@@ -3129,7 +3129,7 @@ button.brand-btn:focus-visible {
 /* 2-Column Story Stage: SVG illustration + Insight panel */
 .story-stage-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
   gap: clamp(8px, 1.2vw, 16px);
   align-items: stretch;
   flex: 1;
@@ -3199,6 +3199,7 @@ button.brand-btn:focus-visible {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 15%;
   display: block;
 }
 
@@ -3547,13 +3548,135 @@ button.brand-btn:focus-visible {
   color: var(--muted);
   line-height: 1.3;
 }
-.sip-subcard.defense {
+/* ─── Progressive Guided Insight Card (sgc-*) ─── */
+.sip-guided-card {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1vh, 12px);
+  animation: fadeIn .25s ease;
+}
+
+.sgc-step-counter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.sgc-pip {
+  width: 28px;
+  height: 5px;
+  border-radius: 99px;
+  background: rgba(6,43,83,.12);
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.sgc-pip.active {
+  width: 36px;
+}
+.sgc-pip.done {
+  opacity: .6;
+}
+.sgc-fraction {
+  font-size: .7rem;
+  font-weight: 800;
+  color: var(--muted);
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+.sgc-body {
+  flex: 1;
+  min-height: 0;
   background: white;
+  border: 1px solid rgba(6,43,83,.1);
+  border-radius: var(--radius-sm);
+  padding: clamp(10px, 1.4vh, 16px) clamp(10px, 1.4vw, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, .6vh, 8px);
+  box-shadow: 0 1px 4px rgba(6,43,83,.06);
+  animation: fadeUp .22s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
+}
+.sgc-body.sgc-type-defense {
   border-width: 1.5px;
 }
-.sip-defense-copy {
-  color: var(--navy-950) !important;
-  font-weight: 700;
+
+.sgc-icon-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+.sgc-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.sgc-label {
+  font-size: .7rem;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.sgc-title {
+  font: 700 clamp(.82rem, 1.1vw, .95rem)/1.2 var(--font-display);
+  color: var(--navy-950);
+  display: block;
+}
+.sgc-body-text {
+  margin: 0;
+  font-size: clamp(.73rem, .9vw, .8rem);
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.sgc-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+.sgc-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: var(--radius-xs);
+  font-size: .78rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all var(--transition);
+  border: 0;
+}
+.sgc-nav-btn.secondary {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+.sgc-nav-btn.secondary:hover:not(:disabled) {
+  background: var(--paper);
+  color: var(--navy-900);
+}
+.sgc-nav-btn.secondary:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+.sgc-nav-btn.primary {
+  color: white;
+  font-weight: 800;
+}
+.sgc-nav-btn.primary:hover {
+  filter: brightness(1.08);
+  transform: translateX(2px);
 }
 
 /* Channel Stats Card */

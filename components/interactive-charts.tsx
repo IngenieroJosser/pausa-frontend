@@ -25,7 +25,7 @@ import {
   PauseIllustration,
 } from "./illustrations/attack-cycle-illustrations";
 
-/* ─── 1. Matriz de Criterios de Seguridad Digital (Sin estadísticas sin sustento) ─── */
+/* ─── 1. Matriz de Criterios de Seguridad Digital ─── */
 export type CriterionKey = "urgencia" | "verificacion" | "pagos" | "identidad";
 
 export function CompetencyRadarChart() {
@@ -137,9 +137,12 @@ export function CompetencyRadarChart() {
   );
 }
 
-/* ─── 2. Historia Ilustrada del Ciclo del Ataque (Narrativa Visual con Personaje) ─── */
+/* ─── 2. Historia Ilustrada del Ciclo del Ataque ─── */
+type InsightType = "bait" | "mind" | "defense";
+
 export function AttackFunnelChart() {
   const [activeStep, setActiveStep] = useState(0);
+  const [insightStep, setInsightStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const scenes = [
@@ -148,19 +151,33 @@ export function AttackFunnelChart() {
       num: "01",
       badge: "Fase 1",
       title: "El Gancho",
-      subtitle: "La oferta prometedora",
+      subtitle: "La oferta inesperada",
       themeColor: "#0284c7",
       bgColor: "#f0f9ff",
       illustration: <HookIllustration className="story-stage-svg" />,
-      storyText:
-        "El atacante contacta a la persona de forma imprevista con una oportunidad laboral atractiva (salario superior al promedio, horarios flexibles o beneficios extraordinarios).",
-      baitTitle: "Lo que muestra el mensaje:",
-      baitContent: "«Fuiste preseleccionado para Auxiliar Logístico · $2.400.000 + subsidio».",
-      mindTitle: "Efecto psicológico:",
-      mindContent:
-        "Genera ilusión y optimismo inmediato, reduciendo el escepticismo inicial y haciendo que la persona baje la guardia ante preguntas básicas de procedencia.",
-      defenseRule:
-        "Si no te postulaste formalmente a la empresa o las condiciones son atípicas, no asumas que el remitente es quien dice ser.",
+      insights: [
+        {
+          icon: Compass,
+          label: "El anzuelo",
+          title: "Lo que muestra el mensaje",
+          body: "«Fuiste preseleccionado para Auxiliar Logístico · $2.400.000 + subsidio de transporte. Cupo limitado.» Llegó sin que te hayas postulado.",
+          type: "bait" as InsightType,
+        },
+        {
+          icon: Zap,
+          label: "Efecto psicológico",
+          title: "La selección inesperada baja la guardia",
+          body: "Creer que 'alguien ya te eligió' genera optimismo que reduce el escepticismo. La persona se enfoca en asegurar el cupo, no en verificar el remitente.",
+          type: "mind" as InsightType,
+        },
+        {
+          icon: CheckCircle2,
+          label: "Criterio PAUSA",
+          title: "Primera señal de alerta",
+          body: "¿No te postulaste a esta empresa? ¿El contacto llegó por WhatsApp sin aviso previo? Esas dos condiciones juntas son motivo de pausa antes de responder.",
+          type: "defense" as InsightType,
+        },
+      ],
     },
     {
       id: "urgencia",
@@ -171,34 +188,62 @@ export function AttackFunnelChart() {
       themeColor: "#d97706",
       bgColor: "#fffbeb",
       illustration: <UrgencyIllustration className="story-stage-svg" />,
-      storyText:
-        "Una vez captada la atención, el atacante introduce un límite de tiempo estricto («hoy mismo», «en 20 minutos», «últimos 2 cupos») para bloquear la reflexión.",
-      baitTitle: "Lo que muestra el mensaje:",
-      baitContent: "«Debes confirmar y realizar el trámite hoy antes del mediodía o el cupo se reasigna».",
-      mindTitle: "Efecto psicológico:",
-      mindContent:
-        "Activa el miedo a perder la oportunidad (FOMO). La mente entra en 'efecto túnel', enfocándose en no perder el empleo en vez de validar si la empresa existe.",
-      defenseRule:
-        "Toda prisa impuesta por un remitente desconocido es una alerta. Los procesos de selección reales permiten evaluar y consultar sin plazos de minutos.",
+      insights: [
+        {
+          icon: Compass,
+          label: "El anzuelo",
+          title: "Lo que muestra el mensaje",
+          body: "«Debes confirmar y realizar el trámite hoy antes del mediodía o el cupo se reasigna a otro candidato.»",
+          type: "bait" as InsightType,
+        },
+        {
+          icon: Zap,
+          label: "Efecto psicológico",
+          title: "El 'efecto túnel' bloquea el análisis",
+          body: "El plazo artificial activa el miedo a perder la oportunidad (FOMO). La mente prioriza actuar rápido sobre actuar bien, anulando la verificación básica.",
+          type: "mind" as InsightType,
+        },
+        {
+          icon: CheckCircle2,
+          label: "Criterio PAUSA",
+          title: "La prisa impuesta siempre es sospechosa",
+          body: "Los procesos de selección legítimos no imponen plazos de minutos. Cualquier urgencia extrema desde un remitente desconocido es una señal para detenerse.",
+          type: "defense" as InsightType,
+        },
+      ],
     },
     {
       id: "trampa",
       num: "03",
       badge: "Fase 3",
       title: "La Trampa",
-      subtitle: "Extracción de dinero o cédula",
+      subtitle: "Extracción de dinero o identidad",
       themeColor: "#dc2626",
       bgColor: "#fef2f2",
       illustration: <TrapIllustration className="story-stage-svg" />,
-      storyText:
-        "Aprovechando la prisa inducida, se solicita una transferencia económica inmediata (exámenes médicos, carnets, dotación) o la foto de la cédula por ambos lados.",
-      baitTitle: "Lo que muestra el mensaje:",
-      baitContent: "«Consigna $48.000 del examen médico a esta cuenta y envíanos foto de tu cédula».",
-      mindTitle: "Efecto psicológico:",
-      mindContent:
-        "La víctima racionaliza el costo como un paso menor frente al sueldo prometido, cediendo dinero o entregando datos que facilitan suplantaciones financieras.",
-      defenseRule:
-        "Por ley laboral en Colombia, los exámenes de ingreso son costeados 100% por el empleador. Jamás transfieras dinero para participar en un proceso.",
+      insights: [
+        {
+          icon: Compass,
+          label: "El anzuelo",
+          title: "Lo que muestra el mensaje",
+          body: "«Consigna $48.000 del examen médico de ingreso a esta cuenta y envíanos foto de tu cédula por ambos lados para completar el proceso.»",
+          type: "bait" as InsightType,
+        },
+        {
+          icon: Zap,
+          label: "Efecto psicológico",
+          title: "El costo parece menor frente al beneficio",
+          body: "La víctima racionaliza: «$48.000 es poco comparado con el sueldo mensual». Ese razonamiento es exactamente el objetivo del atacante.",
+          type: "mind" as InsightType,
+        },
+        {
+          icon: CheckCircle2,
+          label: "Criterio PAUSA",
+          title: "En Colombia, el candidato nunca paga",
+          body: "La normativa laboral colombiana prohíbe cobrar al candidato exámenes de ingreso, dotación o carnets. Un cobro previo es una señal definitiva de fraude.",
+          type: "defense" as InsightType,
+        },
+      ],
     },
     {
       id: "pausa",
@@ -209,26 +254,47 @@ export function AttackFunnelChart() {
       themeColor: "#0d9488",
       bgColor: "#f0fdfa",
       illustration: <PauseIllustration className="story-stage-svg" />,
-      storyText:
-        "La persona reconoce las señales, frena el impulso de responder en el chat, no envía dinero ni documentos, y abre un navegador por su cuenta para consultar a la empresa oficial.",
-      baitTitle: "Acción protectora:",
-      baitContent: "Salir del chat de WhatsApp, buscar la empresa en Google y llamar a su línea PBX oficial.",
-      mindTitle: "Resultado pedagógico:",
-      mindContent:
-        "Al no usar los teléfonos ni enlaces que el atacante suministró, se rompe el canal del engaño y se confirma de inmediato que la vacante era fraudulenta.",
-      defenseRule:
-        "Regla de Oro PAUSA: Sal del chat. Busca tú mismo los canales oficiales y corrobora antes de cualquier acción.",
+      insights: [
+        {
+          icon: Compass,
+          label: "La acción protectora",
+          title: "Sal del chat y no uses sus datos",
+          body: "Cierra el chat. No llames al número que te dieron ni entres al enlace que te enviaron. Abre tu navegador y busca la empresa por tu cuenta.",
+          type: "bait" as InsightType,
+        },
+        {
+          icon: Zap,
+          label: "Cómo verificar correctamente",
+          title: "Compara por canales independientes",
+          body: "Busca el sitio oficial de la empresa en Google, revisa que el dominio sea exacto y llama al conmutador PBX que aparece en esa página, no al número del mensaje.",
+          type: "mind" as InsightType,
+        },
+        {
+          icon: CheckCircle2,
+          label: "Regla de Oro PAUSA",
+          title: "Verificar es siempre el paso correcto",
+          body: "Si la empresa no puede confirmar la oferta por sus propios canales oficiales, tienes un motivo sólido para no continuar. La pausa te protege sin importar el resultado.",
+          type: "defense" as InsightType,
+        },
+      ],
     },
   ];
 
   const current = scenes[activeStep];
+  const currentInsight = current.insights[insightStep];
+  const InsightIcon = currentInsight.icon;
+
+  // Reset insight step when scene changes
+  useEffect(() => {
+    setInsightStep(0);
+  }, [activeStep]);
 
   // Auto-advance narrative tour when playing
   useEffect(() => {
     if (!isPlaying) return;
     const timer = setInterval(() => {
       setActiveStep((prev) => (prev + 1) % scenes.length);
-    }, 4500);
+    }, 5000);
     return () => clearInterval(timer);
   }, [isPlaying, scenes.length]);
 
@@ -281,15 +347,14 @@ export function AttackFunnelChart() {
         </div>
       </header>
 
-      {/* ─── Main Story Stage: High-Fidelity SVG Illustration & Pedagogical Insight ─── */}
+      {/* ─── Main Story Stage ─── */}
       <div className="story-stage-grid">
-        {/* Left Side: The Rich Editorial SVG Illustration */}
+        {/* Left: Illustration */}
         <div className="story-illustration-card" style={{ borderColor: current.themeColor }}>
           <div className="sic-viewport" key={current.id}>
             {current.illustration}
           </div>
 
-          {/* Floating Navigation Controls */}
           <footer className="sic-nav-footer">
             <button
               type="button"
@@ -331,51 +396,95 @@ export function AttackFunnelChart() {
                 setIsPlaying(false);
               }}
             >
-              <span>{activeStep === scenes.length - 1 ? "Reiniciar historia" : "Siguiente"}</span>
+              <span>{activeStep === scenes.length - 1 ? "Reiniciar" : "Siguiente"}</span>
               {activeStep === scenes.length - 1 ? <RotateCcw size={15} /> : <ArrowRight size={16} />}
             </button>
           </footer>
         </div>
 
-        {/* Right Side: Pedagogical Narrative Panel */}
+        {/* Right: Progressive Guided Insight Panel */}
         <aside className="story-insight-panel" style={{ backgroundColor: current.bgColor }}>
+          {/* Scene header — always visible */}
           <div className="sip-header">
             <div className="sip-phase-row">
               <span className="sip-badge" style={{ backgroundColor: current.themeColor }}>
-                {current.badge} · Paso {current.num}
+                {current.badge} · {current.num}
               </span>
               <span className="sip-subtitle">{current.subtitle}</span>
             </div>
             <h3 style={{ color: current.themeColor }}>{current.title}</h3>
-            <p className="sip-story-desc">{current.storyText}</p>
           </div>
 
-          <div className="sip-breakdown-cards">
-            {/* The Trick */}
-            <div className="sip-subcard">
-              <div className="sip-subcard-title">
-                <Compass size={14} style={{ color: current.themeColor }} />
-                <strong>{current.baitTitle}</strong>
-              </div>
-              <p>{current.baitContent}</p>
+          {/* Progressive single-insight card */}
+          <div className="sip-guided-card" key={`${activeStep}-${insightStep}`}>
+            {/* Step dots + counter */}
+            <div className="sgc-step-counter">
+              {current.insights.map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  aria-label={`Ir al paso ${idx + 1}`}
+                  className={`sgc-pip${insightStep === idx ? " active" : insightStep > idx ? " done" : ""}`}
+                  style={{
+                    backgroundColor: insightStep >= idx ? current.themeColor : undefined,
+                    borderColor: insightStep >= idx ? current.themeColor : undefined,
+                  }}
+                  onClick={() => setInsightStep(idx)}
+                />
+              ))}
+              <span className="sgc-fraction">{insightStep + 1} de {current.insights.length}</span>
             </div>
 
-            {/* Cognitive impact */}
-            <div className="sip-subcard">
-              <div className="sip-subcard-title">
-                <Zap size={14} style={{ color: current.themeColor }} />
-                <strong>{current.mindTitle}</strong>
+            {/* Insight content */}
+            <div className={`sgc-body sgc-type-${currentInsight.type}`}>
+              <div className="sgc-icon-row">
+                <span className="sgc-icon" style={{ backgroundColor: current.themeColor + "1a", color: current.themeColor }}>
+                  <InsightIcon size={16} />
+                </span>
+                <span className="sgc-label" style={{ color: current.themeColor }}>{currentInsight.label}</span>
               </div>
-              <p>{current.mindContent}</p>
+              <strong className="sgc-title">{currentInsight.title}</strong>
+              <p className="sgc-body-text">{currentInsight.body}</p>
             </div>
 
-            {/* PAUSA Golden Rule */}
-            <div className="sip-subcard defense" style={{ borderColor: current.themeColor }}>
-              <div className="sip-subcard-title">
-                <CheckCircle2 size={14} style={{ color: current.themeColor }} />
-                <strong>Regla de Criterio PAUSA:</strong>
-              </div>
-              <p className="sip-defense-copy">{current.defenseRule}</p>
+            {/* Anterior / Continuar */}
+            <div className="sgc-nav">
+              <button
+                type="button"
+                className="sgc-nav-btn secondary"
+                disabled={insightStep === 0}
+                onClick={() => setInsightStep((s) => Math.max(0, s - 1))}
+              >
+                <ArrowLeft size={13} />
+                Anterior
+              </button>
+              {insightStep < current.insights.length - 1 ? (
+                <button
+                  type="button"
+                  className="sgc-nav-btn primary"
+                  style={{ backgroundColor: current.themeColor }}
+                  onClick={() => setInsightStep((s) => s + 1)}
+                >
+                  Continuar
+                  <ArrowRight size={13} />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="sgc-nav-btn primary"
+                  style={{ backgroundColor: current.themeColor }}
+                  onClick={() => {
+                    if (activeStep < scenes.length - 1) {
+                      setActiveStep((s) => s + 1);
+                    } else {
+                      setActiveStep(0);
+                    }
+                  }}
+                >
+                  {activeStep < scenes.length - 1 ? "Siguiente escena" : "Reiniciar"}
+                  {activeStep < scenes.length - 1 ? <ArrowRight size={13} /> : <RotateCcw size={13} />}
+                </button>
+              )}
             </div>
           </div>
         </aside>
