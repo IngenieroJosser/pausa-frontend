@@ -2,79 +2,147 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { Sparkles, HelpCircle, CheckCircle2, AlertTriangle } from "lucide-react";
 
-interface IllustrationProps {
-  className?: string;
-  onExploreHotspot?: (tag: string) => void;
+interface Hotspot {
+  id: string;
+  pinClass: string;
+  number: number;
+  label: string;
+  title: string;
+  explanation: string;
+  variant?: "info" | "warning" | "danger" | "success";
 }
 
-/* ─── SCENE 1: EL GANCHO (The Hook / Deceptive Offer) ─── */
-export function HookIllustration({ className = "" }: IllustrationProps) {
-  const [activePin, setActivePin] = useState<string | null>(null);
+interface SceneProps {
+  className?: string;
+}
+
+/* ─── SCENE 1: EL GANCHO ─── */
+export function HookIllustration({ className = "" }: SceneProps) {
+  const hotspots: Hotspot[] = [
+    {
+      id: "anzuelo",
+      pinClass: "pin-hook",
+      number: 1,
+      label: "El Anzuelo",
+      title: "Oferta inflada sin postulación",
+      explanation: "El anzuelo promete un salario muy por encima del promedio para despertar euforia y anular tus filtros de duda.",
+      variant: "info",
+    },
+    {
+      id: "emocion",
+      pinClass: "pin-phone",
+      number: 2,
+      label: "Ilusión inicial",
+      title: "Optimismo que baja la guardia",
+      explanation: "Al creer que 'tuviste suerte', te enfocas en asegurar el cupo en vez de preguntarte cómo consiguieron tu número.",
+      variant: "warning",
+    },
+  ];
+
+  const [activeId, setActiveId] = useState<string>("anzuelo");
+  const activeSpot = hotspots.find((h) => h.id === activeId) || hotspots[0];
 
   return (
-    <figure className={`story-figure-wrapper ${className}`}>
-      <div className="sf-image-container">
+    <div className={`story-figure-wrapper ${className}`}>
+      <div className="sf-image-stage">
         <Image
           src="/illustrations/01-gancho.jpg"
-          alt="Escena 1: El Gancho. Personaje joven colombiano ilusionado al recibir una vacante atractiva con un anzuelo oculto en su celular."
+          alt="Escena 1: El Gancho. Personaje joven colombiano ilusionado al recibir una vacante atractiva en su celular."
           width={720}
           height={540}
           className="sf-main-img"
           priority
         />
-        
-        {/* Interactive Pedagogical Hotspots */}
-        <div className="sf-hotspots-layer">
-          {/* Pin 1: El Anzuelo */}
-          <div 
-            className={`sf-hotspot-pin pin-hook ${activePin === "hook" ? "open" : ""}`}
-            onMouseEnter={() => setActivePin("hook")}
-            onMouseLeave={() => setActivePin(null)}
-          >
-            <span className="sf-pin-pulse" />
-            <span className="sf-pin-badge">1</span>
-            <div className="sf-pin-popover">
-              <strong>El Anzuelo</strong>
-              <p>Promesa de salario muy alto sin haber enviado hoja de vida previamente.</p>
-            </div>
-          </div>
 
-          {/* Pin 2: El Celular y la Emoción */}
-          <div 
-            className={`sf-hotspot-pin pin-phone ${activePin === "phone" ? "open" : ""}`}
-            onMouseEnter={() => setActivePin("phone")}
-            onMouseLeave={() => setActivePin(null)}
-          >
-            <span className="sf-pin-pulse" />
-            <span className="sf-pin-badge">2</span>
-            <div className="sf-pin-popover">
-              <strong>Optimismo prematuro</strong>
-              <p>La ilusión nubla el juicio crítico y evita verificar el número remitente.</p>
-            </div>
-          </div>
+        {/* Hotspot Pins on the Artwork */}
+        <div className="sf-hotspots-overlay">
+          {hotspots.map((h) => {
+            const isSelected = activeId === h.id;
+            return (
+              <button
+                key={h.id}
+                type="button"
+                className={`sf-hotspot-pin ${h.pinClass}${isSelected ? " active" : ""}`}
+                onClick={() => setActiveId(h.id)}
+                onMouseEnter={() => setActiveId(h.id)}
+                aria-label={`Pista ${h.number}: ${h.title}`}
+              >
+                <span className={`sf-pin-pulse ${h.variant || ""}`} />
+                <span className={`sf-pin-badge ${h.variant || ""}`}>{h.number}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Scene Watermark Tag */}
+        {/* Phase Badge */}
         <div className="sf-scene-tag hook">
           <span className="sft-dot" />
           <span>Fase 01 · El Anzuelo Emocional</span>
         </div>
       </div>
-      <figcaption className="sr-only">
-        Escena del Ciclo del Ataque: El atacante utiliza una oferta de empleo tentadora para atraer a la persona.
-      </figcaption>
-    </figure>
+
+      {/* Interactive Clue Bar: Always 100% visible, never clipped */}
+      <div className="sf-clue-interactive-bar">
+        <div className="scib-chips">
+          <span className="scib-prompt">
+            <HelpCircle size={13} />
+            <span>Pistas en la escena:</span>
+          </span>
+          {hotspots.map((h) => (
+            <button
+              key={h.id}
+              type="button"
+              className={`scib-chip-btn${activeId === h.id ? " active" : ""}`}
+              onClick={() => setActiveId(h.id)}
+            >
+              <span className="scib-num">{h.number}</span>
+              <span>{h.label}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="scib-callout-box">
+          <strong className="scib-title">
+            <span className="scib-idx">{activeSpot.number}.</span> {activeSpot.title}
+          </strong>
+          <p className="scib-desc">{activeSpot.explanation}</p>
+        </div>
+      </div>
+    </div>
   );
 }
 
-/* ─── SCENE 2: LA URGENCIA (The Pressure / False Urgency Clock) ─── */
-export function UrgencyIllustration({ className = "" }: IllustrationProps) {
-  const [activePin, setActivePin] = useState<string | null>(null);
+/* ─── SCENE 2: LA URGENCIA ─── */
+export function UrgencyIllustration({ className = "" }: SceneProps) {
+  const hotspots: Hotspot[] = [
+    {
+      id: "reloj",
+      pinClass: "pin-clock",
+      number: 1,
+      label: "Temporizador",
+      title: "Cuenta regresiva artificial (11:59)",
+      explanation: "Fijan plazos inmediatos ('hoy mismo', 'en 20 minutos') para impedir que consultes con otras personas o verifiques con calma.",
+      variant: "danger",
+    },
+    {
+      id: "fomo",
+      pinClass: "pin-stress",
+      number: 2,
+      label: "Efecto túnel",
+      title: "Presión psicológica forzada",
+      explanation: "El atacante induce miedo a 'perder el cupo' para que tu cerebro decida por impulso y no por razonamiento lógico.",
+      variant: "warning",
+    },
+  ];
+
+  const [activeId, setActiveId] = useState<string>("reloj");
+  const activeSpot = hotspots.find((h) => h.id === activeId) || hotspots[0];
 
   return (
-    <figure className={`story-figure-wrapper ${className}`}>
-      <div className="sf-image-container">
+    <div className={`story-figure-wrapper ${className}`}>
+      <div className="sf-image-stage">
         <Image
           src="/illustrations/02-urgencia.jpg"
           alt="Escena 2: La Urgencia. Personaje presionado con cronómetro en cuenta regresiva y alertas rojas inmediatas."
@@ -84,57 +152,90 @@ export function UrgencyIllustration({ className = "" }: IllustrationProps) {
           priority
         />
 
-        {/* Interactive Pedagogical Hotspots */}
-        <div className="sf-hotspots-layer">
-          {/* Pin 1: El Reloj */}
-          <div 
-            className={`sf-hotspot-pin pin-clock ${activePin === "clock" ? "open" : ""}`}
-            onMouseEnter={() => setActivePin("clock")}
-            onMouseLeave={() => setActivePin(null)}
-          >
-            <span className="sf-pin-pulse danger" />
-            <span className="sf-pin-badge danger">1</span>
-            <div className="sf-pin-popover">
-              <strong>Temporizador artificial</strong>
-              <p>Límite arbitrario de minutos para forzar a actuar sin tiempo de pensar.</p>
-            </div>
-          </div>
-
-          {/* Pin 2: El Estrés */}
-          <div 
-            className={`sf-hotspot-pin pin-stress ${activePin === "stress" ? "open" : ""}`}
-            onMouseEnter={() => setActivePin("stress")}
-            onMouseLeave={() => setActivePin(null)}
-          >
-            <span className="sf-pin-pulse warning" />
-            <span className="sf-pin-badge warning">2</span>
-            <div className="sf-pin-popover">
-              <strong>Efecto túnel</strong>
-              <p>El pánico a perder la oportunidad impide llamar a consultar con otros.</p>
-            </div>
-          </div>
+        <div className="sf-hotspots-overlay">
+          {hotspots.map((h) => {
+            const isSelected = activeId === h.id;
+            return (
+              <button
+                key={h.id}
+                type="button"
+                className={`sf-hotspot-pin ${h.pinClass}${isSelected ? " active" : ""}`}
+                onClick={() => setActiveId(h.id)}
+                onMouseEnter={() => setActiveId(h.id)}
+                aria-label={`Pista ${h.number}: ${h.title}`}
+              >
+                <span className={`sf-pin-pulse ${h.variant || ""}`} />
+                <span className={`sf-pin-badge ${h.variant || ""}`}>{h.number}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Scene Watermark Tag */}
         <div className="sf-scene-tag urgency">
           <span className="sft-dot" />
           <span>Fase 02 · Presión Psicológica (11:59)</span>
         </div>
       </div>
-      <figcaption className="sr-only">
-        Escena del Ciclo del Ataque: El atacante usa plazos inmediatos para forzar decisiones precipitadas.
-      </figcaption>
-    </figure>
+
+      <div className="sf-clue-interactive-bar">
+        <div className="scib-chips">
+          <span className="scib-prompt">
+            <HelpCircle size={13} />
+            <span>Pistas en la escena:</span>
+          </span>
+          {hotspots.map((h) => (
+            <button
+              key={h.id}
+              type="button"
+              className={`scib-chip-btn${activeId === h.id ? " active" : ""}`}
+              onClick={() => setActiveId(h.id)}
+            >
+              <span className="scib-num">{h.number}</span>
+              <span>{h.label}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="scib-callout-box">
+          <strong className="scib-title">
+            <span className="scib-idx">{activeSpot.number}.</span> {activeSpot.title}
+          </strong>
+          <p className="scib-desc">{activeSpot.explanation}</p>
+        </div>
+      </div>
+    </div>
   );
 }
 
-/* ─── SCENE 3: LA TRAMPA (The Trap / Money & Identity Extraction) ─── */
-export function TrapIllustration({ className = "" }: IllustrationProps) {
-  const [activePin, setActivePin] = useState<string | null>(null);
+/* ─── SCENE 3: LA TRAMPA ─── */
+export function TrapIllustration({ className = "" }: SceneProps) {
+  const hotspots: Hotspot[] = [
+    {
+      id: "cobro",
+      pinClass: "pin-money",
+      number: 1,
+      label: "Cobro previo",
+      title: "Exigencia de dinero por adelantado",
+      explanation: "Te piden consignar $48.000 para exámenes médicos o dotación. En Colombia, la ley prohíbe que el candidato pague exámenes de ingreso.",
+      variant: "danger",
+    },
+    {
+      id: "cedula",
+      pinClass: "pin-cedula",
+      number: 2,
+      label: "Foto de cédula",
+      title: "Extracción de identidad personal",
+      explanation: "Solicitan foto de tu documento por ambos lados por chat. Esta información es vendida o usada para aperturas ilícitas a tu nombre.",
+      variant: "danger",
+    },
+  ];
+
+  const [activeId, setActiveId] = useState<string>("cobro");
+  const activeSpot = hotspots.find((h) => h.id === activeId) || hotspots[0];
 
   return (
-    <figure className={`story-figure-wrapper ${className}`}>
-      <div className="sf-image-container">
+    <div className={`story-figure-wrapper ${className}`}>
+      <div className="sf-image-stage">
         <Image
           src="/illustrations/03-trampa.jpg"
           alt="Escena 3: La Trampa. Personaje en duda frenando ante solicitud de dinero por exámenes médicos y foto de cédula."
@@ -144,106 +245,150 @@ export function TrapIllustration({ className = "" }: IllustrationProps) {
           priority
         />
 
-        {/* Interactive Pedagogical Hotspots */}
-        <div className="sf-hotspots-layer">
-          {/* Pin 1: Cobro de Dinero */}
-          <div 
-            className={`sf-hotspot-pin pin-money ${activePin === "money" ? "open" : ""}`}
-            onMouseEnter={() => setActivePin("money")}
-            onMouseLeave={() => setActivePin(null)}
-          >
-            <span className="sf-pin-pulse danger" />
-            <span className="sf-pin-badge danger">1</span>
-            <div className="sf-pin-popover">
-              <strong>Cobro anticipado</strong>
-              <p>Petición de dinero para exámenes médicos o uniformes antes del contrato.</p>
-            </div>
-          </div>
-
-          {/* Pin 2: Cédula */}
-          <div 
-            className={`sf-hotspot-pin pin-cedula ${activePin === "cedula" ? "open" : ""}`}
-            onMouseEnter={() => setActivePin("cedula")}
-            onMouseLeave={() => setActivePin(null)}
-          >
-            <span className="sf-pin-pulse danger" />
-            <span className="sf-pin-badge danger">2</span>
-            <div className="sf-pin-popover">
-              <strong>Captura de cédula</strong>
-              <p>Piden fotos de tu documento por WhatsApp para abrir créditos a tu nombre.</p>
-            </div>
-          </div>
+        <div className="sf-hotspots-overlay">
+          {hotspots.map((h) => {
+            const isSelected = activeId === h.id;
+            return (
+              <button
+                key={h.id}
+                type="button"
+                className={`sf-hotspot-pin ${h.pinClass}${isSelected ? " active" : ""}`}
+                onClick={() => setActiveId(h.id)}
+                onMouseEnter={() => setActiveId(h.id)}
+                aria-label={`Pista ${h.number}: ${h.title}`}
+              >
+                <span className={`sf-pin-pulse ${h.variant || ""}`} />
+                <span className={`sf-pin-badge ${h.variant || ""}`}>{h.number}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Scene Watermark Tag */}
         <div className="sf-scene-tag trap">
           <span className="sft-dot" />
           <span>Fase 03 · Extracción Irregular</span>
         </div>
       </div>
-      <figcaption className="sr-only">
-        Escena del Ciclo del Ataque: El fraude se materializa al exigir transferencias y fotos del documento de identidad.
-      </figcaption>
-    </figure>
+
+      <div className="sf-clue-interactive-bar">
+        <div className="scib-chips">
+          <span className="scib-prompt">
+            <HelpCircle size={13} />
+            <span>Pistas en la escena:</span>
+          </span>
+          {hotspots.map((h) => (
+            <button
+              key={h.id}
+              type="button"
+              className={`scib-chip-btn${activeId === h.id ? " active" : ""}`}
+              onClick={() => setActiveId(h.id)}
+            >
+              <span className="scib-num">{h.number}</span>
+              <span>{h.label}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="scib-callout-box">
+          <strong className="scib-title">
+            <span className="scib-idx">{activeSpot.number}.</span> {activeSpot.title}
+          </strong>
+          <p className="scib-desc">{activeSpot.explanation}</p>
+        </div>
+      </div>
+    </div>
   );
 }
 
-/* ─── SCENE 4: EL MOMENTO PAUSA (The Autonomous Verification & Defense) ─── */
-export function PauseIllustration({ className = "" }: IllustrationProps) {
-  const [activePin, setActivePin] = useState<string | null>(null);
+/* ─── SCENE 4: EL MOMENTO PAUSA (Con personaje de 2 brazos) ─── */
+export function PauseIllustration({ className = "" }: SceneProps) {
+  const hotspots: Hotspot[] = [
+    {
+      id: "pausa",
+      pinClass: "pin-pause-hand",
+      number: 1,
+      label: "Gesto PAUSA",
+      title: "Freno cognitivo activo",
+      explanation: "El personaje detiene el clic impulsivo: no consigna dinero, no envía su documento y sale del chat de forma deliberada.",
+      variant: "success",
+    },
+    {
+      id: "canal",
+      pinClass: "pin-ssl",
+      number: 2,
+      label: "Canal oficial",
+      title: "Verificación independiente",
+      explanation: "Abre el navegador por su cuenta, busca la página web oficial con candado de seguridad SSL y llama al conmutador PBX verificado.",
+      variant: "success",
+    },
+  ];
+
+  const [activeId, setActiveId] = useState<string>("pausa");
+  const activeSpot = hotspots.find((h) => h.id === activeId) || hotspots[0];
 
   return (
-    <figure className={`story-figure-wrapper ${className}`}>
-      <div className="sf-image-container">
+    <div className={`story-figure-wrapper ${className}`}>
+      <div className="sf-image-stage">
         <Image
           src="/illustrations/04-pausa.jpg"
-          alt="Escena 4: El Momento PAUSA. Personaje tranquilo con escudo PAUSA en la mano y verificando en sitio web oficial con candado SSL."
+          alt="Escena 4: El Momento PAUSA. Personaje sereno con escudo PAUSA en mano y verificando de forma independiente en web oficial con candado SSL."
           width={720}
           height={540}
           className="sf-main-img"
           priority
         />
 
-        {/* Interactive Pedagogical Hotspots */}
-        <div className="sf-hotspots-layer">
-          {/* Pin 1: Gesto PAUSA */}
-          <div 
-            className={`sf-hotspot-pin pin-pause-hand ${activePin === "pause" ? "open" : ""}`}
-            onMouseEnter={() => setActivePin("pause")}
-            onMouseLeave={() => setActivePin(null)}
-          >
-            <span className="sf-pin-pulse success" />
-            <span className="sf-pin-badge success">1</span>
-            <div className="sf-pin-popover">
-              <strong>El Gesto PAUSA</strong>
-              <p>Freno cognitivo: Salir del chat de inmediato sin pagar ni enviar cédula.</p>
-            </div>
-          </div>
-
-          {/* Pin 2: Canal Oficial SSL */}
-          <div 
-            className={`sf-hotspot-pin pin-ssl ${activePin === "ssl" ? "open" : ""}`}
-            onMouseEnter={() => setActivePin("ssl")}
-            onMouseLeave={() => setActivePin(null)}
-          >
-            <span className="sf-pin-pulse success" />
-            <span className="sf-pin-badge success">2</span>
-            <div className="sf-pin-popover">
-              <strong>Canal Independiente</strong>
-              <p>Búsqueda autónoma en Google y consulta al conmutador o web real de la empresa.</p>
-            </div>
-          </div>
+        <div className="sf-hotspots-overlay">
+          {hotspots.map((h) => {
+            const isSelected = activeId === h.id;
+            return (
+              <button
+                key={h.id}
+                type="button"
+                className={`sf-hotspot-pin ${h.pinClass}${isSelected ? " active" : ""}`}
+                onClick={() => setActiveId(h.id)}
+                onMouseEnter={() => setActiveId(h.id)}
+                aria-label={`Pista ${h.number}: ${h.title}`}
+              >
+                <span className={`sf-pin-pulse ${h.variant || ""}`} />
+                <span className={`sf-pin-badge ${h.variant || ""}`}>{h.number}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Scene Watermark Tag */}
         <div className="sf-scene-tag pausa">
           <span className="sft-dot" />
           <span>Fase 04 · Verificación Autónoma Activa</span>
         </div>
       </div>
-      <figcaption className="sr-only">
-        Escena del Ciclo del Ataque: La persona detiene la acción y verifica de manera independiente mediante un canal oficial seguro.
-      </figcaption>
-    </figure>
+
+      <div className="sf-clue-interactive-bar">
+        <div className="scib-chips">
+          <span className="scib-prompt">
+            <HelpCircle size={13} />
+            <span>Pistas en la escena:</span>
+          </span>
+          {hotspots.map((h) => (
+            <button
+              key={h.id}
+              type="button"
+              className={`scib-chip-btn${activeId === h.id ? " active" : ""}`}
+              onClick={() => setActiveId(h.id)}
+            >
+              <span className="scib-num">{h.number}</span>
+              <span>{h.label}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="scib-callout-box">
+          <strong className="scib-title">
+            <span className="scib-idx">{activeSpot.number}.</span> {activeSpot.title}
+          </strong>
+          <p className="scib-desc">{activeSpot.explanation}</p>
+        </div>
+      </div>
+    </div>
   );
 }
