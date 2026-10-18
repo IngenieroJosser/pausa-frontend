@@ -40,11 +40,26 @@ export function IntroScreen({ onStart, previousScore }: { onStart: () => void; p
             </div>
           </div>
 
+          <div className="landing-stats-row">
+            <div className="stat-pill">
+              <span className="stat-pill-num">4 min</span>
+              <span className="stat-pill-label">Duración total</span>
+            </div>
+            <div className="stat-pill">
+              <span className="stat-pill-num">3 casos</span>
+              <span className="stat-pill-label">Práctica adaptativa</span>
+            </div>
+            <div className="stat-pill">
+              <span className="stat-pill-num">100%</span>
+              <span className="stat-pill-label">Anónimo y sin cuenta</span>
+            </div>
+          </div>
+
           <div className="start-row">
             <button className="primary-button large" type="button" onClick={onStart}>
               Comenzar práctica <ArrowRight size={20} />
             </button>
-            <span><Clock3 size={18} /> 4 minutos · sin registro</span>
+            <span className="no-reg-note"><Clock3 size={18} /> Sin registro previo</span>
           </div>
 
           {previousScore !== null && (
@@ -67,22 +82,46 @@ export function IntroScreen({ onStart, previousScore }: { onStart: () => void; p
             <ShieldCheck size={20} />
             <div>
               <strong>No memorices consejos</strong>
-              <span>Aprende a decidir</span>
+              <span>Aprende a decidir bajo presión</span>
             </div>
           </article>
           <article className="floating-note note-two">
             <Sparkles size={20} />
             <div>
               <strong>Práctica adaptativa</strong>
-              <span>Cambia según tu error</span>
+              <span>El caso 2 responde a tu fallo</span>
+            </div>
+          </article>
+          <article className="floating-note note-three">
+            <TrendingUp size={20} />
+            <div>
+              <strong>Prueba de transferencia</strong>
+              <span>Evalúa si aprendiste el principio</span>
             </div>
           </article>
         </section>
       </div>
 
+      <div className="landing-capability-strip">
+        <div className="cap-item">
+          <strong>1. Diagnóstico</strong>
+          <span>Enfrentas un caso de riesgo en tu canal habitual sin pistas previas</span>
+        </div>
+        <div className="cap-divider" />
+        <div className="cap-item">
+          <strong>2. Retroalimentación activa</strong>
+          <span>Desarmamos el engaño: el gancho, la urgencia y el canal independiente</span>
+        </div>
+        <div className="cap-divider" />
+        <div className="cap-item">
+          <strong>3. Transferencia demostrable</strong>
+          <span>Demuestras si puedes aplicar la regla en una situación totalmente distinta</span>
+        </div>
+      </div>
+
       <footer className="landing-footer">
-        <span>PAUSA no detecta fraudes por ti.</span>
-        <span>Te ayuda a reconocer señales y verificar mejor.</span>
+        <span>PAUSA no es un antivirus ni un filtro pasivo.</span>
+        <span>Entrena tu criterio para detectar señales de engaño y tomar una pausa a tiempo.</span>
       </footer>
     </main>
   );

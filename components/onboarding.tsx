@@ -43,17 +43,78 @@ const situations = [
   },
 ];
 
-const goalMap: Record<Goal, { icon: React.ReactNode; title: string; sub: string }> = {
-  empleo: { icon: <Briefcase size={24} />, title: "Buscar empleo", sub: "Protegerme de ofertas laborales falsas" },
-  dinero: { icon: <CreditCard size={24} />, title: "Proteger mi dinero", sub: "Detectar cobros o transferencias sospechosas" },
-  datos: { icon: <Database size={24} />, title: "Cuidar mis datos", sub: "No entregar información a quien no deba tenerla" },
+type GoalDetail = {
+  icon: React.ReactNode;
+  title: string;
+  sub: string;
+  badge: string;
+  tags: string[];
+  simulationSample: string;
+  focusPoint: string;
 };
 
-const frictionMap: Record<Friction, { title: string; body: string }> = {
-  urgencia: { title: "La presión de tiempo", body: "Cuando dicen que debo decidir ya o pierdo la oportunidad." },
-  marca: { title: "Confiar en la marca", body: "Si el mensaje parece venir de una empresa conocida, bajo la guardia." },
-  miedo: { title: "Miedo a perder algo", body: "El temor a quedarme sin la oportunidad me hace actuar sin pensar." },
-  canal: { title: "No sé por dónde verificar", body: "No tengo claro cómo comprobar si una empresa o mensaje es legítimo." },
+const goalMap: Record<Goal, GoalDetail> = {
+  empleo: {
+    icon: <Briefcase size={26} />,
+    title: "Buscar empleo seguro",
+    sub: "Detecta ofertas laborales falsas antes de pagar exámenes, cursos o entregar documentos privados.",
+    badge: "Frecuencia alta",
+    tags: ["WhatsApp", "Examen médico falso", "Contratación exprés"],
+    simulationSample: "Chat de reclutamiento que exige un pago para examen médico antes de la entrevista.",
+    focusPoint: "Verificar la vacante en la página oficial de la empresa sin pagar nada.",
+  },
+  dinero: {
+    icon: <CreditCard size={26} />,
+    title: "Proteger mi dinero",
+    sub: "Reconoce alertas bancarias falsas, supuestos cobros retenidos y enlaces que buscan vaciar tu cuenta.",
+    badge: "Impacto financiero",
+    tags: ["SMS bancario", "Alerta de bloqueo", "Transferencias"],
+    simulationSample: "SMS de urgencia alertando de un bloqueo si no confirmas tus claves en un enlace externo.",
+    focusPoint: "Entrar directamente a la app del banco, nunca mediante enlaces por mensaje.",
+  },
+  datos: {
+    icon: <Database size={26} />,
+    title: "Cuidar mi identidad y datos",
+    sub: "Evita el robo de cuentas de mensajería y el envío indebido de fotos de tu cédula a terceros.",
+    badge: "Seguridad y privacidad",
+    tags: ["Suplantación", "Cédula / Documentos", "Robo de sesión"],
+    simulationSample: "Mensaje solicitando fotos de tu documento de identidad para validar un trámite desconocido.",
+    focusPoint: "Proteger tu documento de identidad para evitar suplantaciones de firma y créditos.",
+  },
+};
+
+type FrictionDetail = {
+  title: string;
+  body: string;
+  tag: string;
+  example: string;
+};
+
+const frictionMap: Record<Friction, FrictionDetail> = {
+  urgencia: {
+    title: "La presión de tiempo",
+    body: "«Si no respondes en 15 minutos, la oportunidad o el beneficio se cancela».",
+    tag: "Urgencia artificial",
+    example: "Te impiden consultar con alguien o revisar con calma antes de actuar.",
+  },
+  marca: {
+    title: "Confiar en la marca o logo",
+    body: "Si el mensaje incluye el logo, nombre o colores de una empresa conocida, tiendo a bajar la guardia.",
+    tag: "Suplantación visual",
+    example: "Imitan tipografías y pies de firma idénticos a los corporativos reales.",
+  },
+  miedo: {
+    title: "Miedo a perder la oportunidad",
+    body: "El temor a quedarme sin trabajo o a que bloqueen mi cuenta me hace actuar de inmediato.",
+    tag: "Manipulación emocional",
+    example: "Aprovechan la necesidad o la preocupación para que no te detengas a pensar.",
+  },
+  canal: {
+    title: "No saber cómo verificar",
+    body: "No tengo claro qué pasos dar para comprobar si un mensaje o dominio web es auténtico.",
+    tag: "Falta de procedimiento",
+    example: "Hacer clic en el enlace provisto parece la única opción evidente en el momento.",
+  },
 };
 
 const goalToContext: Record<Goal, Context> = {
@@ -63,10 +124,10 @@ const goalToContext: Record<Goal, Context> = {
 };
 
 const frictionToSignal: Record<Friction, string> = {
-  urgencia: "la presión de tiempo",
-  marca: "marcas que imitan empresas reales",
-  miedo: "el miedo a perder una oportunidad",
-  canal: "cómo verificar por canales independientes",
+  urgencia: "la presión de tiempo y plazos artificiales",
+  marca: "marcas y logos que imitan empresas reales",
+  miedo: "la manipulación por temor a perder la oportunidad",
+  canal: "el procedimiento para verificar por canales independientes",
 };
 
 /* ─── Nav dots ───────────────────────────────────── */
@@ -87,21 +148,47 @@ function NavDots({ current }: { current: Stage }) {
 
 /* ─── Stage 1: Goal ──────────────────────────────── */
 function GoalStage({ onNext }: { onNext: (goal: Goal) => void }) {
-  const [selected, setSelected] = useState<Goal | null>(null);
-  const goals = Object.entries(goalMap) as [Goal, (typeof goalMap)[Goal]][];
+  const [selected, setSelected] = useState<Goal | null>("empleo");
+  const goals = Object.entries(goalMap) as [Goal, GoalDetail][];
+  const activeGoal = selected ? goalMap[selected] : goalMap.empleo;
 
   return (
     <div className="goal-screen">
       <div className="goal-copy">
-        <span className="eyebrow">01 · Objetivo</span>
+        <span className="eyebrow">01 · Objetivo de práctica</span>
         <h1>¿Qué quieres<br />proteger hoy?</h1>
         <p>
-          Tu respuesta cambia el escenario de práctica y el criterio que
-          entrenará esta sesión. No hay respuesta correcta.
+          Tu respuesta calibra el simulador: cambia el mensaje entrante, el remitente sospechoso y las decisiones críticas que evaluarás.
         </p>
+
+        {/* Live Personalization Preview Widget */}
+        <div className="goal-preview-box">
+          <div className="gpb-header">
+            <span className="gpb-badge">Calibración en vivo</span>
+            <strong>{activeGoal.title}</strong>
+          </div>
+          <div className="gpb-body">
+            <div className="gpb-item">
+              <span className="gpb-label">Caso simulado:</span>
+              <p>{activeGoal.simulationSample}</p>
+            </div>
+            <div className="gpb-item">
+              <span className="gpb-label">Criterio que entrenarás:</span>
+              <p>{activeGoal.focusPoint}</p>
+            </div>
+          </div>
+          <div className="gpb-footer">
+            <span>⏱ ~4 minutos</span>
+            <span>·</span>
+            <span>100% Anónimo</span>
+            <span>·</span>
+            <span>Sin registro</span>
+          </div>
+        </div>
       </div>
+
       <div className="goal-cards">
-        {goals.map(([id, { icon, title, sub }], i) => (
+        {goals.map(([id, { icon, title, sub, badge, tags }], i) => (
           <button
             key={id}
             className={`goal-card${selected === id ? " selected" : ""}`}
@@ -109,22 +196,31 @@ function GoalStage({ onNext }: { onNext: (goal: Goal) => void }) {
             type="button"
             onClick={() => setSelected(id)}
           >
-            <span className="goal-card-icon">{icon}</span>
-            <span className="goal-card-text">
+            <div className="goal-card-top-row">
+              <span className="goal-card-icon">{icon}</span>
+              <span className="goal-card-badge">{badge}</span>
+              <span className="goal-card-check">{selected === id ? "✓" : ""}</span>
+            </div>
+            <div className="goal-card-text">
               <strong>{title}</strong>
-              <span>{sub}</span>
-            </span>
-            <span className="goal-card-check">{selected === id ? "✓" : ""}</span>
+              <p>{sub}</p>
+            </div>
+            <div className="goal-card-tags">
+              {tags.map((tag) => (
+                <span key={tag} className="goal-tag">{tag}</span>
+              ))}
+            </div>
           </button>
         ))}
+
         <button
-          className="primary-button large"
+          className="primary-button large teal"
           type="button"
           disabled={!selected}
           onClick={() => selected && onNext(selected)}
-          style={{ marginTop: 8 }}
+          style={{ marginTop: 12 }}
         >
-          Continuar <ArrowRight size={20} />
+          Continuar con {activeGoal.title} <ArrowRight size={20} />
         </button>
       </div>
     </div>
@@ -133,22 +229,37 @@ function GoalStage({ onNext }: { onNext: (goal: Goal) => void }) {
 
 /* ─── Stage 2: Friction ──────────────────────────── */
 function FrictionStage({ goal, onNext }: { goal: Goal; onNext: (f: Friction) => void }) {
-  const [selected, setSelected] = useState<Friction | null>(null);
-  const frictions = Object.entries(frictionMap) as [Friction, (typeof frictionMap)[Friction]][];
-  const goalLabel = goalMap[goal].title.toLowerCase();
+  const [selected, setSelected] = useState<Friction | null>("urgencia");
+  const frictions = Object.entries(frictionMap) as [Friction, FrictionDetail][];
+  const goalInfo = goalMap[goal];
 
   return (
     <div className="goal-screen">
       <div className="goal-copy">
-        <span className="eyebrow">02 · Fricción</span>
+        <span className="eyebrow">02 · Punto ciego / Fricción</span>
         <h1>¿Qué te hace<br />difícil detenerte?</h1>
         <p>
-          Pensando en <strong>{goalLabel}</strong>, ¿qué suele impedirte pausar
-          y verificar antes de actuar?
+          En situaciones de <strong>{goalInfo.title.toLowerCase()}</strong>, los estafadores explotan puntos ciegos para impedir que te tomes una pausa. ¿Cuál te cuesta más identificar?
         </p>
+
+        <div className="goal-preview-box">
+          <div className="gpb-header">
+            <span className="gpb-badge">Por qué importa esto</span>
+            <strong>La trampa psicológica</strong>
+          </div>
+          <div className="gpb-body">
+            <div className="gpb-item">
+              <span className="gpb-label">Objetivo de la sesión:</span>
+              <p>
+                No basta con saber qué es un fraude. El entrenamiento te ayuda a sentir el impulso de actuar y aprender a activar la <strong>PAUSA</strong> en ese instante.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
+
       <div className="friction-grid">
-        {frictions.map(([id, { title, body }], i) => (
+        {frictions.map(([id, { title, body, tag, example }], i) => (
           <button
             key={id}
             className={`friction-card${selected === id ? " selected" : ""}`}
@@ -156,19 +267,26 @@ function FrictionStage({ goal, onNext }: { goal: Goal; onNext: (f: Friction) => 
             type="button"
             onClick={() => setSelected(id)}
           >
-            <span className="fc-check">{selected === id ? "✓" : ""}</span>
+            <div className="fc-top-row">
+              <span className="fc-tag">{tag}</span>
+              <span className="fc-check">{selected === id ? "✓" : ""}</span>
+            </div>
             <strong>{title}</strong>
-            <p>{body}</p>
+            <p className="fc-body">{body}</p>
+            <div className="fc-example">
+              <span>Ejemplo:</span> {example}
+            </div>
           </button>
         ))}
+
         <button
-          className="primary-button large"
+          className="primary-button large teal"
           type="button"
           disabled={!selected}
           onClick={() => selected && onNext(selected)}
-          style={{ marginTop: 4 }}
+          style={{ marginTop: 8 }}
         >
-          Continuar <ArrowRight size={20} />
+          Continuar al reconocimiento de casos <ArrowRight size={20} />
         </button>
       </div>
     </div>
