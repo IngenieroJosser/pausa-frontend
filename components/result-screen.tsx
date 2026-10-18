@@ -22,7 +22,7 @@ export function ResultScreen({ answers, onRestart }: { answers: Answer[]; onRest
     <main className="result-page">
       <nav className="landing-nav">
         <Brand />
-        <span className="session-label">Práctica completada · Análisis Gurwi</span>
+        <span className="session-label">Práctica completada · Análisis interactivo</span>
       </nav>
 
       <section className="result-hero">
@@ -58,7 +58,7 @@ export function ResultScreen({ answers, onRestart }: { answers: Answer[]; onRest
             </div>
           </section>
 
-          {/* Gurwi Radar Chart Component */}
+          {/* Gráfica de radar de competencias */}
           <CompetencyRadarChart scores={finalScores} />
         </div>
 

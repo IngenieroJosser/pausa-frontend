@@ -13,7 +13,7 @@ export function ChatCard({ scenario, allowInspection = true }: Props) {
   const [inspectorActive, setInspectorActive] = useState(false);
   const [selectedClue, setSelectedClue] = useState<number | null>(null);
 
-  // Clues mapped from scenario signals for interactive Gurwi microlearning inspection
+  // Pistas mapeadas de las señales del escenario para la inspección interactiva
   const clues = scenario.signals;
 
   return (
@@ -46,7 +46,7 @@ export function ChatCard({ scenario, allowInspection = true }: Props) {
         <div className="inspector-banner">
           <div className="ib-top">
             <Sparkles size={16} />
-            <span>Modo Análisis Gurwi: Toca una pista para desarmar el mensaje</span>
+            <span>Modo Inspector de Pistas: Toca una pista para desarmar el mensaje</span>
           </div>
           <div className="clue-chips-row">
             {clues.map((clue, idx) => (

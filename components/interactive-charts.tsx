@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Clock, ExternalLink, Shield, TrendingUp, Zap } from "lucide-react";
 
-/* ─── 1. Gráfica de Radar / Barras de Competencias (Estilo Gurwi) ─── */
+/* ─── 1. Gráfica de Radar / Barras de Competencias ─── */
 export type CompetencyScores = {
   urgencia: number;      // 0 a 100
   verificacion: number;  // 0 a 100
@@ -65,7 +65,7 @@ export function CompetencyRadarChart({
   const current = metrics.find((m) => m.key === activeMetric)!;
 
   return (
-    <div className="gurwi-chart-card">
+    <div className="chart-card">
       <div className="gcc-header">
         <div className="gcc-title-group">
           <span className="eyebrow">Diagnóstico de habilidades</span>
@@ -162,13 +162,13 @@ export function AttackFunnelChart() {
   ];
 
   return (
-    <div className="gurwi-chart-card">
+    <div className="chart-card">
       <div className="gcc-header">
         <div className="gcc-title-group">
           <span className="eyebrow">Anatomía interactiva</span>
           <h3>¿Cómo opera el engaño paso a paso?</h3>
         </div>
-        <span className="gcc-pill">Modelo explicativo Gurwi</span>
+        <span className="gcc-pill">Modelo explicativo visual</span>
       </div>
 
       <div className="funnel-steps-grid">

@@ -44,7 +44,7 @@ export function FeedbackStep({
           </div>
         </div>
 
-        {/* Embedded Gurwi Competency Graph */}
+        {/* Gráfica de competencias integrada */}
         <div className="feedback-chart-wrapper">
           <CompetencyRadarChart scores={dynamicScores} />
         </div>

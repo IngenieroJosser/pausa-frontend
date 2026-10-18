@@ -19,12 +19,12 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit }: Props) 
   const [activeTab, setActiveTab] = useState<ViewTab>("simulacion");
 
   return (
-    <div className="gurwi-lesson-container">
-      {/* Gurwi-style Top Lesson Navigation Tabs */}
-      <nav className="gurwi-tabs-nav" aria-label="Navegación de la lección interactiva">
+    <div className="lesson-container">
+      {/* Navegación de pestañas de la lección interactiva */}
+      <nav className="lesson-tabs-nav" aria-label="Navegación de la lección interactiva">
         <button
           type="button"
-          className={`gurwi-tab-btn${activeTab === "simulacion" ? " active" : ""}`}
+          className={`lesson-tab-btn${activeTab === "simulacion" ? " active" : ""}`}
           onClick={() => setActiveTab("simulacion")}
         >
           <MessageSquare size={16} />
@@ -32,7 +32,7 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit }: Props) 
         </button>
         <button
           type="button"
-          className={`gurwi-tab-btn${activeTab === "anatomia" ? " active" : ""}`}
+          className={`lesson-tab-btn${activeTab === "anatomia" ? " active" : ""}`}
           onClick={() => setActiveTab("anatomia")}
         >
           <TrendingUp size={16} />
@@ -40,7 +40,7 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit }: Props) 
         </button>
         <button
           type="button"
-          className={`gurwi-tab-btn${activeTab === "radar" ? " active" : ""}`}
+          className={`lesson-tab-btn${activeTab === "radar" ? " active" : ""}`}
           onClick={() => setActiveTab("radar")}
         >
           <BarChart2 size={16} />
@@ -123,7 +123,7 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit }: Props) 
         </main>
       )}
 
-      {/* View 2: Attack Anatomy Graph (Gurwi model) */}
+      {/* Vista 2: Gráfica de anatomía del ataque */}
       {activeTab === "anatomia" && (
         <div className="chart-tab-view">
           <div className="chart-tab-intro">
