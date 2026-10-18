@@ -277,62 +277,100 @@ function SituationsStage({ onNext }: { onNext: () => void }) {
 
   if (done) {
     return (
-      <div className="situation-section">
-        <div className="situation-copy">
-          <span className="eyebrow">03 · Reconocimiento</span>
-          <h1>Ya reconoces<br />las señales.</h1>
+      <div className="onboarding-flow-step">
+        <div className="onboarding-step-hero">
+          <span className="eyebrow">03 · Calibración completada</span>
+          <h1>Ya reconoces las señales clave</h1>
           <p>
-            Revisaste tres situaciones cotidianas. Ahora verás un plan de
-            práctica construido con lo que respondiste.
+            Revisaste tres situaciones cotidianas. Aquí tienes el desglose de lo que identificaste en cada caso:
           </p>
-          <button className="primary-button large" type="button" onClick={onNext} style={{ marginTop: 32 }}>
-            Ver mi plan <ArrowRight size={20} />
-          </button>
         </div>
-        <div className="situation-stack">
-          <div className="situation-card">
-            <div style={{ display: "flex", flexDirection: "column", gap: 16, alignItems: "center", textAlign: "center", padding: "16px 0" }}>
-              <span style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--teal-100)", display: "grid", placeItems: "center", color: "var(--teal-600)" }}>
-                <Shield size={28} />
-              </span>
-              <strong style={{ fontSize: "1.1rem" }}>¡Bien hecho!</strong>
-              <p style={{ color: "var(--muted)", fontSize: ".9rem", lineHeight: 1.6, margin: 0 }}>
-                Analizaste las tres situaciones. Eso ya es hacer una pausa.
-              </p>
+
+        <div className="situation-summary-grid">
+          <div className="summary-case-card">
+            <span className="scc-badge risk">Riesgo identificado</span>
+            <h4>Oferta de empleo por WhatsApp</h4>
+            <p>Petición de dinero para examen médico previo a la entrevista y fotos de cédula.</p>
+            <div className="scc-lesson">
+              <strong>Señal crítica:</strong> Cobro previo por acceder a un trabajo.
             </div>
           </div>
+
+          <div className="summary-case-card">
+            <span className="scc-badge risk">Riesgo identificado</span>
+            <h4>Enlace bancario urgente</h4>
+            <p>SMS alertando de bloqueo en 2 horas con enlace a dominio no oficial.</p>
+            <div className="scc-lesson">
+              <strong>Señal crítica:</strong> Presión de tiempo forzada y dominio suplantado.
+            </div>
+          </div>
+
+          <div className="summary-case-card">
+            <span className="scc-badge safe">Canal seguro</span>
+            <h4>Oferta de empleo verificable</h4>
+            <p>Empresa con sucursal física, correo de dominio oficial y sin ningún tipo de cobro.</p>
+            <div className="scc-lesson">
+              <strong>Señal crítica:</strong> Canal verificable y transparencia en el proceso.
+            </div>
+          </div>
+        </div>
+
+        <div className="onboarding-bottom-bar">
+          <div className="obb-info">
+            <span className="obb-dot" />
+            <span>Calibración completada · Tu criterio inicial está registrado</span>
+          </div>
+          <button className="primary-button large teal" type="button" onClick={onNext}>
+            Ver mi plan personalizado de práctica <ArrowRight size={20} />
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="situation-section">
-      <div className="situation-copy">
-        <span className="eyebrow">03 · Reconocimiento</span>
-        <h1>¿Te preocupa<br />esta situación?</h1>
+    <div className="onboarding-flow-step">
+      <div className="onboarding-step-hero">
+        <span className="eyebrow">03 · Reconocimiento de situaciones</span>
+        <h1>¿Te preocupa esta situación?</h1>
         <p>
-          Lee cada caso y dinos si lo encontrarías sospechoso. No hay
-          respuestas correctas aquí, solo queremos conocer tu punto de partida.
+          Lee el caso real. Dinos si te generaría sospecha para calibrar tu punto de partida.
         </p>
       </div>
-      <div className="situation-stack">
-        <div className="situation-card" key={current.id}>
+
+      <div className="situation-widescreen-card" key={current.id}>
+        <div className="swc-top-bar">
           <span className={`sc-label ${current.label === "riesgo" ? "risk" : "safe"}`}>
-            {current.label === "riesgo" ? <><AlertTriangle size={12} /> Caso de práctica</> : <><Eye size={12} /> Caso de práctica</>}
+            {current.label === "riesgo" ? <><AlertTriangle size={14} /> Situación real para evaluar</> : <><Eye size={14} /> Situación real para evaluar</>}
           </span>
+          <span className="swc-progress-pill">
+            Caso {index + 1} de {situations.length}
+          </span>
+        </div>
+
+        <div className="swc-content">
           <h3>{current.title}</h3>
-          <p>{current.body}</p>
-          <div className="situation-actions">
-            <button className="sit-btn no" type="button" onClick={() => respond(false)}>
-              <X size={16} /> No me preocupa
-            </button>
-            <button className="sit-btn yes" type="button" onClick={() => respond(true)}>
-              <Check size={16} /> Sí me preocupa
-            </button>
+          <div className="swc-message-bubble">
+            <p>«{current.body}»</p>
           </div>
         </div>
-        <p className="situation-counter">{index + 1} de {situations.length}</p>
+
+        <div className="swc-actions">
+          <button className="sit-btn no" type="button" onClick={() => respond(false)}>
+            <X size={18} />
+            <div>
+              <strong>No me preocupa</strong>
+              <small>Parece un aviso o trámite habitual</small>
+            </div>
+          </button>
+          <button className="sit-btn yes" type="button" onClick={() => respond(true)}>
+            <Check size={18} />
+            <div>
+              <strong>Sí me preocupa</strong>
+              <small>Detecto señales sospechosas</small>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -344,57 +382,52 @@ function SolutionStage({ goal, friction, onNext }: { goal: Goal; friction: Frict
   const frictionLabel = frictionToSignal[friction];
 
   return (
-    <div className="solution-screen">
-      <div className="solution-copy">
-        <span className="eyebrow">04 · Tu plan</span>
-        <h1>Tu práctica<br />está lista.</h1>
+    <div className="onboarding-flow-step">
+      <div className="onboarding-step-hero">
+        <span className="eyebrow">04 · Tu plan de entrenamiento</span>
+        <h1>Tu práctica personalizada está lista</h1>
         <p>
-          Basándonos en lo que contaste, la sesión se enfocará en{" "}
-          <strong>{frictionLabel}</strong> en un contexto de{" "}
-          <strong>{goalInfo.title.toLowerCase()}</strong>. Nada inventado,
-          solo lo que identificaste.
+          Configurada según tus respuestas para entrenar el reflejo de PAUSA en situaciones reales de riesgo.
         </p>
-        <button className="primary-button large" type="button" onClick={onNext} style={{ marginTop: 32 }}>
-          Iniciar práctica <ArrowRight size={20} />
-        </button>
       </div>
-      <div>
-        <div className="profile-card">
-          <div className="pc-header">
-            <span className="pc-avatar">
-              <Shield size={24} />
-            </span>
-            <div className="pc-title">
-              <strong>Sesión personalizada</strong>
-              <span>Construida según tus respuestas</span>
-            </div>
+
+      <div className="solution-deck-grid">
+        <div className="solution-card">
+          <div className="slc-icon">
+            <Target size={26} />
           </div>
-          <div className="profile-row">
-            <span className="pr-icon"><Target size={16} /></span>
-            <div>
-              <div className="pr-label">Objetivo</div>
-              <div className="pr-value">{goalInfo.title}</div>
-            </div>
-          </div>
-          <div className="profile-row">
-            <span className="pr-icon"><Zap size={16} /></span>
-            <div>
-              <div className="pr-label">Señal a entrenar</div>
-              <div className="pr-value" style={{ textTransform: "capitalize" }}>{frictionLabel}</div>
-            </div>
-          </div>
-          <div className="profile-row">
-            <span className="pr-icon"><Clock size={16} /></span>
-            <div>
-              <div className="pr-label">Duración estimada</div>
-              <div className="pr-value">~4 minutos · 3 decisiones</div>
-            </div>
-          </div>
-          <div className="profile-cta">
-            <strong>Sin registro · Sin cobros</strong>
-            El resultado queda guardado en tu navegador para comparar después.
-          </div>
+          <span className="slc-badge">Ámbito principal</span>
+          <h3>{goalInfo.title}</h3>
+          <p>{goalInfo.sub}</p>
         </div>
+
+        <div className="solution-card">
+          <div className="slc-icon highlight">
+            <Zap size={26} />
+          </div>
+          <span className="slc-badge">Señal crítica a entrenar</span>
+          <h3 style={{ textTransform: "capitalize" }}>{frictionLabel}</h3>
+          <p>Aprenderás a identificar la trampa psicológica y frenar antes de enviar dinero, abrir enlaces o compartir datos.</p>
+        </div>
+
+        <div className="solution-card">
+          <div className="slc-icon">
+            <Clock size={26} />
+          </div>
+          <span className="slc-badge">Estructura de la sesión</span>
+          <h3>~4 minutos · 3 decisiones</h3>
+          <p>Diagnóstico inicial + Retroalimentación activa + Prueba de transferencia en un contexto nuevo. 100% anónimo.</p>
+        </div>
+      </div>
+
+      <div className="onboarding-bottom-bar">
+        <div className="obb-info">
+          <span className="obb-dot" />
+          <span>Sin registro ni cobros · Tu progreso se calcula en tiempo real</span>
+        </div>
+        <button className="primary-button large teal" type="button" onClick={onNext}>
+          Iniciar práctica interactiva <ArrowRight size={20} />
+        </button>
       </div>
     </div>
   );
@@ -406,43 +439,68 @@ function ProcessingStage({ goal, friction, onReady }: { goal: Goal; friction: Fr
   const steps = [
     `Identificando escenario de ${goalMap[goal].title.toLowerCase()}…`,
     `Ajustando señal de riesgo: ${frictionToSignal[friction]}…`,
-    "Preparando práctica adaptada…",
+    "Preparando simulación interactiva adaptada…",
   ];
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
     steps.forEach((_, i) => {
-      timers.push(setTimeout(() => setStep(i + 1), (i + 1) * 800));
+      timers.push(setTimeout(() => setStep(i + 1), (i + 1) * 850));
     });
-    timers.push(setTimeout(onReady, steps.length * 800 + 600));
+    timers.push(setTimeout(onReady, steps.length * 850 + 700));
     return () => timers.forEach(clearTimeout);
   }, []); // eslint-disable-line
 
+  const progressPct = Math.min(100, Math.round((step / steps.length) * 100));
+
   return (
-    <div className="processing-screen">
-      <div className="processing-icon">
-        <Shield size={36} />
-      </div>
-      <p className="processing-title">Preparando tu práctica</p>
-      <p className="processing-sub">
-        Seleccionamos un escenario real según tu objetivo. Esto no es IA,
-        es un caso validado de nuestro banco de situaciones.
-      </p>
-      <div className="dots">
-        <span /><span /><span />
-      </div>
-      <div className="processing-steps">
-        {steps.map((s, i) => (
-          <div
-            key={s}
-            className="ps-item"
-            style={{ "--i": i, opacity: step > i ? 1 : 0.35 } as React.CSSProperties}
-          >
-            <span className="ps-dot" />
-            <span>{s}</span>
-            {step > i && <Check size={14} style={{ marginLeft: "auto", color: "var(--success)" }} />}
+    <div className="onboarding-flow-step">
+      <div className="processing-dashboard-widescreen">
+        <div className="processing-icon">
+          <Shield size={40} />
+        </div>
+        <div className="processing-hero-text">
+          <span className="eyebrow">Calibración en tiempo real</span>
+          <h2>Preparando tu práctica interactiva</h2>
+          <p>
+            Seleccionamos un escenario de nuestro banco validado según tu objetivo. Sin preguntas genéricas.
+          </p>
+        </div>
+
+        {/* Live Progress Bar */}
+        <div className="pdw-progress-wrap">
+          <div className="pdw-progress-info">
+            <span>Calibración activa</span>
+            <strong>{progressPct}%</strong>
           </div>
-        ))}
+          <div className="pdw-track">
+            <div className="pdw-fill" style={{ width: `${progressPct}%` }} />
+          </div>
+        </div>
+
+        {/* 3 Live Terminal Cards */}
+        <div className="pdw-cards-grid">
+          <div className={`pdw-card${step >= 1 ? " done" : ""}`}>
+            <span className="pdw-step-num">01</span>
+            <strong>Escenario de práctica</strong>
+            <p>Caso de {goalMap[goal].title.toLowerCase()}</p>
+            {step >= 1 ? <span className="pdw-status-badge ok">✓ Seleccionado</span> : <span className="pdw-status-badge wait">Calibrando…</span>}
+          </div>
+
+          <div className={`pdw-card${step >= 2 ? " done" : ""}`}>
+            <span className="pdw-step-num">02</span>
+            <strong>Punto ciego calibrado</strong>
+            <p>{frictionToSignal[friction]}</p>
+            {step >= 2 ? <span className="pdw-status-badge ok">✓ Ajustado</span> : <span className="pdw-status-badge wait">En espera…</span>}
+          </div>
+
+          <div className={`pdw-card${step >= 3 ? " done" : ""}`}>
+            <span className="pdw-step-num">03</span>
+            <strong>Prueba de transferencia</strong>
+            <p>Caso cruzado para medir aprendizaje</p>
+            {step >= 3 ? <span className="pdw-status-badge ok">✓ Listo</span> : <span className="pdw-status-badge wait">En espera…</span>}
+          </div>
+        </div>
       </div>
     </div>
   );
