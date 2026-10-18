@@ -94,6 +94,7 @@ export function PausaExperience() {
     return (
       <Onboarding
         onComplete={startAfterOnboarding}
+        onHome={() => setView("intro")}
       />
     );
   }
@@ -104,7 +105,7 @@ export function PausaExperience() {
 
   return (
     <div className="app-shell">
-      <Progress step={step} />
+      <Progress step={step} onHome={() => setView("intro")} />
       {view === "scenario" ? (
         <ScenarioStep scenario={scenario} selected={selected} onSelect={setSelected} onSubmit={submit} />
       ) : (

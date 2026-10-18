@@ -1,6 +1,12 @@
-export function Brand({ compact = false }: { compact?: boolean }) {
-  return (
-    <div className="brand" aria-label="PAUSA">
+export function Brand({
+  compact = false,
+  onClick,
+}: {
+  compact?: boolean;
+  onClick?: () => void;
+}) {
+  const content = (
+    <>
       <svg className="brand-mark" viewBox="0 0 64 68" role="img" aria-hidden="true">
         <defs>
           <linearGradient id="shield-blue" x1="8" y1="5" x2="44" y2="62">
@@ -19,6 +25,26 @@ export function Brand({ compact = false }: { compact?: boolean }) {
         <rect x="36" y="28" width="6" height="15" rx="2" fill="#07305b" />
       </svg>
       {!compact && <span>PAUSA</span>}
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        className="brand brand-btn"
+        onClick={onClick}
+        aria-label="Volver al inicio · PAUSA"
+        title="Volver al inicio"
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className="brand" aria-label="PAUSA">
+      {content}
     </div>
   );
 }

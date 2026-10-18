@@ -17,6 +17,7 @@ export type OnboardingResult = {
 
 type OnboardingProps = {
   onComplete: (result: OnboardingResult) => void;
+  onHome?: () => void;
 };
 
 type Stage = "goal" | "friction" | "situations" | "solution" | "processing";
@@ -507,7 +508,7 @@ function ProcessingStage({ goal, friction, onReady }: { goal: Goal; friction: Fr
 }
 
 /* ─── Main Onboarding Component ──────────────────── */
-export function Onboarding({ onComplete }: OnboardingProps) {
+export function Onboarding({ onComplete, onHome }: OnboardingProps) {
   const [stage, setStage] = useState<Stage>("goal");
   const [goal, setGoal] = useState<Goal | null>(null);
   const [friction, setFriction] = useState<Friction | null>(null);
@@ -556,7 +557,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
               <ChevronLeft size={16} /> Atrás
             </button>
           )}
-          <Brand />
+          <Brand onClick={onHome} />
         </div>
         <NavDots current={stage} />
         <button

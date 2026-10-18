@@ -117,6 +117,20 @@ button:focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; bor
 img, svg { display: block; }
 .eyebrow { display: inline-block; color: var(--teal-600); font-size: .72rem; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; }
 .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--navy-900); font: 900 1.45rem/1 var(--font-display); letter-spacing: .12em; text-decoration: none; }
+button.brand-btn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+button.brand-btn:focus-visible {
+  outline: 2px solid var(--teal-500);
+  outline-offset: 4px;
+  border-radius: var(--radius-xs);
+}
 .brand-mark { width: 38px; height: 42px; transition: transform var(--transition), filter var(--transition); filter: drop-shadow(0 6px 12px rgba(6,43,83,.18)); }
 .brand:hover .brand-mark { transform: translateY(-2px) scale(1.05); filter: drop-shadow(0 10px 20px rgba(6,43,83,.28)); }
 

@@ -5,7 +5,7 @@ export function IntroScreen({ onStart, previousScore }: { onStart: () => void; p
   return (
     <main className="landing">
       <nav className="landing-nav">
-        <Brand />
+        <Brand onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} />
         <span className="session-label">Entrenamiento contra engaños digitales</span>
       </nav>
 

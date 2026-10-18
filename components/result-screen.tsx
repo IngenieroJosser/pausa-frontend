@@ -21,7 +21,7 @@ export function ResultScreen({ answers, onRestart }: { answers: Answer[]; onRest
   return (
     <main className="result-page">
       <nav className="landing-nav">
-        <Brand />
+        <Brand onClick={onRestart} />
         <span className="session-label">Práctica completada · Análisis interactivo</span>
       </nav>
 
