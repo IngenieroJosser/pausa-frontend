@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import type { Choice, Scenario } from "@/lib/scenarios";
 import { ChatCard } from "./chat-card";
-import { DecisionIllustration } from "./decision-illustration";
 import { AttackFunnelChart, CompetencyRadarChart } from "./interactive-charts";
 
 type Props = {
@@ -81,10 +80,10 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit }: Props) 
         </button>
       </nav>
 
-      {/* Vista 1: Espacio de Trabajo Principal en 3 Columnas */}
+      {/* Vista 1: Espacio de Trabajo Principal en 3 Columnas (Ajuste a pantalla completa sin scroll) */}
       {activeTab === "simulacion" && (
         <main className="scenario-layout">
-          {/* Columna 1: Diagnóstico e Ilustración de Contexto */}
+          {/* Columna 1: Diagnóstico y Guía Rápida de Observación */}
           <section className="scenario-intro">
             <div className="scenario-badge-wrap">
               <span className="eyebrow">{scenario.eyebrow}</span>
@@ -100,44 +99,41 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit }: Props) 
               Luego, decide.
             </h1>
 
-            {/* Ilustración interactiva del usuario analizando el mensaje */}
-            <DecisionIllustration />
-
             <p className="scenario-lead">
               No busques la respuesta perfecta. Elige con honestidad lo que harías en este momento.
             </p>
 
             <div className="scenario-checkpoints">
               <div className="checkpoints-header">
-                <Compass size={16} className="ch-icon" />
+                <Compass size={15} className="ch-icon" />
                 <span className="checkpoints-title">Qué observar antes de decidir:</span>
               </div>
               <ul className="checkpoints-list">
                 <li>
                   <div className="cp-icon-wrap">
-                    <UserCheck size={14} />
+                    <UserCheck size={13} />
                   </div>
                   <div className="cp-copy">
                     <strong>Remitente y canal</strong>
-                    <span>¿Viene de un número desconocido o un dominio extraño?</span>
+                    <span>¿Número desconocido o dominio extraño?</span>
                   </div>
                 </li>
                 <li>
                   <div className="cp-icon-wrap">
-                    <Clock size={14} />
+                    <Clock size={13} />
                   </div>
                   <div className="cp-copy">
                     <strong>Sensación de urgencia</strong>
-                    <span>¿Te presionan para responder de inmediato sin verificar?</span>
+                    <span>¿Presión para actuar de inmediato?</span>
                   </div>
                 </li>
                 <li>
                   <div className="cp-icon-wrap">
-                    <FileCheck2 size={14} />
+                    <FileCheck2 size={13} />
                   </div>
                   <div className="cp-copy">
                     <strong>Acción solicitada</strong>
-                    <span>¿Piden pagos, datos personales o abrir enlaces externos?</span>
+                    <span>¿Pagos previos o documentos sensibles?</span>
                   </div>
                 </li>
               </ul>
@@ -148,18 +144,18 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit }: Props) 
               className="quick-chart-trigger"
               onClick={() => setActiveTab("anatomia")}
             >
-              <TrendingUp size={16} />
+              <TrendingUp size={15} />
               <span>Ver gráfica del ciclo del engaño →</span>
             </button>
 
             {scenario.caseSource && (
               <aside className="case-academic-citation" aria-label="Referencia del caso">
                 <div className="cac-top">
-                  <Shield size={13} />
+                  <Shield size={12} />
                   <span>Caso documentado: {scenario.caseSource.caseName}</span>
                 </div>
                 <small>
-                  {scenario.caseSource.organization} · {scenario.caseSource.pedagogy}
+                  {scenario.caseSource.organization}
                 </small>
               </aside>
             )}
