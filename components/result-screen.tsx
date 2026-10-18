@@ -1,6 +1,23 @@
 "use client";
 
-import { AlertTriangle, CheckCircle2, RotateCcw, ShieldAlert, ShieldCheck, XCircle } from "lucide-react";
+import {
+  AlertTriangle,
+  Award,
+  Check,
+  CheckCircle2,
+  Clock,
+  Compass,
+  CreditCard,
+  RotateCcw,
+  Search,
+  Shield,
+  ShieldAlert,
+  ShieldCheck,
+  Sparkles,
+  Target,
+  X,
+  XCircle,
+} from "lucide-react";
 import type { Answer } from "@/lib/session";
 import { Brand } from "./brand";
 
@@ -76,6 +93,27 @@ export function ResultScreen({ answers, onRestart }: { answers: Answer[]; onRest
     },
   ];
 
+  const competencies = [
+    {
+      name: "Detección de cobro ilícito",
+      desc: "Reconocer que en Colombia la ley prohíbe cobrar exámenes de ingreso.",
+      passed: diagnostic,
+      icon: <CreditCard size={15} />,
+    },
+    {
+      name: "Freno a la urgencia artificial",
+      desc: "Neutralizar el impulso ante plazos forzados ('hoy', 'en 2 horas').",
+      passed: adaptive,
+      icon: <Clock size={15} />,
+    },
+    {
+      name: "Verificación en canal seguro",
+      desc: "Buscar portales y números oficiales de manera 100% independiente.",
+      passed: transfer,
+      icon: <Search size={15} />,
+    },
+  ];
+
   return (
     <div className="result-viewport-container">
       <nav className="landing-nav">
@@ -85,84 +123,112 @@ export function ResultScreen({ answers, onRestart }: { answers: Answer[]; onRest
 
       <div className="result-main-area">
         <main className="result-expanded-card">
-        {/* Executive Header Banner — Dynamically styled by score level */}
-        <header className={`rex-header-banner ${evaluation.level}`}>
-          <div className="rex-icon-mark">{evaluation.icon}</div>
-          <div className="rex-header-info">
-            <span className="rex-eyebrow">{evaluation.eyebrow}</span>
-            <h1>{evaluation.title}</h1>
-            <p>{evaluation.summary}</p>
-          </div>
-          <div className="rex-score-badge">
-            <strong>{score} / 3</strong>
-            <span>Decisiones seguras</span>
-          </div>
-        </header>
-
-        {/* 2-Panel Widescreen Body: Real Decisions Breakdown on Left, Diagnostic Pedagogy on Right */}
-        <div className="rex-body-grid">
-          {/* Left Panel: Real Cases Breakdown */}
-          <section className="rex-panel-cases">
-            <div className="rex-section-title-row">
-              <h3>Desglose de tus decisiones en la sesión</h3>
-              <span className="rex-score-pill">{score} de 3 casos superados</span>
+          {/* Executive Header Banner — Dynamically styled by score level */}
+          <header className={`rex-header-banner ${evaluation.level}`}>
+            <div className="rex-icon-mark">{evaluation.icon}</div>
+            <div className="rex-header-info">
+              <span className="rex-eyebrow">{evaluation.eyebrow}</span>
+              <h1>{evaluation.title}</h1>
+              <p>{evaluation.summary}</p>
             </div>
+            <div className="rex-score-badge">
+              <strong>{score} / 3</strong>
+              <span>Decisiones seguras</span>
+            </div>
+          </header>
 
-            <div className="rex-cases-stack">
-              {cases.map((c) => (
-                <div key={c.num} className={`rex-case-row ${c.passed ? "passed" : "missed"}`}>
-                  <div className="rcr-status-icon">
-                    {c.passed ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
-                  </div>
-                  <div className="rcr-content">
-                    <div className="rcr-heading">
-                      <span className="rcr-num">Caso {c.num}</span>
-                      <strong className="rcr-name">{c.name}</strong>
+          {/* 2-Panel Widescreen Body: Real Decisions Breakdown on Left, Diagnostic Pedagogy on Right */}
+          <div className="rex-body-grid">
+            {/* Left Panel: Real Cases Breakdown */}
+            <section className="rex-panel-cases">
+              <div className="rex-section-title-row">
+                <h3>Decisiones evaluadas en tu recorrido</h3>
+                <span className="rex-score-pill">{score} de 3 casos superados</span>
+              </div>
+
+              <div className="rex-cases-stack">
+                {cases.map((c) => (
+                  <div key={c.num} className={`rex-case-row ${c.passed ? "passed" : "missed"}`}>
+                    <div className="rcr-status-icon">
+                      {c.passed ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
                     </div>
-                    <div className="rcr-meta">
-                      <span className="rcr-pattern">{c.pattern}</span>
-                      <span className="rcr-dot">·</span>
-                      <span className="rcr-trap">{c.trap}</span>
+                    <div className="rcr-content">
+                      <div className="rcr-heading">
+                        <span className="rcr-num">Caso {c.num}</span>
+                        <strong className="rcr-name">{c.name}</strong>
+                      </div>
+                      <div className="rcr-meta">
+                        <span className="rcr-pattern">{c.pattern}</span>
+                        <span className="rcr-dot">·</span>
+                        <span className="rcr-trap">{c.trap}</span>
+                      </div>
+                    </div>
+                    <div className={`rcr-verdict-pill ${c.passed ? "passed" : "missed"}`}>
+                      {c.passed ? "Pausa segura" : "Fricción detectada"}
                     </div>
                   </div>
-                  <div className={`rcr-verdict-pill ${c.passed ? "passed" : "missed"}`}>
-                    {c.passed ? "Pausa segura" : "Fricción detectada"}
-                  </div>
+                ))}
+              </div>
+
+              {/* Matriz de Habilidades Demostradas */}
+              <div className="rex-competency-card">
+                <span className="rcc-title">Matriz de criterio demostrada</span>
+                <div className="rcc-grid">
+                  {competencies.map((comp) => (
+                    <div key={comp.name} className={`rcc-item ${comp.passed ? "mastered" : "needs-work"}`}>
+                      <div className="rcc-icon-slot">{comp.icon}</div>
+                      <div className="rcc-item-body">
+                        <div className="rcc-item-top">
+                          <strong>{comp.name}</strong>
+                          <span className={`rcc-status-tag ${comp.passed ? "ok" : "warn"}`}>
+                            {comp.passed ? "Demostrado" : "Por entrenar"}
+                          </span>
+                        </div>
+                        <p>{comp.desc}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Right Panel: Honest Diagnostic & Golden Rule */}
-          <section className="rex-panel-learnings">
-            <div className="rex-diagnosis-card">
-              <div className="rdc-title-row">
-                <ShieldAlert size={16} />
-                <strong>Diagnóstico pedagógico de tu sesión</strong>
               </div>
-              <p>{evaluation.diagnosis}</p>
-            </div>
+            </section>
 
-            <div className="rex-golden-rule-card">
-              <div className="rgr-title-row">
-                <ShieldCheck size={16} />
-                <strong>Principio para tu día a día: Regla de Oro PAUSA</strong>
+            {/* Right Panel: Honest Diagnostic & Golden Rule */}
+            <section className="rex-panel-learnings">
+              <div className="rex-diagnosis-card">
+                <div className="rdc-title-row">
+                  <ShieldAlert size={16} />
+                  <strong>Diagnóstico pedagógico de tu sesión</strong>
+                </div>
+                <p>{evaluation.diagnosis}</p>
               </div>
-              <p>
-                Ante cualquier mensaje que mezcle <strong>urgencia, dinero o petición de documentos</strong>:
-                nunca resuelvas desde el enlace o número recibido. Sal del chat y verifica por tu cuenta en la web o app oficial.
-              </p>
-            </div>
 
-            <footer className="rex-action-footer">
-              <button className="primary-button large teal rex-restart-btn" type="button" onClick={onRestart}>
-                <RotateCcw size={17} />
-                <span>Comenzar nueva práctica adaptativa</span>
-              </button>
-            </footer>
-          </section>
-        </div>
-      </main>
+              <div className="rex-golden-rule-card">
+                <div className="rgr-title-row">
+                  <ShieldCheck size={16} />
+                  <strong>Principio para tu día a día: Regla de Oro PAUSA</strong>
+                </div>
+                <p>
+                  Ante cualquier mensaje que mezcle <strong>urgencia, dinero o petición de documentos</strong>:
+                  nunca resuelvas desde el enlace o número recibido. Sal del chat y verifica por tu cuenta en la web o app oficial.
+                </p>
+              </div>
+
+              <div className="rex-learning-notice">
+                <span className="rln-dot" />
+                <span>
+                  El criterio se fortalece con la práctica periódica. Esta sesión entrena tu reflejo de alerta, pero la verificación independiente es tu defensa permanente.
+                </span>
+              </div>
+
+              <footer className="rex-action-footer">
+                <button className="primary-button large teal rex-restart-btn" type="button" onClick={onRestart}>
+                  <RotateCcw size={17} />
+                  <span>Comenzar nueva práctica adaptativa</span>
+                </button>
+              </footer>
+            </section>
+          </div>
+        </main>
       </div>
     </div>
   );

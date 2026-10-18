@@ -1,7 +1,9 @@
 "use client";
 
-import { ArrowRight, Clock3 } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Clock3, MessageSquare, ShieldCheck, Sparkles, TrendingUp } from "lucide-react";
 import { Brand } from "./brand";
+import imgPausa from "@/public/illustrations/04-pausa.jpg";
 
 export function IntroScreen({ onStart, previousScore }: { onStart: () => void; previousScore: number | null }) {
   return (
@@ -50,64 +52,73 @@ export function IntroScreen({ onStart, previousScore }: { onStart: () => void; p
           </div>
         </section>
 
-        {/* Preview card — Simulador activo y anatomía de la trampa */}
-        <section className="landing-preview-card" aria-label="Demostración interactiva del simulador de casos">
+        {/* Preview card — Escena protagonista y anatomía del Momento PAUSA */}
+        <section className="landing-preview-card" aria-label="Demostración visual del método PAUSA">
           {/* Top header bar */}
           <header className="lpc-header">
             <div className="lpc-tag-wrap">
               <span className="lpc-live-dot" />
-              <span className="lpc-badge">Simulador activo</span>
+              <span className="lpc-badge">Método PAUSA en acción</span>
             </div>
-            <span className="lpc-case-id">Patrón: Falso Reclutamiento</span>
+            <span className="lpc-case-id">Casos reales documentados</span>
           </header>
 
-          {/* Simulated chat with realistic styling */}
-          <div className="lpc-chat-box">
-            <div className="lpc-message-header">
-              <div className="lpc-avatar">TH</div>
-              <div className="lpc-sender-info">
-                <strong>Talento Humano Express</strong>
-                <small>⚠ Remitente desconocido · Cuenta no verificada</small>
+          {/* Visual Hero Scene with the protagonist */}
+          <div className="lpc-scene-viewport">
+            <Image
+              src={imgPausa}
+              alt="Protagonista de PAUSA verificando de manera segura en un canal oficial"
+              placeholder="blur"
+              priority
+              className="lpc-hero-img"
+            />
+            <div className="lpc-scene-overlay">
+              <div className="lpc-floating-toast top">
+                <span className="lft-icon">💬</span>
+                <div className="lft-text">
+                  <strong>«Transfiere $48.000 para el examen hoy»</strong>
+                  <small>Presión psicológica del atacante</small>
+                </div>
               </div>
-            </div>
 
-            <div className="lpc-bubble">
-              <p>
-                «Vimos tu hoja de vida. Fuiste seleccionado para la vacante. Para asegurar el cupo{" "}
-                <span className="lpc-mark-urgencia">hoy</span>,{" "}
-                <span className="lpc-mark-trampa">transfiere $48.000 para el examen médico.</span>»
-              </p>
+              <div className="lpc-floating-toast bottom">
+                <span className="lft-icon shield">🛡</span>
+                <div className="lft-text">
+                  <strong>El Momento PAUSA</strong>
+                  <small>Detener la acción y verificar por canal oficial</small>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Anatomía de la trampa psicológica */}
+          {/* Anatomía del Momento PAUSA */}
           <div className="lpc-anatomy-block">
             <div className="lpc-anatomy-header">
-              <span>Anatomía de la trampa psicológica:</span>
+              <span>El recorrido formativo de 3 pasos:</span>
             </div>
 
             <div className="lpc-anatomy-rows">
               <div className="lpc-anatomy-item">
                 <span className="lpc-step-num">01</span>
                 <div className="lpc-step-content">
-                  <strong>El gancho:</strong>
-                  <p>Oferta atractiva sin proceso de entrevista formal previo.</p>
+                  <strong>El Gancho:</strong>
+                  <p>Oferta atractiva o beneficio inesperado sin proceso previo formal.</p>
                 </div>
               </div>
 
               <div className="lpc-anatomy-item">
                 <span className="lpc-step-num">02</span>
                 <div className="lpc-step-content">
-                  <strong>La presión de urgencia:</strong>
-                  <p>Plazo inmediato («hoy») para inducir una respuesta impulsiva.</p>
+                  <strong>La Urgencia:</strong>
+                  <p>Plazo inmediato artificial («hoy», «2 horas») para anular la duda.</p>
                 </div>
               </div>
 
               <div className="lpc-anatomy-item pausa">
                 <span className="lpc-step-num pausa">PAUSA</span>
                 <div className="lpc-step-content">
-                  <strong>El Momento PAUSA:</strong>
-                  <p>Verificar de forma autónoma en el portal oficial sin transferir.</p>
+                  <strong>La Defensa Activa:</strong>
+                  <p>Salir del canal y comprobar por cuenta propia en el portal oficial.</p>
                 </div>
               </div>
             </div>
