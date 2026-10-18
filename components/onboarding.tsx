@@ -1,7 +1,33 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowRight, Briefcase, CreditCard, Database, Shield, X, Check, Target, AlertTriangle, Zap, Eye, Clock, ChevronLeft } from "lucide-react";
+import {
+  AlertCircle,
+  AlertTriangle,
+  ArrowRight,
+  Briefcase,
+  Building2,
+  Check,
+  CheckCheck,
+  ChevronLeft,
+  Clock,
+  CreditCard,
+  Database,
+  ExternalLink,
+  Eye,
+  FileText,
+  Lock,
+  Mail,
+  MessageCircle,
+  Shield,
+  ShieldAlert,
+  ShieldCheck,
+  Smartphone,
+  Sparkles,
+  Target,
+  X,
+  Zap,
+} from "lucide-react";
 import { Brand } from "./brand";
 
 /* ─── Types ─────────────────────────────────────── */
@@ -22,25 +48,66 @@ type OnboardingProps = {
 
 type Stage = "goal" | "friction" | "situations" | "solution" | "processing";
 
-/* ─── Situation Cards data ───────────────────────── */
-const situations = [
+export type SituationChannel = "whatsapp" | "sms" | "email";
+
+export type SituationItem = {
+  id: string;
+  label: "riesgo" | "seguro";
+  channel: SituationChannel;
+  channelName: string;
+  title: string;
+  sender: string;
+  senderMeta: string;
+  subject?: string;
+  message: string;
+  criticalSignal: string;
+  explanation: string;
+};
+
+/* ─── Situation Data: Realistic simulated cases ──── */
+const situations: SituationItem[] = [
   {
     id: "s1",
-    label: "riesgo" as const,
-    title: "Oferta de empleo por WhatsApp",
-    body: "Te contactan por chat, piden foto de tu cédula antes de revelar el nombre de la empresa y piden pagar un examen médico hoy mismo.",
+    label: "riesgo",
+    channel: "whatsapp",
+    channelName: "WhatsApp",
+    title: "Oferta de empleo por chat",
+    sender: "Gestión Talento Humano",
+    senderMeta: "+57 314 892 0184 · En línea",
+    message:
+      "¡Hola! Vimos tu hoja de vida y fuiste preseleccionado para la vacante de Auxiliar Administrativo ($2.400.000 + auxilio). Para asegurar tu cupo hoy y agendar la inducción de mañana, debes cancelar $48.000 del examen médico de ingreso y enviarnos foto de tu cédula por ambos lados antes de las 12:00 m. Envía comprobante por aquí.",
+    criticalSignal: "Cobro previo por examen médico + solicitud de cédula antes de entrevista.",
+    explanation:
+      "En Colombia el Ministerio del Trabajo prohíbe exigir dinero a los candidatos para exámenes médicos o dotación. Además, solicitar fotos de tu cédula por chat informal abre la puerta a suplantación de identidad.",
   },
   {
     id: "s2",
-    label: "riesgo" as const,
-    title: "Enlace bancario urgente",
-    body: "Recibes un SMS: «Tu cuenta será bloqueada en 2 horas. Ingresa aquí para confirmar tus datos.» El dominio dice bancocentral-seguro.info.",
+    label: "riesgo",
+    channel: "sms",
+    channelName: "Mensaje SMS",
+    title: "Alerta bancaria con plazo límite",
+    sender: "BANCO_ALERTA",
+    senderMeta: "SMS · Hoy 14:15",
+    message:
+      "ALERTA BANCO: Detectamos una transacción sospechosa por $840.000 en tu cuenta. Será bloqueada preventivamente en 2 horas por seguridad. Para cancelarla o validar tu identidad ingresa ya a https://bancocentral-seguro.info/validar-cuenta",
+    criticalSignal: "Presión de tiempo forzada (2 horas) + enlace a dominio sospechoso (.info).",
+    explanation:
+      "Los bancos reales nunca amenazan con bloquear cuentas en plazos inmediatos por SMS ni envían enlaces con dominios no oficiales (.info, .xyz). Siempre debes ingresar por la app o portal oficial que conoces.",
   },
   {
     id: "s3",
-    label: "seguro" as const,
-    title: "Oferta de empleo verificable",
-    body: "La empresa te pide ir a una sucursal con tu hoja de vida. El correo viene del dominio oficial que encuentras en su web y no te cobran nada.",
+    label: "seguro",
+    channel: "email",
+    channelName: "Correo corporativo",
+    title: "Citación a entrevista presencial",
+    sender: "Selección Grupo Nutresa",
+    senderMeta: "seleccion@nutresa.com.co · Canal oficial verificado",
+    subject: "Convocatoria Auxiliar de Operaciones — Citación a entrevista presencial",
+    message:
+      "Estimado(a) postulante: Confirmamos la recepción de tu postulación a través de nuestro portal de empleo oficial. Te citamos a la primera entrevista presencial este jueves a las 9:00 a. m. en nuestra sede administrativa (Calle 72 # 10-34, Piso 3). Por favor asiste con tu cédula original y copia de tu hoja de vida. Nota de seguridad: Nuestros procesos de selección son 100% gratuitos y jamás solicitamos pagos por exámenes médicos ni ningún trámite.",
+    criticalSignal: "Dominio institucional corporativo (@nutresa.com.co), sede física verificable y gratuidad garantizada.",
+    explanation:
+      "Esta es una citación legítima: el correo proviene del dominio oficial de la empresa, te cita a una sede física reconocible y aclara expresamente que nunca te cobrarán por participar.",
   },
 ];
 
@@ -89,6 +156,7 @@ type FrictionDetail = {
   body: string;
   tag: string;
   example: string;
+  visualType: "urgencia" | "marca" | "miedo" | "canal";
 };
 
 const frictionMap: Record<Friction, FrictionDetail> = {
@@ -97,24 +165,28 @@ const frictionMap: Record<Friction, FrictionDetail> = {
     body: "«Si no respondes en 15 minutos, la oportunidad o el beneficio se cancela».",
     tag: "Urgencia artificial",
     example: "Te impiden consultar con alguien o revisar con calma antes de actuar.",
+    visualType: "urgencia",
   },
   marca: {
     title: "Confiar en la marca o logo",
     body: "Si el mensaje incluye el logo, nombre o colores de una empresa conocida, tiendo a bajar la guardia.",
     tag: "Suplantación visual",
     example: "Imitan tipografías y pies de firma idénticos a los corporativos reales.",
+    visualType: "marca",
   },
   miedo: {
     title: "Miedo a perder la oportunidad",
     body: "El temor a quedarme sin trabajo o a que bloqueen mi cuenta me hace actuar de inmediato.",
     tag: "Manipulación emocional",
     example: "Aprovechan la necesidad o la preocupación para que no te detengas a pensar.",
+    visualType: "miedo",
   },
   canal: {
     title: "No saber cómo verificar",
     body: "No tengo claro qué pasos dar para comprobar si un mensaje o dominio web es auténtico.",
     tag: "Falta de procedimiento",
     example: "Hacer clic en el enlace provisto parece la única opción evidente en el momento.",
+    visualType: "canal",
   },
 };
 
@@ -208,6 +280,65 @@ function GoalStage({ onNext }: { onNext: (goal: Goal) => void }) {
   );
 }
 
+/* ─── Friction Micro-Illustration Component ──────── */
+function FrictionIllustration({ type }: { type: "urgencia" | "marca" | "miedo" | "canal" }) {
+  if (type === "urgencia") {
+    return (
+      <div className="friction-visual-pill urgencia">
+        <div className="fvp-countdown">
+          <Clock size={16} className="fvp-spin" />
+          <span className="fvp-time">00:14:59</span>
+          <span className="fvp-badge-urg">¡Expira pronto!</span>
+        </div>
+        <div className="fvp-sub">«Solo hoy · Últimos cupos»</div>
+      </div>
+    );
+  }
+
+  if (type === "marca") {
+    return (
+      <div className="friction-visual-pill marca">
+        <div className="fvp-badge-row">
+          <Building2 size={16} />
+          <strong>Empresa Reconocida S.A.</strong>
+          <span className="fvp-fake-check">✓</span>
+        </div>
+        <div className="fvp-sub unverified">
+          <AlertCircle size={12} />
+          <span>Remitente: empleo-urgente@mail-gratis.com</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (type === "miedo") {
+    return (
+      <div className="friction-visual-pill miedo">
+        <div className="fvp-alert-row">
+          <ShieldAlert size={16} />
+          <strong>Acción inmediata requerida</strong>
+        </div>
+        <div className="fvp-sub threat">«Tu cuenta o vacante será cancelada»</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="friction-visual-pill canal">
+      <div className="fvp-path-row">
+        <span className="fvp-path bad">
+          <X size={12} /> Enlace en el mensaje
+        </span>
+        <span className="fvp-vs">vs</span>
+        <span className="fvp-path good">
+          <Check size={12} /> Portal oficial
+        </span>
+      </div>
+      <div className="fvp-sub">¿Cómo compruebo si es real?</div>
+    </div>
+  );
+}
+
 /* ─── Stage 2: Friction ──────────────────────────── */
 function FrictionStage({ goal, onNext }: { goal: Goal; onNext: (f: Friction) => void }) {
   const [selected, setSelected] = useState<Friction | null>("urgencia");
@@ -220,12 +351,12 @@ function FrictionStage({ goal, onNext }: { goal: Goal; onNext: (f: Friction) => 
         <span className="eyebrow">02 · Punto ciego / Fricción</span>
         <h1>¿Qué te hace difícil detenerte?</h1>
         <p>
-          En situaciones de <strong>{goalInfo.title.toLowerCase()}</strong>, los atacantes usan trampas psicológicas para apresurar tu decisión. ¿Cuál te cuesta más reconocer?
+          En situaciones de <strong>{goalInfo.title.toLowerCase()}</strong>, los atacantes usan trampas psicológicas para apresurar tu decisión. Selecciona la situación que más te cuesta reconocer:
         </p>
       </div>
 
       <div className="friction-deck-grid">
-        {frictions.map(([id, { title, body, tag, example }], i) => (
+        {frictions.map(([id, { title, body, tag, example, visualType }], i) => (
           <button
             key={id}
             className={`friction-deck-card${selected === id ? " selected" : ""}`}
@@ -237,10 +368,14 @@ function FrictionStage({ goal, onNext }: { goal: Goal; onNext: (f: Friction) => 
               <span className="fdc-tag">{tag}</span>
               <span className="fdc-check">{selected === id ? "✓" : ""}</span>
             </div>
+
+            {/* Visual representation of the trap */}
+            <FrictionIllustration type={visualType} />
+
             <strong>{title}</strong>
             <p className="fdc-body">{body}</p>
             <div className="fdc-example">
-              <span>Ejemplo:</span> {example}
+              <span>Señal en el mensaje:</span> {example}
             </div>
           </button>
         ))}
@@ -264,7 +399,104 @@ function FrictionStage({ goal, onNext }: { goal: Goal; onNext: (f: Friction) => 
   );
 }
 
-/* ─── Stage 3: Situation Cards ───────────────────── */
+/* ─── Real Communication Simulators ─────────────── */
+
+function WhatsAppSimulator({ item }: { item: SituationItem }) {
+  return (
+    <div className="sim-device-container whatsapp">
+      <div className="sim-whatsapp-bar">
+        <div className="swb-profile">
+          <div className="swb-avatar">TH</div>
+          <div className="swb-info">
+            <strong>{item.sender}</strong>
+            <small>{item.senderMeta}</small>
+          </div>
+        </div>
+        <div className="swb-secure-tag">
+          <Lock size={12} />
+          <span>Cifrado</span>
+        </div>
+      </div>
+
+      <div className="sim-whatsapp-chat-stage">
+        <div className="sim-encryption-pill">
+          <Lock size={11} />
+          <span>Los mensajes en este chat están cifrados de extremo a extremo.</span>
+        </div>
+
+        <div className="sim-whatsapp-bubble">
+          <p className="sim-whatsapp-text">{item.message}</p>
+          <div className="sim-whatsapp-footer">
+            <span>10:42 a. m.</span>
+            <CheckCheck size={14} className="sim-checks-read" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SmsSimulator({ item }: { item: SituationItem }) {
+  return (
+    <div className="sim-device-container sms">
+      <div className="sim-sms-header">
+        <div className="ssh-sender-group">
+          <Smartphone size={16} />
+          <strong>{item.sender}</strong>
+        </div>
+        <span className="ssh-time">{item.senderMeta}</span>
+      </div>
+
+      <div className="sim-sms-body-stage">
+        <div className="sim-sms-bubble">
+          <p className="sim-sms-text">{item.message}</p>
+          <span className="sim-sms-time-stamp">Hoy 14:15 · SMS entrante</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EmailSimulator({ item }: { item: SituationItem }) {
+  return (
+    <div className="sim-device-container email">
+      <div className="sim-email-chrome">
+        <div className="sec-dots">
+          <span className="sec-dot red" />
+          <span className="sec-dot yellow" />
+          <span className="sec-dot green" />
+        </div>
+        <span className="sec-title">Bandeja de entrada — Correo</span>
+      </div>
+
+      <div className="sim-email-header">
+        <div className="seh-subject">
+          <h3>{item.subject}</h3>
+        </div>
+        <div className="seh-meta-row">
+          <div className="seh-sender-badge">
+            <Mail size={14} />
+            <div className="seh-sender-details">
+              <strong>{item.sender}</strong>
+              <small>{item.senderMeta}</small>
+            </div>
+          </div>
+          <span className="seh-date">Hoy 08:30 a. m.</span>
+        </div>
+      </div>
+
+      <div className="sim-email-content">
+        <p className="sim-email-body-text">{item.message}</p>
+        <div className="sim-email-signature">
+          <Building2 size={15} />
+          <span>Equipo de Selección y Atracción de Talento</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Stage 3: Situation Cards with Realistic Simulators ─ */
 function SituationsStage({ onNext }: { onNext: () => void }) {
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
@@ -281,45 +513,61 @@ function SituationsStage({ onNext }: { onNext: () => void }) {
       <div className="onboarding-flow-step">
         <div className="onboarding-step-hero">
           <span className="eyebrow">03 · Calibración completada</span>
-          <h1>Ya reconoces las señales clave</h1>
+          <h1>Desglose de tu criterio inicial</h1>
           <p>
-            Revisaste tres situaciones cotidianas. Aquí tienes el desglose de lo que identificaste en cada caso:
+            Revisaste tres situaciones en sus canales reales sin pistas previas. Aquí tienes el análisis de lo que evaluaste y las señales críticas que entrenaremos:
           </p>
         </div>
 
         <div className="situation-summary-grid">
-          <div className="summary-case-card">
-            <span className="scc-badge risk">Riesgo identificado</span>
-            <h4>Oferta de empleo por WhatsApp</h4>
-            <p>Petición de dinero para examen médico previo a la entrevista y fotos de cédula.</p>
-            <div className="scc-lesson">
-              <strong>Señal crítica:</strong> Cobro previo por acceder a un trabajo.
-            </div>
-          </div>
+          {situations.map((sit) => {
+            const userSaidConcerning = answers[sit.id];
+            const isRisk = sit.label === "riesgo";
+            // Correct discernment: User flagged risk as concerning, or recognized safe as not concerning
+            const isAccurate = isRisk ? userSaidConcerning === true : userSaidConcerning === false;
 
-          <div className="summary-case-card">
-            <span className="scc-badge risk">Riesgo identificado</span>
-            <h4>Enlace bancario urgente</h4>
-            <p>SMS alertando de bloqueo en 2 horas con enlace a dominio no oficial.</p>
-            <div className="scc-lesson">
-              <strong>Señal crítica:</strong> Presión de tiempo forzada y dominio suplantado.
-            </div>
-          </div>
+            return (
+              <div className="summary-case-card" key={sit.id}>
+                <div className="scc-header-row">
+                  <span className={`scc-badge ${isRisk ? "risk" : "safe"}`}>
+                    {isRisk ? "Situación de riesgo" : "Canal oficial seguro"}
+                  </span>
+                  <span className="scc-channel-tag">{sit.channelName}</span>
+                </div>
 
-          <div className="summary-case-card">
-            <span className="scc-badge safe">Canal seguro</span>
-            <h4>Oferta de empleo verificable</h4>
-            <p>Empresa con sucursal física, correo de dominio oficial y sin ningún tipo de cobro.</p>
-            <div className="scc-lesson">
-              <strong>Señal crítica:</strong> Canal verificable y transparencia en el proceso.
-            </div>
-          </div>
+                <h4>{sit.title}</h4>
+
+                {/* User response badge */}
+                <div className={`scc-user-verdict ${isAccurate ? "correct" : "blindspot"}`}>
+                  {isAccurate ? (
+                    <>
+                      <Check size={14} />
+                      <span>Tu respuesta: {userSaidConcerning ? "Detectaste sospecha" : "No te preocupó"} (Criterio acertado)</span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertTriangle size={14} />
+                      <span>
+                        Tu respuesta: {userSaidConcerning ? "Marcaste sospecha" : "No te preocupó"} ({isRisk ? "Punto ciego registrado" : "Cautela extra"})
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                <div className="scc-lesson">
+                  <strong>Señal crítica:</strong> {sit.criticalSignal}
+                </div>
+
+                <p className="scc-explanation">{sit.explanation}</p>
+              </div>
+            );
+          })}
         </div>
 
         <div className="onboarding-bottom-bar">
           <div className="obb-info">
             <span className="obb-dot" />
-            <span>Calibración completada · Tu criterio inicial está registrado</span>
+            <span>Punto de partida calibrado · Sin sesgos · Listo para la práctica interactiva</span>
           </div>
           <button className="primary-button large teal" type="button" onClick={onNext}>
             Ver mi plan personalizado de práctica <ArrowRight size={20} />
@@ -332,43 +580,55 @@ function SituationsStage({ onNext }: { onNext: () => void }) {
   return (
     <div className="onboarding-flow-step">
       <div className="onboarding-step-hero">
-        <span className="eyebrow">03 · Reconocimiento de situaciones</span>
-        <h1>¿Te preocupa esta situación?</h1>
+        <span className="eyebrow">03 · Reconocimiento en canal real</span>
+        <h1>¿Te generaría sospecha esta comunicación?</h1>
         <p>
-          Lee el caso real. Dinos si te generaría sospecha para calibrar tu punto de partida.
+          Examina el mensaje tal como lo recibirías en tu dispositivo. Evalúa sin pistas previas para calibrar tu criterio inicial.
         </p>
       </div>
 
-      <div className="situation-widescreen-card" key={current.id}>
-        <div className="swc-top-bar">
-          <span className={`sc-label ${current.label === "riesgo" ? "risk" : "safe"}`}>
-            {current.label === "riesgo" ? <><AlertTriangle size={14} /> Situación real para evaluar</> : <><Eye size={14} /> Situación real para evaluar</>}
-          </span>
-          <span className="swc-progress-pill">
+      <div className="situation-simulator-widescreen" key={current.id}>
+        {/* Neutral header without spoilers */}
+        <div className="ssw-neutral-bar">
+          <div className="ssw-meta-tag">
+            <span className="ssw-channel-icon">
+              {current.channel === "whatsapp" && <MessageCircle size={15} />}
+              {current.channel === "sms" && <Smartphone size={15} />}
+              {current.channel === "email" && <Mail size={15} />}
+            </span>
+            <span>Canal simulado: {current.channelName}</span>
+          </div>
+          <span className="ssw-progress-pill">
             Caso {index + 1} de {situations.length}
           </span>
         </div>
 
-        <div className="swc-content">
-          <h3>{current.title}</h3>
-          <div className="swc-message-bubble">
-            <p>«{current.body}»</p>
-          </div>
+        {/* Realistic channel simulator */}
+        <div className="ssw-simulator-stage">
+          {current.channel === "whatsapp" && <WhatsAppSimulator item={current} />}
+          {current.channel === "sms" && <SmsSimulator item={current} />}
+          {current.channel === "email" && <EmailSimulator item={current} />}
         </div>
 
-        <div className="swc-actions">
+        {/* Clear, neutral decision action */}
+        <div className="ssw-actions-row">
           <button className="sit-btn no" type="button" onClick={() => respond(false)}>
-            <X size={18} />
+            <div className="sit-btn-icon-wrap no">
+              <Check size={20} />
+            </div>
             <div>
               <strong>No me preocupa</strong>
-              <small>Parece un aviso o trámite habitual</small>
+              <small>Parece una comunicación legítima o habitual</small>
             </div>
           </button>
+
           <button className="sit-btn yes" type="button" onClick={() => respond(true)}>
-            <Check size={18} />
+            <div className="sit-btn-icon-wrap yes">
+              <AlertTriangle size={20} />
+            </div>
             <div>
               <strong>Sí me preocupa</strong>
-              <small>Detecto señales sospechosas</small>
+              <small>Detecto señales de riesgo o desconfianza</small>
             </div>
           </button>
         </div>
