@@ -1182,15 +1182,33 @@ button.brand-btn:focus-visible {
   margin: 0;
 }
 .processing-icon {
-  width: 60px;
-  height: 60px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--teal-100), var(--teal-50));
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
   color: var(--teal-600);
   box-shadow: 0 0 0 10px rgba(7,156,168,.08);
-  animation: pulseRing 2s ease-out infinite;
+  animation: pulseShield 2.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulseShield {
+  0% {
+    box-shadow: 0 0 0 4px rgba(7,156,168,.15), 0 0 0 10px rgba(7,156,168,.08);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(7,156,168,.25), 0 0 0 16px rgba(7,156,168,.05);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 0 4px rgba(7,156,168,.15), 0 0 0 10px rgba(7,156,168,.08);
+    transform: scale(1);
+  }
 }
 .pdw-progress-wrap {
   width: 100%;

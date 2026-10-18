@@ -4,6 +4,11 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Sparkles, HelpCircle, CheckCircle2, AlertTriangle } from "lucide-react";
 
+import imgGancho from "@/public/illustrations/01-gancho.jpg";
+import imgUrgencia from "@/public/illustrations/02-urgencia.jpg";
+import imgTrampa from "@/public/illustrations/03-trampa.jpg";
+import imgPausa from "@/public/illustrations/04-pausa.jpg";
+
 interface Hotspot {
   id: string;
   pinClass: string;
@@ -48,10 +53,9 @@ export function HookIllustration({ className = "" }: SceneProps) {
     <div className={`story-figure-wrapper ${className}`}>
       <div className="sf-image-stage">
         <Image
-          src="/illustrations/01-gancho.jpg"
+          src={imgGancho}
           alt="Escena 1: El Gancho. Personaje joven colombiano ilusionado al recibir una vacante atractiva en su celular."
-          width={720}
-          height={540}
+          placeholder="blur"
           className="sf-main-img"
           priority
         />
@@ -144,10 +148,9 @@ export function UrgencyIllustration({ className = "" }: SceneProps) {
     <div className={`story-figure-wrapper ${className}`}>
       <div className="sf-image-stage">
         <Image
-          src="/illustrations/02-urgencia.jpg"
+          src={imgUrgencia}
           alt="Escena 2: La Urgencia. Personaje presionado con cronómetro en cuenta regresiva y alertas rojas inmediatas."
-          width={720}
-          height={540}
+          placeholder="blur"
           className="sf-main-img"
           priority
         />
@@ -237,10 +240,9 @@ export function TrapIllustration({ className = "" }: SceneProps) {
     <div className={`story-figure-wrapper ${className}`}>
       <div className="sf-image-stage">
         <Image
-          src="/illustrations/03-trampa.jpg"
+          src={imgTrampa}
           alt="Escena 3: La Trampa. Personaje en duda frenando ante solicitud de dinero por exámenes médicos y foto de cédula."
-          width={720}
-          height={540}
+          placeholder="blur"
           className="sf-main-img"
           priority
         />
@@ -330,10 +332,9 @@ export function PauseIllustration({ className = "" }: SceneProps) {
     <div className={`story-figure-wrapper ${className}`}>
       <div className="sf-image-stage">
         <Image
-          src="/illustrations/04-pausa.jpg"
+          src={imgPausa}
           alt="Escena 4: El Momento PAUSA. Personaje sereno con escudo PAUSA en mano y verificando de forma independiente en web oficial con candado SSL."
-          width={720}
-          height={540}
+          placeholder="blur"
           className="sf-main-img"
           priority
         />
