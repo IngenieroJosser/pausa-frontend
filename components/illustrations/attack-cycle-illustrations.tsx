@@ -109,7 +109,8 @@ export function HookIllustration({ className = "" }: SceneProps) {
 
         <div className="scib-callout-box">
           <strong className="scib-title">
-            <span className="scib-idx">{activeSpot.number}.</span> {activeSpot.title}
+            <span className="scib-idx">{activeSpot.number}</span>
+            <span>{activeSpot.title}</span>
           </strong>
           <p className="scib-desc">{activeSpot.explanation}</p>
         </div>
@@ -201,7 +202,8 @@ export function UrgencyIllustration({ className = "" }: SceneProps) {
 
         <div className="scib-callout-box">
           <strong className="scib-title">
-            <span className="scib-idx">{activeSpot.number}.</span> {activeSpot.title}
+            <span className="scib-idx">{activeSpot.number}</span>
+            <span>{activeSpot.title}</span>
           </strong>
           <p className="scib-desc">{activeSpot.explanation}</p>
         </div>
@@ -293,7 +295,8 @@ export function TrapIllustration({ className = "" }: SceneProps) {
 
         <div className="scib-callout-box">
           <strong className="scib-title">
-            <span className="scib-idx">{activeSpot.number}.</span> {activeSpot.title}
+            <span className="scib-idx">{activeSpot.number}</span>
+            <span>{activeSpot.title}</span>
           </strong>
           <p className="scib-desc">{activeSpot.explanation}</p>
         </div>
@@ -385,7 +388,8 @@ export function PauseIllustration({ className = "" }: SceneProps) {
 
         <div className="scib-callout-box">
           <strong className="scib-title">
-            <span className="scib-idx">{activeSpot.number}.</span> {activeSpot.title}
+            <span className="scib-idx">{activeSpot.number}</span>
+            <span>{activeSpot.title}</span>
           </strong>
           <p className="scib-desc">{activeSpot.explanation}</p>
         </div>

@@ -3355,29 +3355,43 @@ button.brand-btn:focus-visible {
 
 .scib-callout-box {
   background: #f8fafc;
-  border: 1px solid var(--line);
-  border-left: 3px solid var(--teal-600);
-  border-radius: var(--radius-xs);
-  padding: 6px 10px;
+  border: 1px solid rgba(6, 43, 83, 0.1);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
+  box-shadow: 0 1px 4px rgba(6, 43, 83, 0.04);
   animation: fadeIn .2s ease;
 }
 .scib-title {
-  font-size: .76rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .78rem;
   font-weight: 850;
   color: var(--navy-950);
   margin: 0;
 }
 .scib-idx {
-  color: var(--teal-600);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--navy-900);
+  color: white;
+  font-size: .65rem;
+  font-weight: 900;
+  flex-shrink: 0;
 }
 .scib-desc {
   margin: 0;
-  font-size: .74rem;
+  font-size: .76rem;
   color: var(--ink);
-  line-height: 1.35;
+  line-height: 1.4;
+  padding-left: 24px;
 }
 
 /* Navigation footer under illustration */
