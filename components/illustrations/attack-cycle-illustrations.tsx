@@ -56,6 +56,8 @@ export function HookIllustration({ className = "" }: SceneProps) {
           src={imgGancho}
           alt="Escena 1: El Gancho. Personaje joven colombiano ilusionado al recibir una vacante atractiva en su celular."
           placeholder="blur"
+          fill
+          sizes="(max-width: 900px) 100vw, 55vw"
           className="sf-main-img"
           priority
         />
@@ -152,6 +154,8 @@ export function UrgencyIllustration({ className = "" }: SceneProps) {
           src={imgUrgencia}
           alt="Escena 2: La Urgencia. Personaje presionado con cronómetro en cuenta regresiva y alertas rojas inmediatas."
           placeholder="blur"
+          fill
+          sizes="(max-width: 900px) 100vw, 55vw"
           className="sf-main-img"
           priority
         />
@@ -245,6 +249,8 @@ export function TrapIllustration({ className = "" }: SceneProps) {
           src={imgTrampa}
           alt="Escena 3: La Trampa. Personaje en duda frenando ante solicitud de dinero por exámenes médicos y foto de cédula."
           placeholder="blur"
+          fill
+          sizes="(max-width: 900px) 100vw, 55vw"
           className="sf-main-img"
           priority
         />
@@ -338,6 +344,8 @@ export function PauseIllustration({ className = "" }: SceneProps) {
           src={imgPausa}
           alt="Escena 4: El Momento PAUSA. Personaje sereno con escudo PAUSA en mano y verificando de forma independiente en web oficial con candado SSL."
           placeholder="blur"
+          fill
+          sizes="(max-width: 900px) 100vw, 55vw"
           className="sf-main-img"
           priority
         />

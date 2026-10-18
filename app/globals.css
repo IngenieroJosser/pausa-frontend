@@ -2689,8 +2689,10 @@ button.brand-btn:focus-visible {
    ═════════════════════════════════════════════════════════ */
 .lesson-container {
   width: 100%;
+  height: calc(100svh - 64px);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 .lesson-tabs-nav {
   width: 100%;
@@ -2732,45 +2734,45 @@ button.brand-btn:focus-visible {
   width: 100%;
   max-width: var(--max-w);
   margin: 0 auto;
-  padding: clamp(8px, 1.4vh, 14px) var(--gutter);
+  padding: clamp(6px, 1vh, 10px) var(--gutter);
   display: flex;
   flex-direction: column;
-  gap: clamp(8px, 1.1vh, 12px);
+  gap: clamp(6px, .8vh, 10px);
   animation: fadeUp .35s cubic-bezier(.4,0,.2,1) both;
-  height: calc(100svh - 124px);
-  max-height: calc(100svh - 124px);
-  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
   box-sizing: border-box;
 }
 .chart-tab-intro {
   max-width: 760px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   flex-shrink: 0;
 }
 .chart-tab-intro h2 {
-  font: 800 clamp(1.15rem, 1.7vw, 1.45rem)/1.15 var(--font-display);
+  font: 800 clamp(1rem, 1.4vw, 1.25rem)/1.1 var(--font-display);
   color: var(--navy-950);
   margin: 0;
 }
 .chart-tab-intro p {
   color: var(--muted);
-  font-size: .8rem;
-  line-height: 1.35;
+  font-size: .76rem;
+  line-height: 1.3;
   margin: 0;
 }
 .chart-tab-action {
   display: flex;
   justify-content: flex-start;
   padding-top: 0;
-  margin-top: 2px;
+  margin-top: 0;
   flex-shrink: 0;
 }
 .chart-tab-action .primary-button {
-  min-height: 42px;
-  padding: 0 24px;
-  font-size: .88rem;
+  min-height: 36px;
+  padding: 0 20px;
+  font-size: .82rem;
 }
 .quick-chart-trigger {
   margin-top: 8px;
@@ -3012,9 +3014,13 @@ button.brand-btn:focus-visible {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: clamp(8px, 1.2vh, 14px);
+  gap: clamp(6px, .9vh, 10px);
   animation: fadeIn .3s ease;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
+.story-header-pipeline { flex-shrink: 0; }
 
 /* Pipeline Stepper */
 .story-header-pipeline {
@@ -3124,8 +3130,11 @@ button.brand-btn:focus-visible {
 .story-stage-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-  gap: clamp(12px, 1.6vw, 20px);
-  align-items: start;
+  gap: clamp(8px, 1.2vw, 16px);
+  align-items: stretch;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* SVG Illustration Card */
@@ -3138,9 +3147,12 @@ button.brand-btn:focus-visible {
   flex-direction: column;
   overflow: hidden;
   transition: border-color var(--transition);
+  min-height: 0;
 }
 .sic-viewport {
   width: 100%;
+  flex: 1;
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3166,15 +3178,18 @@ button.brand-btn:focus-visible {
 .story-figure-wrapper {
   margin: 0;
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: white;
+  min-height: 0;
 }
 
 .sf-image-stage {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
   background: #f1f5f9;
   display: block;
@@ -3292,12 +3307,13 @@ button.brand-btn:focus-visible {
 
 /* ─── Interactive Clue Bar (Always 100% Visible & Accessible) ─── */
 .sf-clue-interactive-bar {
-  padding: 8px 12px;
+  padding: 6px 10px;
   background: white;
   border-top: 1px solid var(--line);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
+  flex-shrink: 0;
 }
 .scib-chips {
   display: flex;
@@ -3399,9 +3415,10 @@ button.brand-btn:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 7px 14px;
+  padding: 5px 12px;
   background: white;
   border-top: 1px solid var(--line);
+  flex-shrink: 0;
 }
 .sic-nav-btn {
   display: inline-flex;
@@ -3454,12 +3471,14 @@ button.brand-btn:focus-visible {
 .story-insight-panel {
   border-radius: var(--radius-md);
   border: 1px solid var(--line);
-  padding: clamp(12px, 1.6vh, 16px);
+  padding: clamp(8px, 1.2vh, 12px);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: clamp(6px, .8vh, 8px);
   box-shadow: var(--shadow-sm);
   transition: background-color var(--transition);
+  overflow: hidden;
+  min-height: 0;
 }
 .sip-header {
   display: flex;
@@ -3493,21 +3512,23 @@ button.brand-btn:focus-visible {
 }
 .sip-story-desc {
   margin: 0;
-  font-size: .8rem;
+  font-size: .76rem;
   color: var(--ink);
-  line-height: 1.4;
+  line-height: 1.3;
 }
 
 .sip-breakdown-cards {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 5px;
+  overflow: hidden;
+  min-height: 0;
 }
 .sip-subcard {
   background: white;
   border: 1px solid var(--line);
   border-radius: var(--radius-xs);
-  padding: 8px 11px;
+  padding: 6px 10px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -3522,9 +3543,9 @@ button.brand-btn:focus-visible {
 }
 .sip-subcard p {
   margin: 0;
-  font-size: .76rem;
+  font-size: .73rem;
   color: var(--muted);
-  line-height: 1.35;
+  line-height: 1.3;
 }
 .sip-subcard.defense {
   background: white;
