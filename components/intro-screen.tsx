@@ -1,4 +1,6 @@
-import { ArrowRight, Clock3, ShieldCheck, Sparkles, TrendingUp } from "lucide-react";
+"use client";
+
+import { ArrowRight, Clock3 } from "lucide-react";
 import { Brand } from "./brand";
 
 export function IntroScreen({ onStart, previousScore }: { onStart: () => void; previousScore: number | null }) {
@@ -6,39 +8,22 @@ export function IntroScreen({ onStart, previousScore }: { onStart: () => void; p
     <main className="landing">
       <nav className="landing-nav">
         <Brand onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} />
-        <span className="session-label">Entrenamiento contra engaños digitales</span>
+        <span className="session-label">Simulador de criterio ante fraudes digitales</span>
       </nav>
 
       <div className="landing-grid">
         <section className="landing-copy">
-          <span className="eyebrow">Entrena antes de que sea real</span>
-          <h1>Un mensaje.<br />Una decisión.<br /><em>Haz una pausa.</em></h1>
+          <span className="eyebrow">Entrena tu reflejo de seguridad</span>
+          <h1>
+            Un mensaje sospechoso.
+            <br />
+            Una decisión rápida.
+            <br />
+            <em>Haz una pausa.</em>
+          </h1>
           <p className="lead">
-            Practica cómo detectar ofertas falsas y estafas digitales.
-            En 4 minutos comprobarás si puedes aplicar lo aprendido en un
-            caso completamente nuevo.
+            Entrena tu capacidad para desarmar falsas ofertas de empleo y estafas digitales en tiempo real. En 4 minutos calibrarás tu criterio en situaciones simuladas basadas en casos reales.
           </p>
-
-          {/* Vista previa del resultado — Etapa 01 Welcome */}
-          <div style={{
-            display: "flex",
-            gap: 12,
-            margin: "28px 0 -8px",
-            padding: "16px 18px",
-            background: "linear-gradient(135deg, var(--teal-50), rgba(255,255,255,.7))",
-            border: "1px solid rgba(7,156,168,.2)",
-            borderRadius: "var(--radius-sm)",
-            alignItems: "center",
-          }}>
-            <TrendingUp size={20} style={{ color: "var(--teal-600)", flexShrink: 0 }} />
-            <div>
-              <strong style={{ fontSize: ".82rem", display: "block", marginBottom: 2 }}>¿Qué obtienes al terminar?</strong>
-              <span style={{ color: "var(--muted)", fontSize: ".76rem", lineHeight: 1.5 }}>
-                Un diagnóstico de tu decisión inicial + una prueba de transferencia en un contexto nuevo.
-                Sin registro, sin cobro.
-              </span>
-            </div>
-          </div>
 
           <div className="landing-stats-row">
             <div className="stat-pill">
@@ -57,71 +42,99 @@ export function IntroScreen({ onStart, previousScore }: { onStart: () => void; p
 
           <div className="start-row">
             <button className="primary-button large" type="button" onClick={onStart}>
-              Comenzar práctica <ArrowRight size={20} />
+              Comenzar práctica <ArrowRight size={18} />
             </button>
-            <span className="no-reg-note"><Clock3 size={18} /> Sin registro previo</span>
+            <span className="no-reg-note">
+              <Clock3 size={16} /> Sin registro previo ni descargas
+            </span>
           </div>
-
-          {previousScore !== null && (
-            <p className="previous-result">
-              Tu última práctica: <strong>{previousScore}/3 decisiones seguras</strong>
-            </p>
-          )}
         </section>
 
-        <section className="landing-visual" aria-label="Resumen de la práctica">
-          <div className="shield-orbit">
-            {/* Animated orbit rings */}
-            <span className="orbit-ring-outer" />
-            <span className="orbit-ring-inner" />
-            <Brand compact />
-            <span className="orbit-dot one" />
-            <span className="orbit-dot two" />
+        {/* Preview card — Simulador activo y anatomía de la trampa */}
+        <section className="landing-preview-card" aria-label="Demostración interactiva del simulador de casos">
+          {/* Top header bar */}
+          <header className="lpc-header">
+            <div className="lpc-tag-wrap">
+              <span className="lpc-live-dot" />
+              <span className="lpc-badge">Simulador activo</span>
+            </div>
+            <span className="lpc-case-id">Patrón: Falso Reclutamiento</span>
+          </header>
+
+          {/* Simulated chat with realistic styling */}
+          <div className="lpc-chat-box">
+            <div className="lpc-message-header">
+              <div className="lpc-avatar">TH</div>
+              <div className="lpc-sender-info">
+                <strong>Talento Humano Express</strong>
+                <small>⚠ Remitente desconocido · Cuenta no verificada</small>
+              </div>
+            </div>
+
+            <div className="lpc-bubble">
+              <p>
+                «Vimos tu hoja de vida. Fuiste seleccionado para la vacante. Para asegurar el cupo{" "}
+                <span className="lpc-mark-urgencia">hoy</span>,{" "}
+                <span className="lpc-mark-trampa">transfiere $48.000 para el examen médico.</span>»
+              </p>
+            </div>
           </div>
-          <article className="floating-note note-one">
-            <ShieldCheck size={20} />
-            <div>
-              <strong>No memorices consejos</strong>
-              <span>Aprende a decidir bajo presión</span>
+
+          {/* Anatomía de la trampa psicológica */}
+          <div className="lpc-anatomy-block">
+            <div className="lpc-anatomy-header">
+              <span>Anatomía de la trampa psicológica:</span>
             </div>
-          </article>
-          <article className="floating-note note-two">
-            <Sparkles size={20} />
-            <div>
-              <strong>Práctica adaptativa</strong>
-              <span>El caso 2 responde a tu fallo</span>
+
+            <div className="lpc-anatomy-rows">
+              <div className="lpc-anatomy-item">
+                <span className="lpc-step-num">01</span>
+                <div className="lpc-step-content">
+                  <strong>El gancho:</strong>
+                  <p>Oferta atractiva sin proceso de entrevista formal previo.</p>
+                </div>
+              </div>
+
+              <div className="lpc-anatomy-item">
+                <span className="lpc-step-num">02</span>
+                <div className="lpc-step-content">
+                  <strong>La presión de urgencia:</strong>
+                  <p>Plazo inmediato («hoy») para inducir una respuesta impulsiva.</p>
+                </div>
+              </div>
+
+              <div className="lpc-anatomy-item pausa">
+                <span className="lpc-step-num pausa">PAUSA</span>
+                <div className="lpc-step-content">
+                  <strong>El Momento PAUSA:</strong>
+                  <p>Verificar de forma autónoma en el portal oficial sin transferir.</p>
+                </div>
+              </div>
             </div>
-          </article>
-          <article className="floating-note note-three">
-            <TrendingUp size={20} />
-            <div>
-              <strong>Prueba de transferencia</strong>
-              <span>Evalúa si aprendiste el principio</span>
-            </div>
-          </article>
+          </div>
         </section>
       </div>
 
       <div className="landing-capability-strip">
         <div className="cap-item">
-          <strong>1. Diagnóstico</strong>
-          <span>Enfrentas un caso de riesgo en tu canal habitual sin pistas previas</span>
+          <strong>1. Diagnóstico inicial</strong>
+          <span>Enfrentas un caso de riesgo en tu canal habitual sin pistas previas.</span>
         </div>
         <div className="cap-divider" />
         <div className="cap-item">
-          <strong>2. Retroalimentación activa</strong>
-          <span>Desarmamos el engaño: el gancho, la urgencia y el canal independiente</span>
+          <strong>2. Desarme formativo</strong>
+          <span>Analizas las señales de alerta: el cobro anticipado, la urgencia y el canal seguro.</span>
         </div>
         <div className="cap-divider" />
         <div className="cap-item">
-          <strong>3. Transferencia demostrable</strong>
-          <span>Demuestras si puedes aplicar la regla en una situación totalmente distinta</span>
+          <strong>3. Prueba de transferencia</strong>
+          <span>Compruebas si puedes aplicar el mismo criterio en un entorno totalmente nuevo.</span>
         </div>
       </div>
 
       <footer className="landing-footer">
-        <span>PAUSA no es un antivirus ni un filtro pasivo.</span>
-        <span>Entrena tu criterio para detectar señales de engaño y tomar una pausa a tiempo.</span>
+        <span>PAUSA entrena tu criterio ante ataques de ingeniería social y fraudes digitales.</span>
+        <span>Casos basados en modalidades documentadas por autoridades de ciberseguridad.</span>
       </footer>
     </main>
   );

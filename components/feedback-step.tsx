@@ -1,9 +1,8 @@
 "use client";
 
-import { AlertTriangle, ArrowRight, Check, CircleX, TrendingUp } from "lucide-react";
+import { AlertTriangle, ArrowRight, Check, CircleX, MessageSquare, ShieldCheck, User } from "lucide-react";
 import type { Answer } from "@/lib/session";
 import type { Scenario } from "@/lib/scenarios";
-import { CompetencyRadarChart } from "./interactive-charts";
 
 export function FeedbackStep({
   scenario,
@@ -16,60 +15,108 @@ export function FeedbackStep({
 }) {
   const selected = scenario.choices.find((choice) => choice.id === answer.choiceId)!;
 
-  // Real-time competency scores based on answer
-  const dynamicScores = answer.correct
-    ? { urgencia: 92, verificacion: 95, pagos: 88, identidad: 96 }
-    : { urgencia: 54, verificacion: 48, pagos: 60, identidad: 70 };
-
   return (
-    <main className="feedback-layout">
-      <section className={`feedback-hero ${answer.correct ? "correct" : "needs-pause"}`}>
-        <span className="feedback-icon">{answer.correct ? <Check size={32} /> : <CircleX size={32} />}</span>
-        <span className="eyebrow">Análisis de tu decisión</span>
-        <h1>{answer.correct ? "Hiciste una pausa útil." : "Aquí convenía hacer una pausa."}</h1>
-        <p>Elegiste: <strong>{selected.label}</strong></p>
-
-        <div className="feedback-stat-badge">
-          <TrendingUp size={16} />
-          <span>{answer.correct ? "+25 pts en Verificación Independiente" : "Punto ciego detectado: Urgencia artificial"}</span>
-        </div>
-      </section>
-
-      <section className="learning-panel">
-        <div className="explanation">
-          <AlertTriangle size={22} />
-          <div>
-            <h2>Lo importante no era adivinar</h2>
-            <p>{scenario.explanation}</p>
+    <div className="feedback-viewport-container">
+      <main className="feedback-expanded-card">
+        {/* Executive Feedback Header */}
+        <header className={`fbx-header-bar ${answer.correct ? "correct" : "needs-pause"}`}>
+          <div className="fbx-status-group">
+            <span className="fbx-icon-badge">
+              {answer.correct ? <Check size={20} /> : <CircleX size={20} />}
+            </span>
+            <div className="fbx-title-group">
+              <span className="fbx-eyebrow">Análisis de tu decisión</span>
+              <h2>{answer.correct ? "Hiciste una pausa útil." : "Aquí convenía hacer una pausa."}</h2>
+            </div>
           </div>
-        </div>
 
-        {/* Gráfica de competencias integrada */}
-        <div className="feedback-chart-wrapper">
-          <CompetencyRadarChart scores={dynamicScores} />
-        </div>
+          <div className="fbx-meta-group">
+            <div className="fbx-choice-tag">
+              <span className="fct-label">Elegiste:</span>
+              <strong className="fct-val">{selected.label}</strong>
+            </div>
+            <div className={`fbx-insight-badge ${answer.correct ? "correct" : "needs-pause"}`}>
+              <ShieldCheck size={14} />
+              <span>
+                {answer.correct
+                  ? "Criterio correcto: Salir del chat y verificar"
+                  : "Punto ciego detectado: Urgencia artificial"}
+              </span>
+            </div>
+          </div>
+        </header>
 
-        <div className="signals-grid">
-          {scenario.signals.map((signal, index) => (
-            <article key={signal.label}>
-              <span>0{index + 1}</span>
-              <h3>{signal.label}</h3>
-              <p>{signal.detail}</p>
-            </article>
-          ))}
-        </div>
+        {/* 2-Panel Widescreen Body: Scenario Context on Left, Pedagogy on Right */}
+        <div className="fbx-body-grid">
+          {/* Left Panel: The Scenario you just faced */}
+          <section className="fbx-panel-context">
+            <div className="fbx-section-header">
+              <MessageSquare size={14} />
+              <span>Contexto del mensaje que analizaste</span>
+            </div>
 
-        <div className="rule-card">
-          <span>REGLA DE ORO PAUSA</span>
-          <p>
-            Si el mensaje mezcla <strong>urgencia, dinero o petición de documentos</strong>, sal del chat y verifica por tu cuenta en canales oficiales.
-          </p>
-        </div>
+            <div className="fbx-chat-bubble-card">
+              <div className="fbx-sender-row">
+                <span className="fbx-sender-avatar">
+                  {scenario.avatar || <User size={13} />}
+                </span>
+                <div className="fbx-sender-info">
+                  <strong>{scenario.sender}</strong>
+                  <small>{scenario.time || "Remitente no verificado"}</small>
+                </div>
+              </div>
+              <div className="fbx-messages-preview-list">
+                {scenario.messages.map((msg, idx) => (
+                  <p key={idx} className="fbx-message-preview">«{msg}»</p>
+                ))}
+              </div>
+            </div>
 
-        <button className="primary-button large teal" type="button" onClick={onContinue}>
-          Practicar siguiente caso adaptativo <ArrowRight size={18} />
-        </button>
-      </section>
-    </main>
+            <div className="fbx-golden-rule-card">
+              <div className="fgr-header">
+                <ShieldCheck size={15} />
+                <span>REGLA DE ORO PAUSA</span>
+              </div>
+              <p>
+                Si el mensaje mezcla <strong>urgencia, dinero o petición de documentos</strong>, sal del chat y verifica por tu cuenta en canales oficiales.
+              </p>
+            </div>
+          </section>
+
+          {/* Right Panel: Pedagogy & Signals */}
+          <section className="fbx-panel-analysis">
+            <div className="fbx-explanation-card">
+              <div className="fec-top">
+                <AlertTriangle size={15} className="fec-alert-icon" />
+                <h3>Lo importante no era adivinar</h3>
+              </div>
+              <p className="fec-text">{scenario.explanation}</p>
+            </div>
+
+            <div className="fbx-signals-card">
+              <span className="fsc-header-label">Señales de alerta detectadas en este caso</span>
+              <div className="fsc-signals-list">
+                {scenario.signals.map((signal, index) => (
+                  <div key={signal.label} className="fsc-signal-item">
+                    <span className="fsc-index">0{index + 1}</span>
+                    <div className="fsc-item-body">
+                      <strong>{signal.label}</strong>
+                      <p>{signal.detail}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <footer className="fbx-action-footer">
+              <button className="primary-button large teal fbx-submit-btn" type="button" onClick={onContinue}>
+                <span>Practicar siguiente caso adaptativo</span>
+                <ArrowRight size={17} />
+              </button>
+            </footer>
+          </section>
+        </div>
+      </main>
+    </div>
   );
 }
