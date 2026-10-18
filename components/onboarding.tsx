@@ -153,72 +153,52 @@ function GoalStage({ onNext }: { onNext: (goal: Goal) => void }) {
   const activeGoal = selected ? goalMap[selected] : goalMap.empleo;
 
   return (
-    <div className="goal-screen">
-      <div className="goal-copy">
+    <div className="onboarding-flow-step">
+      <div className="onboarding-step-hero">
         <span className="eyebrow">01 · Objetivo de práctica</span>
-        <h1>¿Qué quieres<br />proteger hoy?</h1>
+        <h1>¿Qué quieres proteger hoy?</h1>
         <p>
-          Tu respuesta calibra el simulador: cambia el mensaje entrante, el remitente sospechoso y las decisiones críticas que evaluarás.
+          Selecciona el ámbito que deseas entrenar. Calibraremos la simulación con situaciones reales y señales de riesgo específicas.
         </p>
-
-        {/* Live Personalization Preview Widget */}
-        <div className="goal-preview-box">
-          <div className="gpb-header">
-            <span className="gpb-badge">Calibración en vivo</span>
-            <strong>{activeGoal.title}</strong>
-          </div>
-          <div className="gpb-body">
-            <div className="gpb-item">
-              <span className="gpb-label">Caso simulado:</span>
-              <p>{activeGoal.simulationSample}</p>
-            </div>
-            <div className="gpb-item">
-              <span className="gpb-label">Criterio que entrenarás:</span>
-              <p>{activeGoal.focusPoint}</p>
-            </div>
-          </div>
-          <div className="gpb-footer">
-            <span>⏱ ~4 minutos</span>
-            <span>·</span>
-            <span>100% Anónimo</span>
-            <span>·</span>
-            <span>Sin registro</span>
-          </div>
-        </div>
       </div>
 
-      <div className="goal-cards">
+      <div className="goal-deck-grid">
         {goals.map(([id, { icon, title, sub, badge, tags }], i) => (
           <button
             key={id}
-            className={`goal-card${selected === id ? " selected" : ""}`}
+            className={`goal-deck-card${selected === id ? " selected" : ""}`}
             style={{ "--i": i } as React.CSSProperties}
             type="button"
             onClick={() => setSelected(id)}
           >
-            <div className="goal-card-top-row">
-              <span className="goal-card-icon">{icon}</span>
-              <span className="goal-card-badge">{badge}</span>
-              <span className="goal-card-check">{selected === id ? "✓" : ""}</span>
+            <div className="gdc-header">
+              <span className="gdc-icon">{icon}</span>
+              <span className="gdc-badge">{badge}</span>
+              <span className="gdc-check">{selected === id ? "✓" : ""}</span>
             </div>
-            <div className="goal-card-text">
+            <div className="gdc-content">
               <strong>{title}</strong>
               <p>{sub}</p>
             </div>
-            <div className="goal-card-tags">
+            <div className="gdc-tags">
               {tags.map((tag) => (
-                <span key={tag} className="goal-tag">{tag}</span>
+                <span key={tag} className="gdc-tag">{tag}</span>
               ))}
             </div>
           </button>
         ))}
+      </div>
 
+      <div className="onboarding-bottom-bar">
+        <div className="obb-info">
+          <span className="obb-dot" />
+          <span>Práctica personalizada de <strong>4 minutos</strong> · 100% Anónimo · Sin registro previo</span>
+        </div>
         <button
           className="primary-button large teal"
           type="button"
           disabled={!selected}
           onClick={() => selected && onNext(selected)}
-          style={{ marginTop: 12 }}
         >
           Continuar con {activeGoal.title} <ArrowRight size={20} />
         </button>
@@ -234,59 +214,49 @@ function FrictionStage({ goal, onNext }: { goal: Goal; onNext: (f: Friction) => 
   const goalInfo = goalMap[goal];
 
   return (
-    <div className="goal-screen">
-      <div className="goal-copy">
+    <div className="onboarding-flow-step">
+      <div className="onboarding-step-hero">
         <span className="eyebrow">02 · Punto ciego / Fricción</span>
-        <h1>¿Qué te hace<br />difícil detenerte?</h1>
+        <h1>¿Qué te hace difícil detenerte?</h1>
         <p>
-          En situaciones de <strong>{goalInfo.title.toLowerCase()}</strong>, los estafadores explotan puntos ciegos para impedir que te tomes una pausa. ¿Cuál te cuesta más identificar?
+          En situaciones de <strong>{goalInfo.title.toLowerCase()}</strong>, los atacantes usan trampas psicológicas para apresurar tu decisión. ¿Cuál te cuesta más reconocer?
         </p>
-
-        <div className="goal-preview-box">
-          <div className="gpb-header">
-            <span className="gpb-badge">Por qué importa esto</span>
-            <strong>La trampa psicológica</strong>
-          </div>
-          <div className="gpb-body">
-            <div className="gpb-item">
-              <span className="gpb-label">Objetivo de la sesión:</span>
-              <p>
-                No basta con saber qué es un fraude. El entrenamiento te ayuda a sentir el impulso de actuar y aprender a activar la <strong>PAUSA</strong> en ese instante.
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
 
-      <div className="friction-grid">
+      <div className="friction-deck-grid">
         {frictions.map(([id, { title, body, tag, example }], i) => (
           <button
             key={id}
-            className={`friction-card${selected === id ? " selected" : ""}`}
+            className={`friction-deck-card${selected === id ? " selected" : ""}`}
             style={{ "--i": i } as React.CSSProperties}
             type="button"
             onClick={() => setSelected(id)}
           >
-            <div className="fc-top-row">
-              <span className="fc-tag">{tag}</span>
-              <span className="fc-check">{selected === id ? "✓" : ""}</span>
+            <div className="fdc-header">
+              <span className="fdc-tag">{tag}</span>
+              <span className="fdc-check">{selected === id ? "✓" : ""}</span>
             </div>
             <strong>{title}</strong>
-            <p className="fc-body">{body}</p>
-            <div className="fc-example">
+            <p className="fdc-body">{body}</p>
+            <div className="fdc-example">
               <span>Ejemplo:</span> {example}
             </div>
           </button>
         ))}
+      </div>
 
+      <div className="onboarding-bottom-bar">
+        <div className="obb-info">
+          <span className="obb-dot" />
+          <span>Identificar tu punto ciego entrena el reflejo de hacer la pausa en el momento clave</span>
+        </div>
         <button
           className="primary-button large teal"
           type="button"
           disabled={!selected}
           onClick={() => selected && onNext(selected)}
-          style={{ marginTop: 8 }}
         >
-          Continuar al reconocimiento de casos <ArrowRight size={20} />
+          Continuar a situaciones de práctica <ArrowRight size={20} />
         </button>
       </div>
     </div>
