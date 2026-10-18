@@ -292,10 +292,10 @@ img, svg { display: block; }
 }
 .previous-result {
   margin-top: 24px;
-  padding: 12px 18px;
-  border-left: 3px solid var(--teal-500);
+  padding: 14px 20px;
   background: var(--teal-50);
-  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+  border: 1.5px solid rgba(7,156,168,.25);
+  border-radius: var(--radius-sm);
   font-size: .88rem;
   animation: slideInLeft .4s ease;
 }
@@ -704,18 +704,18 @@ img, svg { display: block; }
   margin: 0;
 }
 .fdc-example {
-  margin-top: 4px;
-  padding: 10px 14px;
-  background: var(--paper);
-  border-radius: var(--radius-xs);
+  margin-top: 6px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
   font-size: .82rem;
   color: var(--ink);
   line-height: 1.5;
-  border-left: 3px solid var(--amber);
 }
 .fdc-example span {
   font-weight: 800;
-  color: #95610d;
+  color: var(--navy-900);
 }
 
 /* Onboarding Bottom Bar */
@@ -1180,8 +1180,8 @@ img, svg { display: block; }
 .choice.selected {
   border-color: var(--teal-600);
   background: var(--teal-50);
-  box-shadow: inset 4px 0 0 var(--teal-600), var(--shadow-sm);
-  transform: translateX(6px);
+  box-shadow: 0 0 0 3px rgba(7,156,168,.16), var(--shadow-sm);
+  transform: translateY(-2px);
 }
 .choice.selected > span {
   border-color: var(--teal-600);
@@ -1278,11 +1278,11 @@ img, svg { display: block; }
 .signals-grid p { margin: 0; color: var(--muted); font-size: .78rem; line-height: 1.55; }
 .rule-card {
   padding: 20px 24px;
-  border-left: 4px solid var(--amber);
-  background: #fff9eb;
-  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+  background: #f0fdfa;
+  border: 1.5px solid rgba(13,148,136,.3);
+  border-radius: var(--radius-sm);
 }
-.rule-card span { color: #95610d; font-size: .68rem; font-weight: 900; letter-spacing: .14em; }
+.rule-card span { color: var(--teal-700); font-size: .68rem; font-weight: 900; letter-spacing: .14em; }
 .rule-card p { margin: 8px 0 0; font-size: .92rem; line-height: 1.6; }
 .learning-panel > .primary-button { align-self: flex-end; margin-top: 32px; }
 
@@ -1837,12 +1837,12 @@ img, svg { display: block; }
   margin: 0;
 }
 .fdp-warning {
-  padding: 10px 14px;
-  background: #fff3f2;
-  border-left: 3px solid var(--danger);
-  border-radius: var(--radius-xs);
+  padding: 12px 16px;
+  background: #fff5f5;
+  border: 1px solid rgba(220,38,38,.2);
+  border-radius: var(--radius-sm);
   font-size: .84rem;
-  color: var(--danger);
+  color: #991b1b;
 }
 
 /* Channel Stats Card */
