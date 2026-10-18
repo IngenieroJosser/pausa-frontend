@@ -14,7 +14,6 @@ import {
   Shield,
   ShieldAlert,
   ShieldCheck,
-  Sparkles,
   TrendingUp,
   UserCheck,
 } from "lucide-react";
@@ -76,7 +75,7 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit }: Props) 
           onClick={() => setActiveTab("radar")}
         >
           <BarChart2 size={16} />
-          <span>3. Gráfica: Radar de Criterio</span>
+          <span>3. Matriz de Criterio PAUSA</span>
         </button>
       </nav>
 
@@ -252,14 +251,14 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit }: Props) 
         </div>
       )}
 
-      {/* Vista 3: Gráfica de Radar de Competencias */}
+      {/* Vista 3: Matriz de Criterio PAUSA */}
       {activeTab === "radar" && (
         <div className="chart-tab-view">
           <div className="chart-tab-intro">
-            <span className="eyebrow">Métricas de ciberseguridad</span>
-            <h2>Habilidades que estás entrenando en esta sesión</h2>
+            <span className="eyebrow">Marco pedagógico</span>
+            <h2>Habilidades clave para desarmar fraudes</h2>
             <p>
-              Este radar mide tus 4 reflejos de defensa digital. Tu respuesta en este escenario recalculará tu nivel de efectividad.
+              Conoce los 4 reflejos de criterio que desactivan la ingeniería social y te permiten validar cualquier situación antes de actuar.
             </p>
           </div>
           <CompetencyRadarChart />

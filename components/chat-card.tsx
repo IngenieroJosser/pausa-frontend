@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCheck, LockKeyhole, Sparkles, Eye, CreditCard, Clock, FileText, Lightbulb, ShieldAlert, X } from "lucide-react";
+import { CheckCheck, LockKeyhole, Compass, Eye, CreditCard, Clock, FileText, Lightbulb, ShieldAlert, X } from "lucide-react";
 import type { Scenario, ScenarioSignal } from "@/lib/scenarios";
 
 type Props = {
@@ -148,7 +148,7 @@ export function ChatCard({ scenario, allowInspection = true }: Props) {
       {inspectorActive && (
         <div className="inspector-minimal-toolbar">
           <div className="imt-label-row">
-            <Sparkles size={13} className="imt-icon" />
+            <Compass size={13} className="imt-icon" />
             <span>Toca una señal para ver qué delata este mensaje:</span>
           </div>
 
