@@ -83,7 +83,8 @@ export function ResultScreen({ answers, onRestart }: { answers: Answer[]; onRest
         <span className="session-label">Práctica completada · Informe de desempeño</span>
       </nav>
 
-      <main className="result-expanded-card">
+      <div className="result-main-area">
+        <main className="result-expanded-card">
         {/* Executive Header Banner — Dynamically styled by score level */}
         <header className={`rex-header-banner ${evaluation.level}`}>
           <div className="rex-icon-mark">{evaluation.icon}</div>
@@ -162,6 +163,7 @@ export function ResultScreen({ answers, onRestart }: { answers: Answer[]; onRest
           </section>
         </div>
       </main>
+      </div>
     </div>
   );
 }

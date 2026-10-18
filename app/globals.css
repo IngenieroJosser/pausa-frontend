@@ -2343,7 +2343,8 @@ button.brand-btn:focus-visible {
   top: 0;
   z-index: 100;
   flex-shrink: 0;
-  min-height: 60px;
+  min-height: 64px;
+  height: 64px;
   padding: 0 var(--gutter);
   display: flex;
   align-items: center;
@@ -2352,9 +2353,20 @@ button.brand-btn:focus-visible {
   background: white;
 }
 
+.result-main-area {
+  height: calc(100svh - 64px);
+  max-height: calc(100svh - 64px);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(6px, 1.2vh, 12px) 16px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
 .result-expanded-card {
-  margin: auto 16px;
-  width: calc(100% - 32px);
+  width: 100%;
   max-width: 1400px;
   background: white;
   border: 1px solid var(--line);
