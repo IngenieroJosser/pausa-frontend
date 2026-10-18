@@ -1,0 +1,15 @@
+node_modules
+.next
+out
+.env*
+!.env.example
+npm-debug.log*
+.DS_Store
+
+# Documentación privada de trabajo (contexto y bitácora local)
+/Contexto y Bitacora/
+
+# Datos locales generados por el backend de desarrollo
+/backend/data/
+.dev-server.*.log
+.backend-server.*.log
