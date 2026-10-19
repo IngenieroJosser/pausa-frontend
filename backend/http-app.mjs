@@ -9,7 +9,16 @@ const requestsByAddress = new Map();
 
 function setCors(request, response) {
   const origin = request.headers.origin;
-  if (origin === "http://localhost:3000" || origin === "http://127.0.0.1:3000") {
+  const configuredOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(",").map((s) => s.trim())
+    : [];
+
+  const isLocal = origin === "http://localhost:3000" || origin === "http://127.0.0.1:3000";
+  const isConfigured = origin && configuredOrigins.includes(origin);
+  const isVercel = origin && /^https:\/\/[a-zA-Z0-9._-]+\.vercel\.app$/.test(origin);
+  const allowAll = configuredOrigins.includes("*");
+
+  if (origin && (isLocal || isConfigured || isVercel || allowAll)) {
     response.setHeader("Access-Control-Allow-Origin", origin);
   }
   response.setHeader("Vary", "Origin");

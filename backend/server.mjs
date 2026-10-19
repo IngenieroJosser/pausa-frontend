@@ -5,7 +5,7 @@ import { createDatabase } from "./database.mjs";
 import { createHttpHandler } from "./http-app.mjs";
 
 const PORT = Number(process.env.PORT || 3101);
-const HOST = process.env.HOST || "127.0.0.1";
+const HOST = process.env.HOST || "0.0.0.0";
 const databasePath = process.env.DATABASE_PATH || join(import.meta.dirname, "data", "pausa.sqlite");
 const database = createDatabase(databasePath);
 const service = createAssessmentService(database);
