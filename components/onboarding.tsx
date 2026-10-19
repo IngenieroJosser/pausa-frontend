@@ -613,22 +613,28 @@ function SituationsStage({ onNext }: { onNext: () => void }) {
         {/* Clear, neutral decision action */}
         <div className="ssw-actions-row">
           <button className="sit-btn no" type="button" onClick={() => respond(false)}>
-            <div className="sit-btn-icon-wrap no">
-              <Check size={20} />
+            <div className="sit-btn-icon-wrap no" aria-hidden="true">
+              <ShieldCheck size={22} strokeWidth={2.2} />
             </div>
-            <div>
+            <div className="sit-btn-text">
               <strong>No me preocupa</strong>
               <small>Parece una comunicación legítima o habitual</small>
+            </div>
+            <div className="sit-btn-arrow" aria-hidden="true">
+              <ArrowRight size={18} />
             </div>
           </button>
 
           <button className="sit-btn yes" type="button" onClick={() => respond(true)}>
-            <div className="sit-btn-icon-wrap yes">
-              <AlertTriangle size={20} />
+            <div className="sit-btn-icon-wrap yes" aria-hidden="true">
+              <AlertTriangle size={22} strokeWidth={2.2} />
             </div>
-            <div>
+            <div className="sit-btn-text">
               <strong>Sí me preocupa</strong>
               <small>Detecto señales de riesgo o desconfianza</small>
+            </div>
+            <div className="sit-btn-arrow" aria-hidden="true">
+              <ArrowRight size={18} />
             </div>
           </button>
         </div>

@@ -26,11 +26,12 @@ type Props = {
   selected: string | null;
   onSelect: (choiceId: string) => void;
   onSubmit: () => void;
+  submitting?: boolean;
 };
 
 type ViewTab = "simulacion" | "anatomia" | "radar";
 
-export function ScenarioStep({ scenario, selected, onSelect, onSubmit }: Props) {
+export function ScenarioStep({ scenario, selected, onSelect, onSubmit, submitting = false }: Props) {
   const [activeTab, setActiveTab] = useState<ViewTab>("simulacion");
 
   const getChoiceIcon = (choice: Choice) => {
@@ -205,11 +206,11 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit }: Props) 
               <button
                 className="primary-button cta-decision-btn"
                 type="button"
-                disabled={!selected}
+                disabled={!selected || submitting}
                 onClick={onSubmit}
               >
-                <span>Confirmar decisión</span>
-                <ArrowRight size={18} />
+                <span>{submitting ? "Evaluando decisión…" : "Confirmar decisión"}</span>
+                {!submitting && <ArrowRight size={18} />}
               </button>
 
               <div className="decision-calm-note">
