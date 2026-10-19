@@ -1,16 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { diagnosticScenario, getAdaptiveScenario, transferScenario, type Scenario } from "@/lib/scenarios";
-import { evaluateAnswer, primaryPracticeSignal, RESULT_STORAGE_KEY, type Answer, type SavedResult } from "@/lib/session";
+import { completeLearningSession, createLearningSession, recordInteraction, submitLearningDecision } from "@/lib/learning-api";
+import { diagnosticScenario, getScenarioById, type Scenario } from "@/lib/scenarios";
+import { RESULT_STORAGE_KEY, type Answer, type SavedResult } from "@/lib/session";
 import { FeedbackStep } from "./feedback-step";
 import { IntroScreen } from "./intro-screen";
 import { Onboarding, type OnboardingResult } from "./onboarding";
 import { Progress } from "./progress";
 import { ResultScreen } from "./result-screen";
 import { ScenarioStep } from "./scenario-step";
+import { ServiceError } from "./service-error";
 
-type View = "intro" | "onboarding" | "scenario" | "feedback" | "result";
+type View = "intro" | "onboarding" | "scenario" | "feedback" | "result" | "service-error";
+type RetryAction = "start" | "submit" | "complete";
 
 export function PausaExperience() {
   const [view, setView] = useState<View>("intro");
@@ -20,94 +23,147 @@ export function PausaExperience() {
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [previousScore, setPreviousScore] = useState<number | null>(null);
   const [onboardingResult, setOnboardingResult] = useState<OnboardingResult | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [pendingRequestId, setPendingRequestId] = useState<string | null>(null);
+  const [retryAction, setRetryAction] = useState<RetryAction>("start");
+  const [scenarioStartedAt, setScenarioStartedAt] = useState(() => Date.now());
 
   useEffect(() => {
     const saved = window.localStorage.getItem(RESULT_STORAGE_KEY);
-    if (saved) setPreviousScore((JSON.parse(saved) as SavedResult).totalCorrect);
+    if (!saved) return;
+    const result = JSON.parse(saved) as SavedResult;
+    setPreviousScore(result.totalCorrect);
+    if (result.answers?.length === 3) {
+      setAnswers(result.answers);
+      setView("result");
+    }
   }, []);
 
-  /* Landing → Onboarding */
-  function goToOnboarding() {
-    setView("onboarding");
+  function goHome() {
+    setView("intro");
+    setSelected(null);
+    setPendingRequestId(null);
   }
 
-  /* Onboarding complete → first scenario */
-  function startAfterOnboarding(result: OnboardingResult) {
+  function restartPractice() {
+    window.localStorage.removeItem(RESULT_STORAGE_KEY);
+    setPreviousScore(null);
+    setAnswers([]);
+    goHome();
+  }
+
+  async function startAfterOnboarding(result: OnboardingResult) {
     setOnboardingResult(result);
-    setAnswers([]);
-    setSelected(null);
-    setStep(1);
-    setScenario(diagnosticScenario);
-    setView("scenario");
-  }
-
-  /* Skip onboarding — direct start */
-  function startDirect() {
-    setOnboardingResult(null);
-    setAnswers([]);
-    setSelected(null);
-    setStep(1);
-    setScenario(diagnosticScenario);
-    setView("scenario");
-  }
-
-  function submit() {
-    if (!selected) return;
-    const answer = evaluateAnswer(scenario, selected);
-    setAnswers((current) => [...current, answer]);
-    setView("feedback");
-  }
-
-  function continueSession() {
-    const latest = answers.at(-1)!;
-    if (step === 1) {
-      setScenario(getAdaptiveScenario(primaryPracticeSignal(latest)));
-      setStep(2);
+    setRetryAction("start");
+    try {
+      const session = await createLearningSession(result);
+      setSessionId(session.id);
+      setSessionToken(session.accessToken);
+      setAnswers([]);
       setSelected(null);
+      setPendingRequestId(null);
+      setStep(1);
+      setScenario(getScenarioById(session.nextScenario.id) ?? diagnosticScenario);
+      setScenarioStartedAt(Date.now());
+      setView("scenario");
+    } catch {
+      setView("service-error");
+    }
+  }
+
+  async function submit() {
+    if (!selected || !sessionId || !sessionToken || submitting) return;
+    const requestId = pendingRequestId ?? window.crypto.randomUUID();
+    setPendingRequestId(requestId);
+    setSubmitting(true);
+    setRetryAction("submit");
+    try {
+      const decision = await submitLearningDecision(sessionId, sessionToken, {
+        requestId,
+        scenarioId: scenario.id,
+        choiceId: selected,
+        elapsedMs: Date.now() - scenarioStartedAt,
+      });
+      const answer: Answer = {
+        scenarioId: decision.scenarioId,
+        choiceId: selected,
+        correct: decision.correct,
+        signal: decision.signal,
+        skill: decision.skill,
+        nextScenarioId: decision.nextScenario?.id ?? null,
+      };
+      setAnswers((current) => [...current, answer]);
+      setPendingRequestId(null);
+      void recordInteraction(sessionId, sessionToken, {
+        requestId: window.crypto.randomUUID(),
+        scenarioId: scenario.id,
+        eventType: "feedback_viewed",
+      });
+      setView("feedback");
+    } catch {
+      setView("service-error");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function continueSession() {
+    const latest = answers.at(-1);
+    if (!latest) return;
+    if (latest.nextScenarioId) {
+      const nextScenario = getScenarioById(latest.nextScenarioId);
+      if (!nextScenario) return;
+      setScenario(nextScenario);
+      setStep((current) => current + 1);
+      setSelected(null);
+      setScenarioStartedAt(Date.now());
       setView("scenario");
       return;
     }
-    if (step === 2) {
-      setScenario(transferScenario);
-      setStep(3);
-      setSelected(null);
-      setView("scenario");
-      return;
+
+    if (!sessionId || !sessionToken) return;
+    setRetryAction("complete");
+    try {
+      const outcome = await completeLearningSession(sessionId, sessionToken);
+      const result: SavedResult = {
+        completedAt: new Date().toISOString(),
+        diagnosticCorrect: outcome.diagnosticCorrect,
+        transferCorrect: outcome.transferCorrect,
+        totalCorrect: outcome.totalCorrect,
+        answers,
+      };
+      window.localStorage.setItem(RESULT_STORAGE_KEY, JSON.stringify(result));
+      setPreviousScore(result.totalCorrect);
+      setView("result");
+    } catch {
+      setView("service-error");
     }
-
-    const result: SavedResult = {
-      completedAt: new Date().toISOString(),
-      diagnosticCorrect: answers[0].correct,
-      transferCorrect: answers[2].correct,
-      totalCorrect: answers.filter((answer) => answer.correct).length,
-    };
-    window.localStorage.setItem(RESULT_STORAGE_KEY, JSON.stringify(result));
-    setPreviousScore(result.totalCorrect);
-    setView("result");
   }
 
-  if (view === "intro") {
-    return <IntroScreen onStart={goToOnboarding} previousScore={previousScore} />;
+  function retryServiceAction() {
+    if (retryAction === "start" && onboardingResult) void startAfterOnboarding(onboardingResult);
+    else if (retryAction === "submit") void submit();
+    else void continueSession();
   }
 
-  if (view === "onboarding") {
-    return (
-      <Onboarding
-        onComplete={startAfterOnboarding}
-        onHome={() => setView("intro")}
-      />
-    );
-  }
-
-  if (view === "result") {
-    return <ResultScreen answers={answers} onRestart={() => setView("intro")} />;
-  }
+  if (view === "intro") return <IntroScreen onStart={() => setView("onboarding")} previousScore={previousScore} />;
+  if (view === "onboarding") return <Onboarding onComplete={startAfterOnboarding} onHome={goHome} />;
+  if (view === "result") return <ResultScreen answers={answers} onRestart={restartPractice} />;
+  if (view === "service-error") return <ServiceError onRetry={retryServiceAction} onHome={goHome} />;
 
   return (
     <div className="app-shell">
-      <Progress step={step} onHome={() => setView("intro")} />
+      <Progress step={step} onHome={goHome} />
       {view === "scenario" ? (
-        <ScenarioStep scenario={scenario} selected={selected} onSelect={setSelected} onSubmit={submit} />
+        <ScenarioStep
+          scenario={scenario}
+          selected={selected}
+          onSelect={setSelected}
+          onSubmit={submit}
+          submitting={submitting}
+        />
       ) : (
         <FeedbackStep scenario={scenario} answer={answers.at(-1)!} onContinue={continueSession} />
       )}

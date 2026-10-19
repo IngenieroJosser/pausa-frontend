@@ -5,7 +5,6 @@ export type Choice = {
   label: string;
   description?: string;
   icon?: "card" | "message" | "search" | "shield" | "alert";
-  isCorrect: boolean;
   signal: RiskSignal;
 };
 
@@ -53,7 +52,6 @@ export const diagnosticScenario: Scenario = {
       label: "Pagar para no perder el cupo",
       description: "Hacer el pago ahora mismo para asegurar la oportunidad de trabajo.",
       icon: "card",
-      isCorrect: false,
       signal: "pago",
     },
     {
@@ -61,7 +59,6 @@ export const diagnosticScenario: Scenario = {
       label: "Pedir más detalles por el mismo chat",
       description: "Responder para solicitar más información sobre el proceso.",
       icon: "message",
-      isCorrect: false,
       signal: "canal",
     },
     {
@@ -69,7 +66,6 @@ export const diagnosticScenario: Scenario = {
       label: "Buscar la empresa y verificar por un canal oficial",
       description: "Contactar a la empresa por sus canales oficiales para confirmar si es real.",
       icon: "search",
-      isCorrect: true,
       signal: "canal",
     },
   ],
@@ -120,7 +116,6 @@ const adaptiveScenarios: Record<RiskSignal, Scenario> = {
         label: "Transferir y guardar el comprobante",
         description: "Hacer la transferencia bancaria para asegurar el uniforme y asistir.",
         icon: "card",
-        isCorrect: false,
         signal: "pago",
       },
       {
@@ -128,7 +123,6 @@ const adaptiveScenarios: Record<RiskSignal, Scenario> = {
         label: "Pedir pagar solo la mitad",
         description: "Proponer pagar el saldo al momento de recibir la prenda.",
         icon: "message",
-        isCorrect: false,
         signal: "pago",
       },
       {
@@ -136,7 +130,6 @@ const adaptiveScenarios: Record<RiskSignal, Scenario> = {
         label: "No pagar y confirmar la vacante con el restaurante",
         description: "Buscar el teléfono oficial del establecimiento y corroborar la vacante.",
         icon: "search",
-        isCorrect: true,
         signal: "canal",
       },
     ],
@@ -185,7 +178,6 @@ const adaptiveScenarios: Record<RiskSignal, Scenario> = {
         label: "Abrir rápido antes de perder la vacante",
         description: "Hacer clic de inmediato en el enlace para no arriesgar la oportunidad.",
         icon: "alert",
-        isCorrect: false,
         signal: "urgencia",
       },
       {
@@ -193,7 +185,6 @@ const adaptiveScenarios: Record<RiskSignal, Scenario> = {
         label: "Reenviar el enlace a un amigo",
         description: "Pedirle a otra persona que revise o intente registrarse primero.",
         icon: "message",
-        isCorrect: false,
         signal: "datos",
       },
       {
@@ -201,7 +192,6 @@ const adaptiveScenarios: Record<RiskSignal, Scenario> = {
         label: "Detenerme y verificar empresa, dominio y vacante",
         description: "Hacer una pausa, buscar el portal oficial y corroborar la oferta de empleo.",
         icon: "shield",
-        isCorrect: true,
         signal: "canal",
       },
     ],
@@ -250,7 +240,6 @@ const adaptiveScenarios: Record<RiskSignal, Scenario> = {
         label: "Escribir al correo que enviaron",
         description: "Enviar los datos directamente a la dirección indicada en el mensaje.",
         icon: "message",
-        isCorrect: false,
         signal: "canal",
       },
       {
@@ -258,7 +247,6 @@ const adaptiveScenarios: Record<RiskSignal, Scenario> = {
         label: "Buscar el sitio oficial y contactar desde allí",
         description: "Localizar de forma autónoma el conmutador o web legítima de la compañía.",
         icon: "search",
-        isCorrect: true,
         signal: "canal",
       },
       {
@@ -266,7 +254,6 @@ const adaptiveScenarios: Record<RiskSignal, Scenario> = {
         label: "Esperar el contrato para revisar el logo",
         description: "Avanzar en el trámite y juzgar solo por la apariencia gráfica posterior.",
         icon: "shield",
-        isCorrect: false,
         signal: "datos",
       },
     ],
@@ -315,7 +302,6 @@ const adaptiveScenarios: Record<RiskSignal, Scenario> = {
         label: "Enviar las fotos con una marca de agua",
         description: "Poner un texto sobre la cédula pensando que así estás totalmente protegido.",
         icon: "shield",
-        isCorrect: false,
         signal: "datos",
       },
       {
@@ -323,7 +309,6 @@ const adaptiveScenarios: Record<RiskSignal, Scenario> = {
         label: "Enviar solo una cara de la cédula",
         description: "Omitir el reverso para reducir parcialmente los datos expuestos.",
         icon: "alert",
-        isCorrect: false,
         signal: "datos",
       },
       {
@@ -331,7 +316,6 @@ const adaptiveScenarios: Record<RiskSignal, Scenario> = {
         label: "No enviar datos y verificar quién los solicita",
         description: "Rehusar el envío hasta identificar con certeza a la persona jurídica responsable.",
         icon: "search",
-        isCorrect: true,
         signal: "canal",
       },
     ],
@@ -382,7 +366,6 @@ export const transferScenario: Scenario = {
       label: "Entrar al enlace y revisar el saldo",
       description: "Abrir la dirección para comprobar cuántos puntos tienes acumulados.",
       icon: "alert",
-      isCorrect: false,
       signal: "urgencia",
     },
     {
@@ -390,7 +373,6 @@ export const transferScenario: Scenario = {
       label: "Abrir la app oficial del banco y comprobar allí",
       description: "Ignorar el mensaje y entrar a la banca móvil oficial directamente.",
       icon: "shield",
-      isCorrect: true,
       signal: "canal",
     },
     {
@@ -398,7 +380,6 @@ export const transferScenario: Scenario = {
       label: "Responder para confirmar si es real",
       description: "Preguntar por el mismo chat si el mensaje proviene efectivamente del banco.",
       icon: "message",
-      isCorrect: false,
       signal: "canal",
     },
   ],
@@ -432,4 +413,10 @@ export const transferScenario: Scenario = {
 
 export function getAdaptiveScenario(signal: RiskSignal) {
   return adaptiveScenarios[signal];
+}
+
+export function getScenarioById(id: string) {
+  if (id === diagnosticScenario.id) return diagnosticScenario;
+  if (id === transferScenario.id) return transferScenario;
+  return Object.values(adaptiveScenarios).find((scenario) => scenario.id === id) ?? null;
 }
