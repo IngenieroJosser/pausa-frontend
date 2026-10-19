@@ -805,8 +805,13 @@ export function Onboarding({ onComplete, onHome }: OnboardingProps) {
   }
 
   function handleReady() {
-    if (!goal || !friction) return;
-    onComplete({ goal, friction, context: goalToContext[goal] });
+    const finalGoal: Goal = goal || "empleo";
+    const finalFriction: Friction = friction || "urgencia";
+    onComplete({
+      goal: finalGoal,
+      friction: finalFriction,
+      context: goalToContext[finalGoal],
+    });
   }
 
   return (
