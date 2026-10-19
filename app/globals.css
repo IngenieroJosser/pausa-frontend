@@ -4590,14 +4590,34 @@ button.brand-btn:focus-visible {
 
 @media (max-width: 768px) {
   :root {
-    --gutter: 18px;
+    --gutter: 16px;
   }
-  .landing { background: white; }
-  .landing-nav, .topbar, .onboarding-nav { min-height: 68px; }
-  .landing-copy h1 { font-size: clamp(2.8rem, 13vw, 3.8rem); }
-  .lead { font-size: 1rem; }
-  .start-row { flex-direction: column; align-items: stretch; }
-  .primary-button.large { width: 100%; }
+
+  /* ═════════════════════════════════════════════════════════
+     1. CONTENEDORES GLOBALES: SCROLL VERTICAL PERMITIDO EN MÓVIL
+     ═════════════════════════════════════════════════════════ */
+  .landing {
+    height: 100svh;
+    max-height: 100svh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    background: white;
+  }
+  .landing-nav, .topbar, .onboarding-nav {
+    min-height: 60px;
+    height: auto;
+    padding-block: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 150;
+    background: white;
+  }
+  .landing-copy h1 { font-size: clamp(2.2rem, 10vw, 3.2rem); }
+  .lead { font-size: 0.95rem; line-height: 1.5; }
+  .start-row { flex-direction: column; align-items: stretch; gap: 12px; }
+  .primary-button.large { width: 100%; justify-content: center; min-height: 52px; }
   .landing-visual { display: none; }
   .landing-capability-strip {
     flex-direction: column;
@@ -4606,71 +4626,19 @@ button.brand-btn:focus-visible {
   }
   .cap-divider { display: none; }
   .landing-footer { flex-direction: column; gap: 6px; text-align: center; }
-  
-  .app-shell { background: var(--paper); }
-  .scenario-layout {
-    grid-template-columns: 1fr;
-    padding-inline: 16px;
-    gap: 20px;
-  }
-  .scenario-workspace {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  .chat-body { min-height: 280px; }
-  .decision-card { padding: 22px 18px; }
-  .scenario-intro { padding: 22px 18px; }
-  
-  /* Mobile Inspector & Clue Cards */
-  .clue-cards-grid {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-  .chat-footer-guide {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .cfg-dots-cluster {
-    align-self: flex-end;
-  }
-  .decision-hero-illustration {
-    max-width: 220px;
-  }
-  .choice-card-rich {
-    padding: 12px 14px;
-    gap: 12px;
-  }
-  .choice-primary-label {
-    font-size: .88rem;
-  }
-  .choice-sub-description {
-    font-size: .75rem;
-  }
-  .lesson-tabs-nav {
-    padding: 12px var(--gutter) 0;
-    gap: 6px;
-  }
-  .lesson-tab-btn {
-    padding: 10px 14px;
-    font-size: .8rem;
+
+  /* App Shell: Scroll vertical obligatorio en móvil */
+  .app-shell {
+    height: 100svh;
+    max-height: 100svh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    background: var(--paper);
   }
 
-  .feedback-hero, .learning-panel { padding: 40px var(--gutter); }
-  .feedback-hero h1 { font-size: clamp(2.2rem, 9vw, 3rem); }
-  .signals-grid { grid-template-columns: 1fr; }
-  .signals-grid article { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); }
-  .learning-panel > .primary-button { width: 100%; align-self: stretch; }
-  
-  .score-comparison article { padding: 24px 16px; }
-  .score-comparison strong { font-size: 3.4rem; }
-  .score-arrow { width: 20px; }
-  .score-total-bar { flex-direction: column; gap: 4px; text-align: center; }
-  .result-actions .primary-button { width: 100%; }
-  /* ── Onboarding: mobile scroll ──
-     .onboarding-shell is the scroll container (100svh, overflow-y:auto).
-     body/html stay overflow:hidden to not break other app views. */
+  /* Onboarding Shell: Scroll vertical */
   .onboarding-shell {
     height: 100svh;
     max-height: 100svh;
@@ -4679,11 +4647,6 @@ button.brand-btn:focus-visible {
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
   }
-  .onboarding-nav {
-    position: sticky;
-    top: 0;
-    z-index: 200;
-  }
   .onboarding-body {
     padding: 16px var(--gutter) 40px;
     overflow: visible;
@@ -4691,16 +4654,13 @@ button.brand-btn:focus-visible {
     height: auto;
     justify-content: flex-start;
   }
-  /* Goal & friction deck: force single column on mobile */
   .goal-deck-grid, .friction-deck-grid {
     grid-template-columns: 1fr;
     gap: 10px;
   }
-  /* Compact goal cards on mobile */
   .goal-deck-card {
     padding: 12px 14px;
   }
-  /* Bottom bar: always column on mobile */
   .onboarding-bottom-bar {
     flex-direction: column;
     align-items: stretch;
@@ -4711,6 +4671,554 @@ button.brand-btn:focus-visible {
   }
   .obb-info { justify-content: center; }
   .situation-actions { gap: 10px; }
+
+  /* Lección & Navegación entre pestañas */
+  .lesson-container {
+    height: auto;
+    min-height: calc(100svh - 60px);
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+  }
+  .lesson-tabs-nav {
+    position: sticky;
+    top: 60px;
+    z-index: 120;
+    background: white;
+    padding: 8px var(--gutter) 0;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-bottom: 1.5px solid var(--line);
+  }
+  .lesson-tabs-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .lesson-tab-btn {
+    padding: 10px 14px;
+    font-size: .8rem;
+    flex-shrink: 0;
+    white-space: nowrap;
+    touch-action: manipulation;
+  }
+
+  /* ═════════════════════════════════════════════════════════
+     2. PARTE 1: SIMULACIÓN & DECISIÓN (LAYOUT MÓVIL)
+     ═════════════════════════════════════════════════════════ */
+  .scenario-layout {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    padding: 14px var(--gutter) 48px;
+    gap: 16px;
+  }
+  .scenario-intro {
+    padding: 16px 14px;
+    border-radius: var(--radius-sm);
+    gap: 10px;
+  }
+  .scenario-headline {
+    font-size: 1.35rem;
+    line-height: 1.25;
+  }
+  .scenario-lead {
+    font-size: 0.86rem;
+    line-height: 1.45;
+  }
+  .scenario-checkpoints {
+    padding: 10px 12px;
+    border-radius: var(--radius-xs);
+  }
+  .checkpoints-list {
+    gap: 8px;
+  }
+  .cp-copy strong {
+    font-size: 0.8rem;
+  }
+  .cp-copy span {
+    font-size: 0.74rem;
+  }
+  .quick-chart-trigger {
+    width: 100%;
+    justify-content: center;
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    touch-action: manipulation;
+  }
+
+  .scenario-workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  /* Chat Simulator en Móvil */
+  .chat-card {
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    width: 100%;
+  }
+  .chat-header {
+    padding: 10px 12px;
+  }
+  .chat-body {
+    min-height: auto;
+    max-height: none;
+    padding: 14px 12px;
+    gap: 10px;
+  }
+  .message {
+    max-width: 100%;
+    padding: 10px 12px 6px;
+  }
+  .message-content {
+    font-size: 0.86rem;
+    line-height: 1.5;
+  }
+  .editorial-clue-target {
+    padding: 2px 4px;
+    touch-action: manipulation;
+  }
+  .clue-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .chat-clean-footer {
+    padding: 8px 12px;
+    font-size: 0.72rem;
+  }
+
+  /* Tarjeta de Decisión en Móvil */
+  .decision-card {
+    padding: 18px 14px;
+    border-radius: var(--radius-sm);
+    gap: 14px;
+    width: 100%;
+  }
+  .decision-header h2 {
+    font-size: 1.15rem;
+    line-height: 1.3;
+  }
+  .decision-instruction {
+    font-size: 0.78rem;
+  }
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .choice-card-rich {
+    padding: 12px 12px;
+    gap: 10px;
+    min-height: 52px;
+    touch-action: manipulation;
+    border-radius: var(--radius-xs);
+  }
+  .choice-badge-letter {
+    width: 28px;
+    height: 28px;
+    font-size: 0.82rem;
+    flex-shrink: 0;
+  }
+  .choice-primary-label {
+    font-size: 0.88rem;
+    line-height: 1.35;
+  }
+  .choice-sub-description {
+    font-size: 0.76rem;
+    line-height: 1.3;
+  }
+  .choice-icon-slot {
+    flex-shrink: 0;
+  }
+  .cta-decision-btn {
+    width: 100%;
+    min-height: 52px;
+    font-size: 0.95rem;
+    justify-content: center;
+    touch-action: manipulation;
+  }
+  .decision-calm-note {
+    padding: 12px;
+    gap: 10px;
+    border-radius: var(--radius-xs);
+  }
+  .dcn-content strong {
+    font-size: 0.8rem;
+  }
+  .dcn-content p {
+    font-size: 0.75rem;
+    line-height: 1.35;
+  }
+
+  /* ═════════════════════════════════════════════════════════
+     3. PARTE 2: GRÁFICA DEL CICLO DEL ATAQUE (MÓVIL)
+     ═════════════════════════════════════════════════════════ */
+  .chart-tab-view {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    padding: 14px var(--gutter) 48px;
+    gap: 14px;
+    display: flex;
+    flex-direction: column;
+  }
+  .chart-tab-intro {
+    max-width: 100%;
+    gap: 4px;
+  }
+  .chart-tab-intro h2 {
+    font-size: 1.25rem;
+    line-height: 1.25;
+  }
+  .chart-tab-intro p {
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+
+  .attack-story-theater {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Pipeline Stepper en móvil */
+  .story-header-pipeline {
+    padding: 10px 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    border-radius: var(--radius-sm);
+  }
+  .shp-timeline {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    width: 100%;
+  }
+  .shp-timeline::-webkit-scrollbar {
+    display: none;
+  }
+  .shp-step-tab {
+    padding: 6px 10px;
+    gap: 6px;
+    flex-shrink: 0;
+    touch-action: manipulation;
+  }
+  .shp-step-pill {
+    padding: 2px 6px;
+    font-size: 0.68rem;
+  }
+  .shp-step-badge {
+    font-size: 0.58rem;
+  }
+  .shp-step-name {
+    font-size: 0.74rem;
+  }
+  .shp-controls {
+    width: 100%;
+  }
+  .shp-autoplay-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 8px 12px;
+    font-size: 0.78rem;
+    touch-action: manipulation;
+  }
+
+  /* Grid en 1 columna vertical en móvil */
+  .story-stage-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    gap: 14px;
+  }
+
+  /* Tarjeta de Ilustración en móvil */
+  .story-illustration-card {
+    height: auto;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+  }
+  .sic-viewport {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+  .story-figure-wrapper {
+    height: auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .sf-image-stage {
+    position: relative;
+    width: 100%;
+    height: 240px;
+    min-height: 220px;
+    flex: none;
+    overflow: hidden;
+  }
+  .sf-main-img {
+    object-position: center 20%;
+  }
+  .sf-clue-interactive-bar {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .scib-chips {
+    gap: 6px;
+  }
+  .scib-chip-btn {
+    padding: 4px 10px;
+    font-size: 0.72rem;
+    touch-action: manipulation;
+  }
+  .scib-callout-box {
+    padding: 8px 10px;
+  }
+  .scib-title {
+    font-size: 0.76rem;
+  }
+  .scib-desc {
+    font-size: 0.74rem;
+    padding-left: 20px;
+  }
+  .sic-nav-footer {
+    padding: 8px 12px;
+  }
+  .sic-nav-btn {
+    padding: 6px 12px;
+    font-size: 0.76rem;
+    touch-action: manipulation;
+  }
+
+  /* Panel guiado de insights en móvil */
+  .story-insight-panel {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    padding: 14px 12px;
+    border-radius: var(--radius-sm);
+    gap: 10px;
+  }
+  .sip-header {
+    gap: 2px;
+  }
+  .sip-phase-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .sip-badge {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+  }
+  .sip-subtitle {
+    font-size: 0.74rem;
+  }
+  .sip-header h3 {
+    font-size: 1.1rem;
+    margin: 4px 0 0;
+  }
+  .sip-guided-card {
+    padding: 12px;
+    gap: 10px;
+    border-radius: var(--radius-xs);
+  }
+  .sgc-title {
+    font-size: 0.88rem;
+    line-height: 1.3;
+  }
+  .sgc-body-text {
+    font-size: 0.8rem;
+    line-height: 1.45;
+  }
+  .sgc-nav {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .sgc-nav-btn {
+    flex: 1;
+    justify-content: center;
+    min-height: 40px;
+    font-size: 0.78rem;
+    touch-action: manipulation;
+  }
+
+  .chart-tab-action {
+    padding: 8px 0 0;
+    width: 100%;
+  }
+  .chart-tab-action .primary-button {
+    width: 100%;
+    justify-content: center;
+    min-height: 48px;
+    font-size: 0.88rem;
+    touch-action: manipulation;
+  }
+
+  /* ═════════════════════════════════════════════════════════
+     4. PARTE 3: MATRIZ DE CRITERIO PAUSA (MÓVIL)
+     ═════════════════════════════════════════════════════════ */
+  .chart-card {
+    padding: 14px 12px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .gcc-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .gcc-title-group h3 {
+    font-size: 1.05rem;
+  }
+  /* Grid en 1 columna táctil y legible */
+  .criteria-matrix-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .criterion-item-card {
+    padding: 12px 14px;
+    min-height: 52px;
+    touch-action: manipulation;
+    gap: 4px;
+    border-radius: var(--radius-xs);
+  }
+  .cic-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .cic-title {
+    font-size: 0.9rem;
+  }
+  .cic-desc {
+    font-size: 0.76rem;
+    line-height: 1.35;
+  }
+  .criterion-detail-panel {
+    padding: 14px;
+    border-radius: var(--radius-xs);
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .cdp-header {
+    font-size: 0.88rem;
+    font-weight: 800;
+  }
+  .criterion-detail-panel p {
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+  .cdp-footer-rule {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  /* ═════════════════════════════════════════════════════════
+     5. FEEDBACK & RESULTADO (SCROLL Y LAYOUT MÓVIL)
+     ═════════════════════════════════════════════════════════ */
+  .feedback-viewport-container {
+    height: auto;
+    min-height: calc(100svh - 60px);
+    overflow: visible;
+    padding: 12px var(--gutter) 48px;
+  }
+  .feedback-expanded-card {
+    height: auto;
+    overflow: visible;
+    padding: 14px 12px;
+    gap: 14px;
+  }
+  .fbx-header-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+  .fbx-meta-group {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+  .fbx-body-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
+    gap: 14px;
+  }
+  .fbx-panel-context, .fbx-panel-consequence {
+    height: auto;
+    overflow: visible;
+  }
+  .fbx-action-footer .primary-button {
+    width: 100%;
+    justify-content: center;
+    min-height: 50px;
+  }
+
+  /* Result Screen en Móvil */
+  .result-viewport-container {
+    height: 100svh;
+    max-height: 100svh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+  .result-main-area {
+    height: auto;
+    min-height: calc(100svh - 60px);
+    overflow: visible;
+    padding: 12px var(--gutter) 48px;
+  }
+  .result-expanded-card {
+    height: auto;
+    overflow: visible;
+    padding: 14px 12px;
+    gap: 14px;
+  }
+  .rex-header-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px;
+  }
+  .rex-score-badge {
+    align-self: flex-start;
+    margin-top: 4px;
+  }
+  .rex-body-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
+    gap: 14px;
+  }
+  .result-actions .primary-button {
+    width: 100%;
+    justify-content: center;
+    min-height: 50px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
