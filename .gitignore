@@ -13,5 +13,6 @@ npm-debug.log*
 /backend/data/
 .dev-server.*.log
 .backend-server.*.log
-test-results/
-playwright-report/
+.prod-server.*.log
+/test-results/
+/playwright-report/

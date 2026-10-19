@@ -10,7 +10,7 @@ async function completeOnboarding(page: Page) {
   await page.waitForLoadState("networkidle");
   await page.getByRole("button", { name: /Comenzar práctica/i }).click();
   await expect(page.getByRole("heading", { name: "¿Qué quieres proteger hoy?" })).toBeVisible();
-  await page.getByRole("button", { name: /Continuar con Búsqueda de empleo/i }).click();
+  await page.getByRole("button", { name: /Continuar con Buscar empleo seguro/i }).click();
   await page.getByRole("button", { name: /Continuar a situaciones de práctica/i }).click();
 
   for (let index = 0; index < 3; index += 1) {
@@ -23,7 +23,7 @@ async function completeOnboarding(page: Page) {
 }
 
 async function answer(page: Page, option: RegExp) {
-  await page.getByRole("button", { name: option }).click();
+  await page.getByRole("radio", { name: option }).click();
   await page.getByRole("button", { name: /Confirmar decisión/i }).click();
   await expect(page.getByText(/Hiciste una pausa útil|Aquí convenía hacer una pausa/)).toBeVisible();
 }
@@ -34,7 +34,7 @@ test("completa diagnóstico, adaptación, transferencia y restaura el informe", 
   await page.getByRole("button", { name: /Pago anticipado/i }).click();
   await expect(page.getByText(/Te piden dinero antes/i)).toBeVisible();
   await page.getByRole("button", { name: /Gráfica: Ciclo del Ataque/i }).click();
-  await expect(page.getByText(/Anatomía del engaño/i)).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Cómo desarmar este tipo de fraude/i })).toBeVisible();
   await page.getByRole("button", { name: /Volver a la decisión del caso/i }).click();
 
   await answer(page, /Pagar para no perder el cupo/i);
@@ -68,7 +68,7 @@ test("recupera una decisión tras una desconexión sin duplicarla", async ({ pag
     await route.continue();
   });
 
-  await page.getByRole("button", { name: /Pagar para no perder el cupo/i }).click();
+  await page.getByRole("radio", { name: /Pagar para no perder el cupo/i }).click();
   await page.getByRole("button", { name: /Confirmar decisión/i }).click();
   await expect(page.getByRole("heading", { name: "Tu práctica está a salvo." })).toBeVisible();
   await page.getByRole("button", { name: /Intentar de nuevo/i }).click();

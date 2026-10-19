@@ -33,11 +33,14 @@ La lógica de evaluación es determinista y se ejecuta exclusivamente en el back
 - `POST /api/v1/sessions/:id/complete`
 - `GET /api/v1/sessions/:id/results`
 
-Los datos locales se almacenan en `backend/data/pausa.sqlite`, ruta excluida de Git.
+Al crear una sesión, la API devuelve una credencial anónima opaca. Las operaciones de esa sesión requieren `Authorization: Bearer <credencial>`; el identificador por sí solo no concede acceso. Los datos locales se almacenan en `backend/data/pausa.sqlite`, ruta excluida de Git.
 
 ## Validación
 
 ```bash
 npm run test:backend
 npm run build
+npm run test:e2e
 ```
+
+La prueba E2E utiliza Chrome instalado localmente y cubre onboarding, diagnóstico, práctica adaptativa, transferencia, resultado persistido y recuperación de una desconexión.
