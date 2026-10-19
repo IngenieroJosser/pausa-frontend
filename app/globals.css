@@ -598,11 +598,16 @@ button.brand-btn:focus-visible {
   border: none;
   color: var(--muted);
   font-size: .85rem;
-  padding: 6px 12px;
+  padding: 8px 14px;
   border-radius: var(--radius-xs);
   transition: color var(--transition);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
 }
 .onboarding-skip:hover { color: var(--ink); }
+.onboarding-skip:active { color: var(--ink); opacity: .7; }
 
 .onboarding-body {
   flex: 1;
@@ -4663,7 +4668,23 @@ button.brand-btn:focus-visible {
   .score-arrow { width: 20px; }
   .score-total-bar { flex-direction: column; gap: 4px; text-align: center; }
   .result-actions .primary-button { width: 100%; }
-  .onboarding-body { padding: 16px var(--gutter); overflow: hidden; }
+  /* Allow vertical scrolling in onboarding on mobile */
+  html { overflow: hidden; }
+  body { overflow: hidden; }
+  .onboarding-shell {
+    height: auto;
+    min-height: 100svh;
+    max-height: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  .onboarding-body {
+    padding: 16px var(--gutter);
+    overflow: visible;
+    flex: none;
+    justify-content: flex-start;
+  }
   .situation-actions { gap: 10px; }
 }
 
