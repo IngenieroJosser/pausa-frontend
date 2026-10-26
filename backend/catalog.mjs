@@ -1,67 +1,28 @@
-export const SCENARIO_VERSION = "2026.10.1";
+import { createHash } from "node:crypto";
+import { createRequire } from "node:module";
 
-export const scenarios = {
-  "oferta-auxiliar": {
-    id: "oferta-auxiliar",
-    version: SCENARIO_VERSION,
-    stage: "diagnostico",
-    skill: "verificacion_independiente",
-    choiceIds: ["pay", "ask", "verify"],
-    correctChoiceId: "verify",
-    errorSignals: { pay: "pago", ask: "canal", verify: "canal" },
-  },
-  "uniforme-restaurante": {
-    id: "uniforme-restaurante",
-    version: SCENARIO_VERSION,
-    stage: "practica",
-    skill: "deteccion_cobros",
-    choiceIds: ["transfer", "negotiate", "refuse"],
-    correctChoiceId: "refuse",
-    errorSignals: { transfer: "pago", negotiate: "pago", refuse: "canal" },
-  },
-  "entrevista-inmediata": {
-    id: "entrevista-inmediata",
-    version: SCENARIO_VERSION,
-    stage: "practica",
-    skill: "control_urgencia",
-    choiceIds: ["open", "forward", "pause"],
-    correctChoiceId: "pause",
-    errorSignals: { open: "urgencia", forward: "datos", pause: "canal" },
-  },
-  "correo-similar": {
-    id: "correo-similar",
-    version: SCENARIO_VERSION,
-    stage: "practica",
-    skill: "verificacion_independiente",
-    choiceIds: ["email", "google", "contract"],
-    correctChoiceId: "google",
-    errorSignals: { email: "canal", google: "canal", contract: "datos" },
-  },
-  "formulario-datos": {
-    id: "formulario-datos",
-    version: SCENARIO_VERSION,
-    stage: "practica",
-    skill: "custodia_identidad",
-    choiceIds: ["watermark", "minimum", "stop"],
-    correctChoiceId: "stop",
-    errorSignals: { watermark: "datos", minimum: "datos", stop: "canal" },
-  },
-  "banco-premio": {
-    id: "banco-premio",
-    version: SCENARIO_VERSION,
-    stage: "transferencia",
-    skill: "transferencia_criterio",
-    choiceIds: ["login", "app", "reply"],
-    correctChoiceId: "app",
-    errorSignals: { login: "urgencia", app: "canal", reply: "canal" },
-  },
-};
+const require = createRequire(import.meta.url);
+const bank = require("../shared/scenario-bank.json");
+export const SCENARIO_VERSION = "2026.10.3";
+export const scenarios = Object.fromEntries(bank.map((scenario) => [scenario.id, {
+  id: scenario.id,
+  version: SCENARIO_VERSION,
+  goal: scenario.goal,
+  family: scenario.family,
+  stage: scenario.stage,
+  skill: scenario.skill,
+  signal: scenario.signal,
+  choiceIds: scenario.choices.map((choice) => choice.id),
+  correctChoiceId: scenario.correctChoiceId,
+  errorSignals: Object.fromEntries(scenario.choices.map((choice) => [choice.id, choice.signal])),
+}]));
 
-const practiceBySignal = {
-  pago: "uniforme-restaurante",
-  urgencia: "entrevista-inmediata",
-  canal: "correo-similar",
-  datos: "formulario-datos",
+const STAGES = ["diagnostico", "practica", "transferencia"];
+const FRICTION_SIGNALS = {
+  urgencia: "urgencia",
+  autoridad: "canal",
+  oportunidad: "pago",
+  aislamiento: "datos",
 };
 
 export function evaluateDecision(scenarioId, choiceId) {
@@ -75,14 +36,40 @@ export function evaluateDecision(scenarioId, choiceId) {
   };
 }
 
-export function getExpectedScenario(decisions) {
-  if (decisions.length === 0) return "oferta-auxiliar";
-  if (decisions.length === 1) {
+/**
+ * Stable within a session, different between sessions. No mutable global indexes,
+ * no client-controlled correct answers, and no new DB migration is needed.
+ * A previously returned case remains the same after a retry or a restart.
+ */
+export function getExpectedScenario(session, decisions) {
+  if (!session || decisions.length >= STAGES.length) return null;
+  const stage = STAGES[decisions.length];
+  const goal = ["empleo", "dinero", "datos"].includes(session.goal) ? session.goal : "empleo";
+  let candidates = bank.filter((s) => s.goal === goal && s.stage === stage);
+  const previousFamilies = new Set(decisions.map((d) => scenarios[d.scenario_id]?.family));
+  candidates = candidates.filter((s) => !previousFamilies.has(s.family));
+
+  // The practice targets the first observed error. If there was no mistake,
+  // it prioritizes the user's declared friction in onboarding.
+  if (stage === "practica") {
     const first = decisions[0];
-    return practiceBySignal[first.correct ? "datos" : first.error_signal];
+    const target = first?.correct ? FRICTION_SIGNALS[session.friction] : first?.error_signal;
+    if (target) {
+      const relevant = candidates.filter((s) => s.signal === target);
+      if (relevant.length) candidates = relevant;
+    }
   }
-  if (decisions.length === 2) return "banco-premio";
-  return null;
+  if (stage === "transferencia" && decisions.length) {
+    const observedSignal = scenarios[decisions[1].scenario_id]?.signal;
+    const alternate = candidates.filter((s) => s.signal !== observedSignal);
+    if (alternate.length) candidates = alternate;
+  }
+
+  if (!candidates.length) return null;
+  const fingerprint = createHash("sha256")
+    .update(`${session.id}:${(session.scenario_version ?? session.scenarioVersion)}:${stage}:${goal}`)
+    .digest();
+  return candidates[fingerprint.readUInt32BE(0) % candidates.length].id;
 }
 
 export function publicScenario(scenarioId) {

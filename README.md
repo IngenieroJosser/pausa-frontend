@@ -1,5 +1,7 @@
 # PAUSA
 
+Ver [PAUSA_PREGUNTAS_ALEATORIAS_V3.md](PAUSA_PREGUNTAS_ALEATORIAS_V3.md) para la ampliación a 135 escenarios (45 por tema), el rediseño y la validación.
+
 MVP educativo para practicar decisiones seguras ante posibles estafas digitales.
 
 ## Ejecutar
@@ -14,8 +16,8 @@ Abre `http://localhost:3000`. La API pedagógica escucha en `http://127.0.0.1:31
 
 ## Flujo del MVP
 
-1. Diagnóstico con una oferta laboral simulada.
-2. Retroalimentación sobre señales ignoradas.
+1. Diagnóstico variable entre 45 casos del tema seleccionado (empleo, dinero o identidad).
+2. Retroalimentación según la decisión y la señal del caso, con práctica adaptativa.
 3. Práctica adaptada al tipo de error.
 4. Prueba de transferencia en un contexto nuevo.
 5. Resultado persistido localmente en el navegador.

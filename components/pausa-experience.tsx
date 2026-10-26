@@ -31,13 +31,20 @@ export function PausaExperience() {
   const [scenarioStartedAt, setScenarioStartedAt] = useState(() => Date.now());
 
   useEffect(() => {
-    const saved = window.localStorage.getItem(RESULT_STORAGE_KEY);
-    if (!saved) return;
-    const result = JSON.parse(saved) as SavedResult;
-    setPreviousScore(result.totalCorrect);
-    if (result.answers?.length === 3) {
-      setAnswers(result.answers);
-      setView("result");
+    // Los datos locales pueden haber sido borrados, editados o quedar incompletos.
+    // Nunca permitimos que un informe corrupto bloquee el recorrido inicial.
+    try {
+      const saved = window.localStorage.getItem(RESULT_STORAGE_KEY);
+      if (!saved) return;
+      const result = JSON.parse(saved) as SavedResult;
+      if (!Number.isInteger(result.totalCorrect) || !Array.isArray(result.answers)) return;
+      setPreviousScore(result.totalCorrect);
+      if (result.answers.length === 3) {
+        setAnswers(result.answers);
+        setView("result");
+      }
+    } catch {
+      window.localStorage.removeItem(RESULT_STORAGE_KEY);
     }
   }, []);
 
@@ -158,6 +165,7 @@ export function PausaExperience() {
       <Progress step={step} onHome={goHome} />
       {view === "scenario" ? (
         <ScenarioStep
+          key={scenario.id}
           scenario={scenario}
           selected={selected}
           onSelect={setSelected}

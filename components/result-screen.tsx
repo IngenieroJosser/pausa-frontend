@@ -20,99 +20,46 @@ import {
 } from "lucide-react";
 import type { Answer } from "@/lib/session";
 import { Brand } from "./brand";
+import { getScenarioById } from "@/lib/scenarios";
 
 export function ResultScreen({ answers, onRestart }: { answers: Answer[]; onRestart: () => void }) {
   const score = answers.filter((answer) => answer.correct).length;
-  const diagnostic = answers[0]?.correct;
-  const adaptive = answers[1]?.correct;
   const transfer = answers[2]?.correct;
 
-  // Real, honest evaluation tiers based strictly on the user's performance
-  const evaluation = (() => {
-    if (score === 3) {
-      return {
-        level: "perfect",
-        icon: <ShieldCheck size={26} />,
-        eyebrow: "Criterio preventivo sólido · 3 de 3 decisiones seguras",
-        title: "Demostraste un criterio de defensa impecable.",
-        summary: "No cediste ante la urgencia artificial ni realizaste transferencias en ninguno de los escenarios simulados.",
-        diagnosis: "Identificaste correctamente que ningún proceso laboral legítimo exige pagos anticipados ni fotos de cédula por mensajería. Supiste salir del canal y verificar por tu cuenta.",
-      };
-    }
-    if (score === 2) {
-      return {
-        level: "good",
-        icon: <CheckCircle2 size={26} />,
-        eyebrow: "Criterio en consolidación · 2 de 3 decisiones seguras",
-        title: "Buen nivel de prevención con un punto ciego por ajustar.",
-        summary: "Hiciste pausas oportunas en la mayoría de los casos, pero en una situación la presión o el cobro generó fricción.",
-        diagnosis: "El atacante logró generar duda mediante urgencia o aparentando formalidad. Recuerda: cualquier presión de 'hoy mismo' o pago previo es señal automática de alerta.",
-      };
-    }
-    if (score === 1) {
-      return {
-        level: "warning",
-        icon: <ShieldAlert size={26} />,
-        eyebrow: "Criterio vulnerable · 1 de 3 decisiones seguras",
-        title: "La urgencia artificial vulneró tu criterio en 2 casos.",
-        summary: "Identificaste 1 punto crítico, pero en 2 escenarios la presión del mensaje te indujo a actuar sin verificación independiente.",
-        diagnosis: "En una situación real habrías entregado dinero o datos personales. Los estafadores explotan la esperanza de empleo para nublar el criterio.",
-      };
-    }
+  const caseDetails = answers.map((answer, index) => {
+    const scenario = getScenarioById(answer.scenarioId);
     return {
-      level: "critical",
-      icon: <XCircle size={26} />,
-      eyebrow: "Diagnóstico inicial · 0 de 3 decisiones seguras",
-      title: "Cediste ante la trampa en los 3 escenarios simulados.",
-      summary: "En la práctica real habrías transferido dinero o entregado tu cédula. El valor de este simulador es equivocarse aquí y no con tu patrimonio.",
-      diagnosis: "Caíste en los 3 patrones clásicos: cobro de exámenes médicos, plazos inmediatos forzados ('hoy') y enlaces fraudulentos de validación. La urgencia siempre es una bandera roja.",
+      num: String(index + 1).padStart(2, "0"),
+      name: ["Diagnóstico inicial", "Práctica adaptativa", "Prueba de transferencia"][index],
+      pattern: scenario?.topic ?? "Caso de entrenamiento",
+      trap: scenario?.goal === "empleo" ? "Seguridad laboral" : scenario?.goal === "dinero" ? "Protección del dinero" : "Identidad y privacidad",
+      passed: answer.correct,
+      signal: answer.signal,
+      explanation: scenario?.explanation ?? "Verifica siempre por un canal independiente.",
     };
-  })();
-
-  const cases = [
-    {
-      num: "01",
-      name: "Diagnóstico inicial",
-      pattern: "Falso Reclutamiento",
-      trap: "Cobro previo de examen médico",
-      passed: diagnostic,
-    },
-    {
-      num: "02",
-      name: "Práctica adaptativa",
-      pattern: "Presión de Urgencia",
-      trap: "Plazo inmediato para asegurar cupo",
-      passed: adaptive,
-    },
-    {
-      num: "03",
-      name: "Prueba de transferencia",
-      pattern: "Validación de Canal",
-      trap: "Enlace o número recibido en el chat",
-      passed: transfer,
-    },
-  ];
-
-  const competencies = [
-    {
-      name: "Detección de cobro ilícito",
-      desc: "Reconocer que en Colombia la ley prohíbe cobrar exámenes de ingreso.",
-      passed: diagnostic,
-      icon: <CreditCard size={15} />,
-    },
-    {
-      name: "Freno a la urgencia artificial",
-      desc: "Neutralizar el impulso ante plazos forzados ('hoy', 'en 2 horas').",
-      passed: adaptive,
-      icon: <Clock size={15} />,
-    },
-    {
-      name: "Verificación en canal seguro",
-      desc: "Buscar portales y números oficiales de manera 100% independiente.",
-      passed: transfer,
-      icon: <Search size={15} />,
-    },
-  ];
+  });
+  const bySignal: Record<string, string> = {
+    pago: "Evita realizar cobros o anticipos sin verificar a quien recibe el dinero.",
+    datos: "Antes de entregar documentos o códigos, confirma la identidad y finalidad de quien los solicita.",
+    canal: "Busca una fuente independiente del remitente; no confíes únicamente en el mensaje.",
+    urgencia: "El plazo del mensaje no te obliga a decidir antes de comprobar el contexto.",
+  };
+  const missed = caseDetails.filter((item) => !item.passed);
+  const evaluation = {
+    level: score === 3 ? "perfect" : score === 2 ? "good" : score === 1 ? "warning" : "critical",
+    icon: score === 3 ? <ShieldCheck size={26} /> : score === 2 ? <CheckCircle2 size={26} /> : score === 1 ? <ShieldAlert size={26} /> : <XCircle size={26} />,
+    eyebrow: `${score} de 3 decisiones evaluadas como seguras`,
+    title: score === 3 ? "Aplicaste un criterio sólido en los tres escenarios." : score === 2 ? "Hay una habilidad por fortalecer." : score === 1 ? "Tu próxima pausa puede marcar la diferencia." : "Este es un espacio seguro para practicar y mejorar.",
+    summary: `Realizaste ${score} de 3 decisiones seguras en casos simulados. ${transfer ? "Aplicaste el criterio en la prueba de transferencia." : "Conviene reforzar la prueba de transferencia."}`,
+    diagnosis: missed.length ? missed.map((item) => bySignal[item.signal] ?? item.explanation).filter((text, index, arr) => arr.indexOf(text) === index).join(" ") : "En esta sesión contrastaste la información antes de actuar. Repite con casos distintos para entrenar otros patrones.",
+  };
+  const cases = caseDetails;
+  const competencies = caseDetails.map((item) => ({
+    name: item.pattern,
+    desc: item.explanation,
+    passed: item.passed,
+    icon: item.signal === "pago" ? <CreditCard size={15} /> : item.signal === "urgencia" ? <Clock size={15} /> : <Search size={15} />,
+  }));
 
   return (
     <div className="result-viewport-container">
@@ -208,8 +155,7 @@ export function ResultScreen({ answers, onRestart }: { answers: Answer[]; onRest
                   <strong>Principio para tu día a día: Regla de Oro PAUSA</strong>
                 </div>
                 <p>
-                  Ante cualquier mensaje que mezcle <strong>urgencia, dinero o petición de documentos</strong>:
-                  nunca resuelvas desde el enlace o número recibido. Sal del chat y verifica por tu cuenta en la web o app oficial.
+                  Antes de actuar ante un mensaje digital, evalúa <strong>el contexto y la acción solicitada</strong>. Usa canales independientes para comprobarlo y no compartas información sensible sin una justificación verificable.
                 </p>
               </div>
 

@@ -42,49 +42,43 @@ export function FeedbackStep({
 
   const riskSequence = [
     {
-      step: "01",
-      icon: <CreditCard size={15} />,
-      title: "Desembolso o entrega de datos",
-      desc: "La persona transfiere el dinero o envía foto de su cédula antes de consultar con canales oficiales.",
-      tag: "Acción impulsiva",
+      step: "01", icon: <CreditCard size={15} />,
+      title: "Decidir sin comprobar",
+      desc: "Actuar solamente con la información del mensaje puede dejar datos, dinero o cuentas expuestos si el remitente no es legítimo.",
+      tag: "Primer riesgo",
     },
     {
-      step: "02",
-      icon: <UserX size={15} />,
-      title: "Pérdida de contacto o evasivas",
-      desc: "El atacante deja de responder o inventa un nuevo cobro imprevisto (ej. «seguro médico no incluido»).",
-      tag: "Rompimiento",
+      step: "02", icon: <UserX size={15} />,
+      title: "Perder el control de la situación",
+      desc: "Compartir información o realizar una operación antes de verificar puede ser difícil de revertir.",
+      tag: "Efecto potencial",
     },
     {
-      step: "03",
-      icon: <AlertTriangle size={15} />,
-      title: "Riesgo irreversible",
-      desc: "Dinero no recuperable y datos de identidad expuestos a suplantaciones crediticias y falsos trámites.",
-      tag: "Impacto real",
+      step: "03", icon: <AlertTriangle size={15} />,
+      title: "Detectar a tiempo importa",
+      desc: "Una pausa y una confirmación independiente ayudan a reducir la posibilidad de tomar decisiones equivocadas.",
+      tag: "Aprendizaje",
     },
   ];
 
   const pausaSequence = [
     {
-      step: "01",
-      icon: <Clock size={15} />,
-      title: "Frenar la urgencia artificial",
-      desc: "La persona reconoce la presión psicológica y decide no transferir ni hacer clic apresurado.",
-      tag: "Momento PAUSA",
+      step: "01", icon: <Clock size={15} />,
+      title: "Entender antes de actuar",
+      desc: "Separa los datos comprobables de las afirmaciones, emociones y plazos del mensaje.",
+      tag: "Pausa",
     },
     {
-      step: "02",
-      icon: <Search size={15} />,
-      title: "Búsqueda autónoma e independiente",
-      desc: "Busca por su cuenta el conmutador telefónico o portal oficial de la entidad sin usar enlaces provistos.",
-      tag: "Canal seguro",
+      step: "02", icon: <Search size={15} />,
+      title: "Comprobación independiente",
+      desc: "Abre por tu cuenta el portal, aplicación o contacto habitual para contrastar lo recibido.",
+      tag: "Verificación",
     },
     {
-      step: "03",
-      icon: <ShieldCheck size={15} />,
-      title: "Neutralización a costo cero",
-      desc: "Confirma con la entidad real la falsedad de la solicitud, protegiendo su dinero y su identidad.",
-      tag: "Protección total",
+      step: "03", icon: <ShieldCheck size={15} />,
+      title: "Decisión proporcional",
+      desc: "Continúa si el contexto es consistente y justificado; detente si detectas solicitudes sensibles o cobros injustificados.",
+      tag: "Criterio",
     },
   ];
 
@@ -114,8 +108,8 @@ export function FeedbackStep({
               <ShieldCheck size={14} />
               <span>
                 {answer.correct
-                  ? "Criterio aplicado: Salir del canal y verificar"
-                  : "Punto ciego detectado: Actuar bajo la urgencia"}
+                  ? "Criterio aplicado: evaluar y verificar"
+                  : "Punto por mejorar: verificar antes de actuar"}
               </span>
             </div>
           </div>
@@ -153,7 +147,7 @@ export function FeedbackStep({
                 <span>REGLA DE ORO PAUSA</span>
               </div>
               <p>
-                Si el mensaje combina <strong>urgencia, cobros por adelantado o petición de documentos</strong>, sal del chat y verifica por tu cuenta en canales oficiales reconocidos.
+                <strong>{scenario.explanation}</strong>
               </p>
             </div>
           </section>
@@ -204,13 +198,13 @@ export function FeedbackStep({
 
               <div className="fcs-pedagogy-note">
                 <span className="fcs-note-dot" />
-                <span>Estas escenas representan riesgos potenciales documentados para entrenar tu criterio de forma segura.</span>
+                <span>Estas consecuencias son hipotéticas y educativas; no describen acciones ocurridas realmente.</span>
               </div>
             </div>
 
             {/* Signals detected */}
             <div className="fbx-signals-card">
-              <span className="fsc-header-label">Señales críticas detectadas en este caso</span>
+              <span className="fsc-header-label">Qué conviene observar en este caso</span>
               <div className="fsc-signals-list compact">
                 {scenario.signals.map((signal, index) => (
                   <div key={signal.label} className="fsc-signal-item">
@@ -226,7 +220,7 @@ export function FeedbackStep({
 
             <footer className="fbx-action-footer">
               <button className="primary-button large teal fbx-submit-btn" type="button" onClick={onContinue}>
-                <span>Practicar siguiente caso adaptativo</span>
+                <span>Continuar mi entrenamiento</span>
                 <ArrowRight size={17} />
               </button>
             </footer>

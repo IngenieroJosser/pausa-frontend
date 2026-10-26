@@ -47,7 +47,7 @@ export function createAssessmentService(database) {
       (id, access_token_hash, status, goal, friction, scenario_version, current_stage, started_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `).run(session.id, hashToken(accessToken), session.status, session.goal, session.friction, session.scenarioVersion, session.currentStage, session.startedAt);
-    return { ...session, accessToken, nextScenario: publicScenario("oferta-auxiliar") };
+    return { ...session, accessToken, nextScenario: publicScenario(getExpectedScenario(session, [])) };
   }
 
   function authorizeSession(sessionId, accessToken) {
@@ -76,7 +76,7 @@ export function createAssessmentService(database) {
       startedAt: session.started_at,
       completedAt: session.completed_at,
       decisionCount: decisions.length,
-      nextScenario: publicScenario(getExpectedScenario(decisions)),
+      nextScenario: publicScenario(getExpectedScenario(session, decisions)),
     };
   }
 
@@ -94,16 +94,17 @@ export function createAssessmentService(database) {
     if (session.status === "completed") throw new AssessmentError("session_already_completed", 409);
 
     const decisions = getDecisions(database, sessionId);
-    const expectedScenario = getExpectedScenario(decisions);
+    const expectedScenario = getExpectedScenario(session, decisions);
     if (input.scenarioId !== expectedScenario) throw new AssessmentError("unexpected_scenario", 409);
     const evaluation = evaluateDecision(input.scenarioId, input.choiceId);
     if (!evaluation) throw new AssessmentError("invalid_choice", 400);
 
     const now = new Date().toISOString();
     const decisionId = randomUUID();
-    const nextScenarioId = decisions.length === 0
-      ? getExpectedScenario([{ correct: evaluation.correct ? 1 : 0, error_signal: evaluation.signal }])
-      : decisions.length === 1 ? "banco-premio" : null;
+    const nextScenarioId = getExpectedScenario(session, [
+      ...decisions,
+      { scenario_id: input.scenarioId, correct: evaluation.correct ? 1 : 0, error_signal: evaluation.signal },
+    ]);
     const nextStage = nextScenarioId ? publicScenario(nextScenarioId).stage : "completado";
 
     database.exec("BEGIN IMMEDIATE");

@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "PAUSA — Detecta el engaño antes de actuar",
-  description: "Prácticas breves para tomar mejores decisiones ante mensajes sospechosos. Entrena en 4 minutos, sin registro.",
+  title: "PAUSA — Tu criterio sí se entrena",
+  description: "Un simulador de decisiones ante fraudes digitales. Practica con casos ficticios, descubre las señales y entrena tu criterio en 4 minutos, sin registro.",
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#062b53",
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
 };

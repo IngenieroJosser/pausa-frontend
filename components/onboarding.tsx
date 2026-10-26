@@ -5,6 +5,7 @@ import {
   AlertCircle,
   AlertTriangle,
   ArrowRight,
+  ArrowUpRight,
   Briefcase,
   Building2,
   Check,
@@ -12,6 +13,7 @@ import {
   ChevronLeft,
   Clock,
   CreditCard,
+  Fingerprint,
   Database,
   ExternalLink,
   Eye,
@@ -19,6 +21,7 @@ import {
   Lock,
   Mail,
   MessageCircle,
+  CircleCheck,
   Shield,
   ShieldAlert,
   ShieldCheck,
@@ -29,6 +32,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Brand } from "./brand";
+import { fullScenarioBank } from "@/lib/scenarios";
 
 /* ─── Types ─────────────────────────────────────── */
 export type Goal = "empleo" | "dinero" | "datos";
@@ -64,52 +68,33 @@ export type SituationItem = {
   explanation: string;
 };
 
-/* ─── Situation Data: Realistic simulated cases ──── */
-const situations: SituationItem[] = [
-  {
-    id: "s1",
-    label: "riesgo",
-    channel: "whatsapp",
-    channelName: "WhatsApp",
-    title: "Oferta de empleo por chat",
-    sender: "Gestión Talento Humano",
-    senderMeta: "+57 314 892 0184 · En línea",
-    message:
-      "¡Hola! Vimos tu hoja de vida y fuiste preseleccionado para la vacante de Auxiliar Administrativo ($2.400.000 + auxilio). Para asegurar tu cupo hoy y agendar la inducción de mañana, debes cancelar $48.000 del examen médico de ingreso y enviarnos foto de tu cédula por ambos lados antes de las 12:00 m. Envía comprobante por aquí.",
-    criticalSignal: "Cobro previo por examen médico + solicitud de cédula antes de entrevista.",
-    explanation:
-      "En Colombia el Ministerio del Trabajo prohíbe exigir dinero a los candidatos para exámenes médicos o dotación. Además, solicitar fotos de tu cédula por chat informal abre la puerta a suplantación de identidad.",
-  },
-  {
-    id: "s2",
-    label: "riesgo",
-    channel: "sms",
-    channelName: "Mensaje SMS",
-    title: "Alerta bancaria con plazo límite",
-    sender: "BANCO_ALERTA",
-    senderMeta: "SMS · Hoy 14:15",
-    message:
-      "ALERTA BANCO: Detectamos una transacción sospechosa por $840.000 en tu cuenta. Será bloqueada preventivamente en 2 horas por seguridad. Para cancelarla o validar tu identidad ingresa ya a https://bancocentral-seguro.info/validar-cuenta",
-    criticalSignal: "Presión de tiempo forzada (2 horas) + enlace a dominio sospechoso (.info).",
-    explanation:
-      "Los bancos reales nunca amenazan con bloquear cuentas en plazos inmediatos por SMS ni envían enlaces con dominios no oficiales (.info, .xyz). Siempre debes ingresar por la app o portal oficial que conoces.",
-  },
-  {
-    id: "s3",
-    label: "seguro",
-    channel: "email",
-    channelName: "Correo corporativo",
-    title: "Citación a entrevista presencial",
-    sender: "Selección Grupo Nutresa",
-    senderMeta: "seleccion@nutresa.com.co · Canal oficial verificado",
-    subject: "Convocatoria Auxiliar de Operaciones — Citación a entrevista presencial",
-    message:
-      "Estimado(a) postulante: Confirmamos la recepción de tu postulación a través de nuestro portal de empleo oficial. Te citamos a la primera entrevista presencial este jueves a las 9:00 a. m. en nuestra sede administrativa (Calle 72 # 10-34, Piso 3). Por favor asiste con tu cédula original y copia de tu hoja de vida. Nota de seguridad: Nuestros procesos de selección son 100% gratuitos y jamás solicitamos pagos por exámenes médicos ni ningún trámite.",
-    criticalSignal: "Dominio institucional corporativo (@nutresa.com.co), sede física verificable y gratuidad garantizada.",
-    explanation:
-      "Esta es una citación legítima: el correo proviene del dominio oficial de la empresa, te cita a una sede física reconocible y aclara expresamente que nunca te cobrarán por participar.",
-  },
-];
+/* ─── Calibración variable basada en el banco de escenarios compartido ─── */
+function sampleCalibration(goal: Goal): SituationItem[] {
+  const pool = fullScenarioBank.filter((scenario) => scenario.goal === goal && scenario.stage === "diagnostico");
+  const shuffle = (items: typeof pool) => {
+    const result = [...items];
+    for (let index = result.length - 1; index > 0; index--) {
+      const swap = Math.floor(Math.random() * (index + 1));
+      [result[index], result[swap]] = [result[swap], result[index]];
+    }
+    return result;
+  };
+  const sample = (items: typeof pool, quantity: number) => shuffle(items).slice(0, quantity);
+  const chosen = shuffle([...sample(pool.filter((s) => s.risk !== false), 2), ...sample(pool.filter((s) => s.risk === false), 1)]);
+  return chosen.map((scenario) => ({
+    id: scenario.id,
+    label: scenario.risk === false ? "seguro" : "riesgo",
+    channel: scenario.channel ?? "whatsapp",
+    channelName: scenario.channel === "sms" ? "SMS" : scenario.channel === "email" ? "Correo electrónico" : "WhatsApp",
+    title: scenario.topic ?? "Comunicación inesperada",
+    sender: scenario.sender,
+    senderMeta: "Escenario educativo ficticio",
+    subject: scenario.topic ?? "Notificación",
+    message: scenario.messages.join("\n\n"),
+    criticalSignal: scenario.risk === false ? "No se observa una solicitud crítica; aun así verifica desde tu plataforma habitual." : "Señales de riesgo en el contenido o en la acción solicitada.",
+    explanation: scenario.explanation,
+  }));
+}
 
 type GoalDetail = {
   icon: React.ReactNode;
@@ -219,63 +204,123 @@ function NavDots({ current }: { current: Stage }) {
   );
 }
 
-/* ─── Stage 1: Goal ──────────────────────────────── */
+/* ─── Editorial visual previews for the three pathways ─── */
+function GoalArtwork({ goal }: { goal: Goal }) {
+  if (goal === "empleo") {
+    return (
+      <div className="goal-artwork artwork-job" aria-hidden="true">
+        <div className="artwork-job-window">
+          <div className="artwork-window-top"><span /><span /><span /><small>MENSAJE RECIBIDO</small></div>
+          <div className="artwork-job-content">
+            <div className="artwork-avatar"><Briefcase size={17} /></div>
+            <div className="artwork-message-lines"><i /><i /><i /></div>
+          </div>
+          <div className="artwork-job-alert"><AlertTriangle size={12} /> ¿Oferta real o trampa?</div>
+        </div>
+        <span className="artwork-side-label">SIMULACIÓN / 01</span>
+      </div>
+    );
+  }
+  if (goal === "dinero") {
+    return (
+      <div className="goal-artwork artwork-money" aria-hidden="true">
+        <div className="artwork-bank-card">
+          <div className="artwork-bank-top"><span>CUENTA PERSONAL</span><CreditCard size={17} /></div>
+          <strong>$ 840.000</strong>
+          <span className="artwork-bank-bottom">MOVIMIENTO POR VERIFICAR</span>
+        </div>
+        <span className="artwork-security-bubble"><ShieldAlert size={15} /></span>
+        <span className="artwork-side-label">SIMULACIÓN / 02</span>
+      </div>
+    );
+  }
+  return (
+    <div className="goal-artwork artwork-data" aria-hidden="true">
+      <div className="artwork-identity-card">
+        <div className="artwork-identity-icon"><Fingerprint size={43} strokeWidth={1.2} /></div>
+        <div className="artwork-identity-lines"><i /><i /><i /></div>
+        <span className="artwork-identity-lock"><Lock size={13} /> INFORMACIÓN PRIVADA</span>
+      </div>
+      <span className="artwork-side-label">SIMULACIÓN / 03</span>
+    </div>
+  );
+}
+
+/* ─── Stage 1: Goal — Editorial question experience ─── */
 function GoalStage({ onNext }: { onNext: (goal: Goal) => void }) {
   const [selected, setSelected] = useState<Goal | null>("empleo");
   const goals = Object.entries(goalMap) as [Goal, GoalDetail][];
   const activeGoal = selected ? goalMap[selected] : goalMap.empleo;
 
   return (
-    <div className="onboarding-flow-step">
-      <div className="onboarding-step-hero">
-        <span className="eyebrow">01 · Objetivo de práctica</span>
-        <h1>¿Qué quieres proteger hoy?</h1>
-        <p>
-          Selecciona el ámbito que deseas entrenar. Calibraremos la simulación con situaciones reales y señales de riesgo específicas.
-        </p>
+    <div className="onboarding-flow-step questionnaire-flow questionnaire-goals">
+      <div className="questionnaire-topline">
+        <span><span className="questionnaire-topline-indicator" /> PAUSA / PERSONALIZA TU EXPERIENCIA</span>
+        <span>ETAPA 01 <span className="questionnaire-topline-muted">/ 05</span></span>
       </div>
 
-      <div className="goal-deck-grid">
+      <div className="onboarding-step-hero question-hero">
+        <span className="question-eyebrow"><span>01</span> PRIMERO, LO QUE IMPORTA</span>
+        <h1>¿Qué quieres <span className="question-highlight">proteger</span> hoy?</h1>
+        <p>Vamos a entrenar tus decisiones frente a situaciones digitales reales. Elige lo que más te importa; nosotros adaptamos la experiencia.</p>
+      </div>
+
+      <div className="question-deck-heading">
+        <span>01 — ELIGE TU PRIORIDAD</span>
+        <span><CircleCheck size={14} /> Una elección. Un entrenamiento hecho para ti.</span>
+      </div>
+
+      <div className="goal-deck-grid" role="group" aria-label="Selecciona qué quieres proteger">
         {goals.map(([id, { icon, title, sub, badge, tags }], i) => (
           <button
             key={id}
             className={`goal-deck-card${selected === id ? " selected" : ""}`}
             style={{ "--i": i } as React.CSSProperties}
             type="button"
+            aria-pressed={selected === id}
             onClick={() => setSelected(id)}
           >
             <div className="gdc-header">
-              <span className="gdc-icon">{icon}</span>
-              <span className="gdc-badge">{badge}</span>
-              <span className="gdc-check">{selected === id ? "✓" : ""}</span>
+              <span className="gdc-card-index">0{i + 1} / 03</span>
+              <span className="gdc-check" aria-hidden="true">{selected === id ? <Check size={17} strokeWidth={2.5} /> : <ArrowUpRight size={17} />}</span>
             </div>
+            <GoalArtwork goal={id} />
             <div className="gdc-content">
+              <span className="gdc-topic"><span className="gdc-icon">{icon}</span><span>{badge}</span></span>
               <strong>{title}</strong>
               <p>{sub}</p>
             </div>
             <div className="gdc-tags">
-              {tags.map((tag) => (
-                <span key={tag} className="gdc-tag">{tag}</span>
-              ))}
+              {tags.map((tag) => <span key={tag} className="gdc-tag">{tag}</span>)}
+            </div>
+            <div className="gdc-select-footer">
+              <span>{selected === id ? "RUTA SELECCIONADA" : "ELEGIR ESTA RUTA"}</span>
+              <ArrowRight size={18} />
             </div>
           </button>
         ))}
       </div>
 
-      <div className="onboarding-bottom-bar">
-        <div className="obb-info">
-          <span className="obb-dot" />
-          <span>Práctica personalizada de <strong>4 minutos</strong> · 100% Anónimo · Sin registro previo</span>
+      <div className="onboarding-bottom-bar question-bottom-bar">
+        <div className="question-selection-preview" aria-live="polite">
+          <span className="question-preview-icon"><ShieldCheck size={22} /></span>
+          <span className="question-preview-copy">
+            <small>TU ENTRENAMIENTO, EN CONSTRUCCIÓN</small>
+            <strong>{activeGoal.title}</strong>
+            <span>{activeGoal.focusPoint}</span>
+          </span>
         </div>
         <button
-          className="primary-button large teal"
+          className="primary-button large teal question-next-button"
           type="button"
+          aria-label={`Continuar con ${activeGoal.title}`}
           disabled={!selected}
           onClick={() => selected && onNext(selected)}
         >
-          Continuar con {activeGoal.title} <ArrowRight size={20} />
+          Continuar <span className="question-next-icon"><ArrowRight size={20} /></span>
         </button>
       </div>
+      <p className="question-privacy-note"><Lock size={12} /> Sin registro. Sin información personal. Solo escenarios simulados.</p>
     </div>
   );
 }
@@ -339,62 +384,83 @@ function FrictionIllustration({ type }: { type: "urgencia" | "marca" | "miedo" |
   );
 }
 
-/* ─── Stage 2: Friction ──────────────────────────── */
+/* ─── Stage 2: Friction — Decision-making trigger ─── */
 function FrictionStage({ goal, onNext }: { goal: Goal; onNext: (f: Friction) => void }) {
   const [selected, setSelected] = useState<Friction | null>("urgencia");
   const frictions = Object.entries(frictionMap) as [Friction, FrictionDetail][];
   const goalInfo = goalMap[goal];
+  const selectedInfo = selected ? frictionMap[selected] : null;
 
   return (
-    <div className="onboarding-flow-step">
-      <div className="onboarding-step-hero">
-        <span className="eyebrow">02 · Punto ciego / Fricción</span>
-        <h1>¿Qué te hace difícil detenerte?</h1>
-        <p>
-          En situaciones de <strong>{goalInfo.title.toLowerCase()}</strong>, los atacantes usan trampas psicológicas para apresurar tu decisión. Selecciona la situación que más te cuesta reconocer:
-        </p>
+    <div className="onboarding-flow-step questionnaire-flow questionnaire-frictions">
+      <div className="questionnaire-topline">
+        <span><span className="questionnaire-topline-indicator" /> PAUSA / PERSONALIZA TU EXPERIENCIA</span>
+        <span>ETAPA 02 <span className="questionnaire-topline-muted">/ 05</span></span>
       </div>
 
-      <div className="friction-deck-grid">
+      <div className="onboarding-step-hero question-hero">
+        <span className="question-eyebrow"><span>02</span> AHORA, CONOCE TU PUNTO CIEGO</span>
+        <h1>¿Qué te hace difícil <span className="question-highlight">detenerte</span>?</h1>
+        <p>Alguien puede manipular tu decisión sin que lo notes. ¿Cuál de estas situaciones te resulta más difícil de manejar?</p>
+        <span className="question-context-chip"><Shield size={14} /> Estás entrenando: <strong>{goalInfo.title}</strong></span>
+      </div>
+
+      <div className="question-deck-heading">
+        <span>02 — RECONOCE TU PUNTO CIEGO</span>
+        <span><CircleCheck size={14} /> No hay respuestas buenas ni malas.</span>
+      </div>
+
+      <div className="friction-deck-grid" role="group" aria-label="Selecciona tu principal dificultad">
         {frictions.map(([id, { title, body, tag, example, visualType }], i) => (
           <button
             key={id}
             className={`friction-deck-card${selected === id ? " selected" : ""}`}
             style={{ "--i": i } as React.CSSProperties}
             type="button"
+            aria-pressed={selected === id}
             onClick={() => setSelected(id)}
           >
             <div className="fdc-header">
+              <span className="fdc-number">0{i + 1} <span>/ 04</span></span>
               <span className="fdc-tag">{tag}</span>
-              <span className="fdc-check">{selected === id ? "✓" : ""}</span>
+              <span className="fdc-check" aria-hidden="true">{selected === id ? <Check size={16} /> : <ArrowUpRight size={17} />}</span>
             </div>
-
-            {/* Visual representation of the trap */}
-            <FrictionIllustration type={visualType} />
-
-            <strong>{title}</strong>
-            <p className="fdc-body">{body}</p>
-            <div className="fdc-example">
-              <span>Señal en el mensaje:</span> {example}
+            <div className="fdc-main">
+              <div className="fdc-copy">
+                <strong>{title}</strong>
+                <p className="fdc-body">{body}</p>
+              </div>
+              <FrictionIllustration type={visualType} />
+            </div>
+            <div className="fdc-example"><span>Lo que podría ocurrir</span><p>{example}</p></div>
+            <div className="fdc-select-footer">
+              <span>{selected === id ? "ESTA ES MI DIFICULTAD" : "ELEGIR DIFICULTAD"}</span>
+              <ArrowRight size={16} />
             </div>
           </button>
         ))}
       </div>
 
-      <div className="onboarding-bottom-bar">
-        <div className="obb-info">
-          <span className="obb-dot" />
-          <span>Identificar tu punto ciego entrena el reflejo de hacer la pausa en el momento clave</span>
+      <div className="onboarding-bottom-bar question-bottom-bar">
+        <div className="question-selection-preview" aria-live="polite">
+          <span className="question-preview-icon"><Target size={22} /></span>
+          <span className="question-preview-copy">
+            <small>ESTE SERÁ TU FOCO DE PRÁCTICA</small>
+            <strong>{selectedInfo?.title ?? "Selecciona una dificultad"}</strong>
+            <span>{selectedInfo?.example ?? "Personalizaremos las situaciones para ti."}</span>
+          </span>
         </div>
         <button
-          className="primary-button large teal"
+          className="primary-button large teal question-next-button"
           type="button"
+          aria-label="Continuar a situaciones de práctica"
           disabled={!selected}
           onClick={() => selected && onNext(selected)}
         >
-          Continuar a situaciones de práctica <ArrowRight size={20} />
+          Ver situaciones <span className="question-next-icon"><ArrowRight size={20} /></span>
         </button>
       </div>
+      <p className="question-privacy-note"><Lock size={12} /> No evaluamos quién eres. Entrenamos cómo decides.</p>
     </div>
   );
 }
@@ -406,7 +472,7 @@ function WhatsAppSimulator({ item }: { item: SituationItem }) {
     <div className="sim-device-container whatsapp">
       <div className="sim-whatsapp-bar">
         <div className="swb-profile">
-          <div className="swb-avatar">TH</div>
+          <div className="swb-avatar">{item.sender.split(" ").slice(0, 2).map((word) => word.charAt(0)).join("").toUpperCase()}</div>
           <div className="swb-info">
             <strong>{item.sender}</strong>
             <small>{item.senderMeta}</small>
@@ -489,7 +555,7 @@ function EmailSimulator({ item }: { item: SituationItem }) {
         <p className="sim-email-body-text">{item.message}</p>
         <div className="sim-email-signature">
           <Building2 size={15} />
-          <span>Equipo de Selección y Atracción de Talento</span>
+          <span>Comunicación ficticia · Ejercicio PAUSA</span>
         </div>
       </div>
     </div>
@@ -497,7 +563,8 @@ function EmailSimulator({ item }: { item: SituationItem }) {
 }
 
 /* ─── Stage 3: Situation Cards with Realistic Simulators ─ */
-function SituationsStage({ onNext }: { onNext: () => void }) {
+function SituationsStage({ goal, onNext }: { goal: Goal; onNext: () => void }) {
+  const [situations] = useState<SituationItem[]>(() => sampleCalibration(goal));
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
   const current = situations[index];
@@ -515,7 +582,7 @@ function SituationsStage({ onNext }: { onNext: () => void }) {
           <span className="eyebrow">03 · Calibración completada</span>
           <h1>Desglose de tu criterio inicial</h1>
           <p>
-            Revisaste tres situaciones en sus canales reales sin pistas previas. Aquí tienes el análisis de lo que evaluaste y las señales críticas que entrenaremos:
+            Revisaste tres situaciones ficticias representadas en distintos canales. Aquí tienes el análisis de lo que evaluaste y las señales críticas que entrenaremos:
           </p>
         </div>
 
@@ -530,7 +597,7 @@ function SituationsStage({ onNext }: { onNext: () => void }) {
               <div className="summary-case-card" key={sit.id}>
                 <div className="scc-header-row">
                   <span className={`scc-badge ${isRisk ? "risk" : "safe"}`}>
-                    {isRisk ? "Situación de riesgo" : "Canal oficial seguro"}
+                    {isRisk ? "Situación de riesgo" : "Sin riesgo evidente"}
                   </span>
                   <span className="scc-channel-tag">{sit.channelName}</span>
                 </div>
@@ -555,7 +622,7 @@ function SituationsStage({ onNext }: { onNext: () => void }) {
                 </div>
 
                 <div className="scc-lesson">
-                  <strong>Señal crítica:</strong> {sit.criticalSignal}
+                  <strong>Observación útil:</strong> {sit.criticalSignal}
                 </div>
 
                 <p className="scc-explanation">{sit.explanation}</p>
@@ -567,7 +634,7 @@ function SituationsStage({ onNext }: { onNext: () => void }) {
         <div className="onboarding-bottom-bar">
           <div className="obb-info">
             <span className="obb-dot" />
-            <span>Punto de partida calibrado · Sin sesgos · Listo para la práctica interactiva</span>
+            <span>Punto de partida calibrado · Listo para tu práctica interactiva</span>
           </div>
           <button className="primary-button large teal" type="button" onClick={onNext}>
             Ver mi plan personalizado de práctica <ArrowRight size={20} />
@@ -578,13 +645,24 @@ function SituationsStage({ onNext }: { onNext: () => void }) {
   }
 
   return (
-    <div className="onboarding-flow-step">
+    <div className="onboarding-flow-step calibration-stage">
       <div className="onboarding-step-hero">
-        <span className="eyebrow">03 · Reconocimiento en canal real</span>
-        <h1>¿Te generaría sospecha esta comunicación?</h1>
+        <span className="eyebrow">03 · Radar de reconocimiento · {goalMap[goal].title}</span>
+        <h1>¿Confiarías en <em>este mensaje?</em></h1>
         <p>
-          Examina el mensaje tal como lo recibirías en tu dispositivo. Evalúa sin pistas previas para calibrar tu criterio inicial.
+          Cada visita trae situaciones diferentes de tu tema. Distingue las señales críticas sin asumir que todo mensaje es fraudulento.
         </p>
+      </div>
+
+      <div className="calibration-overview" aria-label="Tu recorrido de reconocimiento">
+        <div className="calibration-count"><span>CASO</span><strong>{String(index + 1).padStart(2, "0")}</strong><span>/ 03</span></div>
+        <div className="calibration-overview-content">
+          <span>Tu radar de decisiones <span aria-hidden="true">✦</span> {goalMap[goal].title}</span>
+          <div className="calibration-timeline" aria-label={`${index} de 3 casos completados`}>
+            {[0, 1, 2].map((point) => <div key={point} className={point < index ? "complete" : point === index ? "current" : ""} />)}
+          </div>
+        </div>
+        <span className="calibration-counter">45 situaciones en este tema</span>
       </div>
 
       <div className="situation-simulator-widescreen" key={current.id}>
@@ -598,9 +676,7 @@ function SituationsStage({ onNext }: { onNext: () => void }) {
             </span>
             <span>Canal simulado: {current.channelName}</span>
           </div>
-          <span className="ssw-progress-pill">
-            Caso {index + 1} de {situations.length}
-          </span>
+          <span className="ssw-progress-pill">{current.title}</span>
         </div>
 
         {/* Realistic channel simulator */}
@@ -617,8 +693,8 @@ function SituationsStage({ onNext }: { onNext: () => void }) {
               <ShieldCheck size={22} strokeWidth={2.2} />
             </div>
             <div className="sit-btn-text">
-              <strong>No me preocupa</strong>
-              <small>Parece una comunicación legítima o habitual</small>
+              <strong>No encuentro señales críticas</strong>
+              <small>Puedo continuar si confirmo el contexto por mi cuenta</small>
             </div>
             <div className="sit-btn-arrow" aria-hidden="true">
               <ArrowRight size={18} />
@@ -630,8 +706,8 @@ function SituationsStage({ onNext }: { onNext: () => void }) {
               <AlertTriangle size={22} strokeWidth={2.2} />
             </div>
             <div className="sit-btn-text">
-              <strong>Sí me preocupa</strong>
-              <small>Detecto señales de riesgo o desconfianza</small>
+              <strong>Detecto posibles riesgos</strong>
+              <small>Hay elementos que debo investigar antes de actuar</small>
             </div>
             <div className="sit-btn-arrow" aria-hidden="true">
               <ArrowRight size={18} />
@@ -730,7 +806,7 @@ function ProcessingStage({ goal, friction, onReady }: { goal: Goal; friction: Fr
           <span className="eyebrow">Calibración en tiempo real</span>
           <h2>Preparando tu práctica interactiva</h2>
           <p>
-            Seleccionamos un escenario de nuestro banco validado según tu objetivo. Sin preguntas genéricas.
+            Seleccionamos un escenario de nuestro banco de escenarios según tu objetivo. Sin preguntas genéricas.
           </p>
         </div>
 
@@ -844,7 +920,7 @@ export function Onboarding({ onComplete, onHome }: OnboardingProps) {
       <div className="onboarding-body" key={stage}>
         {stage === "goal" && <GoalStage onNext={handleGoalNext} />}
         {stage === "friction" && goal && <FrictionStage goal={goal} onNext={handleFrictionNext} />}
-        {stage === "situations" && <SituationsStage onNext={handleSituationsNext} />}
+        {stage === "situations" && <SituationsStage goal={goal} onNext={handleSituationsNext} />}
         {stage === "solution" && goal && friction && (
           <SolutionStage goal={goal} friction={friction} onNext={handleSolutionNext} />
         )}

@@ -8,6 +8,9 @@ import {
   Compass,
   CreditCard,
   FileCheck2,
+  CircleCheck,
+  Layers3,
+  Sparkles,
   HelpCircle,
   MessageSquare,
   Search,
@@ -51,7 +54,11 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit, submittin
   };
 
   return (
-    <div className="lesson-container">
+    <div className="lesson-container fresh-questionnaire">
+      <header className="live-experience-header">
+        <div className="live-experience-label"><span className="live-experience-sparkle"><Sparkles size={18} /></span><span>PAUSA <b>/</b> LAB DE DECISIONES</span></div>
+        <div className="live-experience-meta"><span>{scenario.goal === "empleo" ? "EMPLEO" : scenario.goal === "dinero" ? "DINERO" : "IDENTIDAD"}</span><i /><span>45 CASOS EN EL BANCO</span></div>
+      </header>
       {/* Navegación de pestañas de la lección interactiva */}
       <nav className="lesson-tabs-nav" aria-label="Navegación de la lección interactiva">
         <button
@@ -93,20 +100,18 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit, submittin
               </span>
             </div>
 
-            <h1 className="scenario-headline">
-              Lee el mensaje.
-              <br />
-              Luego, decide.
-            </h1>
+            <div className="live-stage-counter">{scenario.stage === "diagnostico" ? "01" : scenario.stage === "practica" ? "02" : "03"}<span> / 03</span></div>
+            <h1 className="scenario-headline">Tu criterio,<br /><em>a prueba.</em></h1>
+            <div className="scenario-topic-kicker"><Layers3 size={14} /> {scenario.topic ?? "Situación interactiva"}</div>
 
             <p className="scenario-lead">
-              No busques la respuesta perfecta. Elige con honestidad lo que harías en este momento.
+              Una situación distinta en cada visita. Observa el contexto, interpreta las señales y decide qué harías.
             </p>
 
             <div className="scenario-checkpoints">
               <div className="checkpoints-header">
                 <Compass size={15} className="ch-icon" />
-                <span className="checkpoints-title">Qué observar antes de decidir:</span>
+                <span className="checkpoints-title">Tu brújula para decidir</span>
               </div>
               <ul className="checkpoints-list">
                 <li>
@@ -152,7 +157,7 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit, submittin
               <aside className="case-academic-citation" aria-label="Referencia del caso">
                 <div className="cac-top">
                   <Shield size={12} />
-                  <span>Caso documentado: {scenario.caseSource.caseName}</span>
+                  <span>Contexto educativo: {scenario.caseSource.caseName}</span>
                 </div>
                 <small>
                   {scenario.caseSource.organization}
@@ -169,11 +174,9 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit, submittin
             {/* Columna 3: Tarjeta de Toma de Decisión */}
             <section className="decision-card">
               <header className="decision-header">
-                <span className="decision-step-label">Toma de decisión</span>
+                <div className="decision-question-overline"><span className="decision-q-icon"><Compass size={17} /></span><span>EL MOMENTO DE ELEGIR</span><span className="decision-question-id">{scenario.stage === "diagnostico" ? "01" : scenario.stage === "practica" ? "02" : "03"} / 03</span></div>
                 <h2>{scenario.prompt}</h2>
-                <p className="decision-instruction">
-                  Selecciona la opción que mejor represente tu primera acción.
-                </p>
+                <p className="decision-instruction">No hay penalizaciones por equivocarte. Lo importante es entrenar una respuesta consciente.</p>
               </header>
 
               <div className="choices" role="radiogroup" aria-label={scenario.prompt}>
@@ -189,8 +192,17 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit, submittin
                       role="radio"
                       aria-checked={isSelected}
                       onClick={() => onSelect(choice.id)}
+                      onKeyDown={(event) => {
+                        if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) return;
+                        event.preventDefault();
+                        const direction = event.key === "ArrowDown" || event.key === "ArrowRight" ? 1 : -1;
+                        const nextIndex = (index + direction + scenario.choices.length) % scenario.choices.length;
+                        onSelect(scenario.choices[nextIndex].id);
+                        const options = event.currentTarget.parentElement?.querySelectorAll<HTMLElement>("[role=radio]");
+                        options?.[nextIndex]?.focus();
+                      }}
                     >
-                      <span className="choice-badge-letter">{letter}</span>
+                      <span className="choice-badge-letter">{isSelected ? <CircleCheck size={21} /> : letter}</span>
                       <div className="choice-body-content">
                         <strong className="choice-primary-label">{choice.label}</strong>
                         {choice.description && (
@@ -203,13 +215,16 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit, submittin
                 })}
               </div>
 
+              <div className="decision-selected-summary" aria-live="polite">
+                {selected ? <><CircleCheck size={16} /> Respuesta seleccionada. Puedes cambiarla antes de confirmar.</> : <><span className="decision-empty-dot" /> Elige una de las tres rutas para continuar</>}
+              </div>
               <button
                 className="primary-button cta-decision-btn"
                 type="button"
                 disabled={!selected || submitting}
                 onClick={onSubmit}
               >
-                <span>{submitting ? "Evaluando decisión…" : "Confirmar decisión"}</span>
+                <span>{submitting ? "Evaluando decisión…" : "Confirmar y descubrir el resultado"}</span>
                 {!submitting && <ArrowRight size={18} />}
               </button>
 
@@ -218,9 +233,9 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit, submittin
                   <ShieldCheck size={20} />
                 </div>
                 <div className="dcn-content">
-                  <strong>¿Por qué es importante decidir con calma?</strong>
+                  <strong>Aprender también significa equivocarse</strong>
                   <p>
-                    Los atacantes se aprovechan de la presión y la urgencia para que tomes decisiones impulsivas.
+                    Al confirmar conocerás el razonamiento detrás de la alternativa más segura. Cada práctica es diferente.
                   </p>
                 </div>
               </div>
