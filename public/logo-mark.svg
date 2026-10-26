@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">PAUSA — símbolo</title>
+  <desc id="desc">Dos barras de pausa en verde lima dentro de un cuadrado grafito de esquinas suaves, con una abertura diagonal de avance.</desc>
+  <rect x="4" y="4" width="120" height="120" rx="34" fill="#1C2922"/>
+  <path d="M38 41c0-4.4 3.6-8 8-8h10c4.4 0 8 3.6 8 8v46c0 4.4-3.6 8-8 8H46c-4.4 0-8-3.6-8-8V41Z" fill="#D0FF84"/>
+  <path d="M71 41c0-4.4 3.6-8 8-8h4c4.4 0 8 3.6 8 8v46c0 4.4-3.6 8-8 8h-4c-4.4 0-8-3.6-8-8V41Z" fill="#D0FF84"/>
+  <path d="M92 30a7 7 0 0 1 7 7" fill="none" stroke="#F3FFE1" stroke-width="3.5" stroke-linecap="round" opacity=".88"/>
+</svg>
