@@ -169,7 +169,7 @@ export function ScenarioStep({ scenario, selected, onSelect, onSubmit, submittin
           {/* Columna 2 y 3: Workspace con Simulador de Chat y Tarjeta de Decisión */}
           <div className="scenario-workspace">
             {/* Columna 2: Simulador de Chat con Modo Inspector */}
-            <ChatCard scenario={scenario} />
+            <ChatCard scenario={scenario} allowInspection={false} />
 
             {/* Columna 3: Tarjeta de Toma de Decisión */}
             <section className="decision-card">

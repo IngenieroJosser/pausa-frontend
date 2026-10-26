@@ -155,6 +155,7 @@ model ScenarioSkill {
 model LearningSession {
   id          String @id @default(uuid()) @db.Uuid
   resumeToken String @unique @default(uuid()) @db.Uuid
+  accessTokenHash String? @unique @db.VarChar(64)
 
   topic Topic
 
@@ -267,6 +268,8 @@ model ClueInspection {
 model InteractionEvent {
   id String @id @default(uuid()) @db.Uuid
 
+  requestId String? @db.Uuid
+
   sessionId         String  @db.Uuid
   sessionScenarioId String? @db.Uuid
 
@@ -278,6 +281,7 @@ model InteractionEvent {
   session LearningSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   sessionScenario SessionScenario? @relation(fields: [sessionScenarioId], references: [id], onDelete: SetNull)
 
+  @@unique([sessionId, requestId])
   @@index([sessionId, createdAt])
   @@index([type, createdAt])
 }

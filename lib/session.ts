@@ -18,3 +18,5 @@ export type SavedResult = {
 };
 
 export const RESULT_STORAGE_KEY = "pausa:last-result";
+
+export const ACTIVE_SESSION_KEY = "pausa:active-session";

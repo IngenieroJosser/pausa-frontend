@@ -48,6 +48,7 @@ export type OnboardingResult = {
   habit: Habit;
   confidence: Confidence;
   context: Context;
+  calibration?: { scenarioId: string; flagged: boolean }[];
 };
 
 type OnboardingProps = {
@@ -761,7 +762,7 @@ function EmailSimulator({ item }: { item: SituationItem }) {
 }
 
 /* ─── Stage 5: Situation Cards with Realistic Simulators ─ */
-function SituationsStage({ goal, onNext }: { goal: Goal; onNext: () => void }) {
+function SituationsStage({ goal, onNext }: { goal: Goal; onNext: (responses: { scenarioId: string; flagged: boolean }[]) => void }) {
   const [situations] = useState<SituationItem[]>(() => sampleCalibration(goal));
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
@@ -834,7 +835,7 @@ function SituationsStage({ goal, onNext }: { goal: Goal; onNext: () => void }) {
             <span className="obb-dot" />
             <span>Punto de partida calibrado · Listo para tu práctica interactiva</span>
           </div>
-          <button className="primary-button large teal" type="button" onClick={onNext}>
+          <button className="primary-button large teal" type="button" onClick={() => onNext(situations.map((sit) => ({ scenarioId: sit.id, flagged: answers[sit.id] === true })))}>
             Ver mi plan personalizado de práctica <ArrowRight size={20} />
           </button>
         </div>
@@ -1054,6 +1055,7 @@ export function Onboarding({ onComplete, onHome }: OnboardingProps) {
   const [friction, setFriction] = useState<Friction | null>(null);
   const [habit, setHabit] = useState<Habit | null>(null);
   const [confidence, setConfidence] = useState<Confidence | null>(null);
+  const [calibration, setCalibration] = useState<{ scenarioId: string; flagged: boolean }[]>([]);
 
   const canGoBack = stage !== "goal" && stage !== "processing";
   const stageIndex = STAGES.indexOf(stage);
@@ -1082,7 +1084,8 @@ export function Onboarding({ onComplete, onHome }: OnboardingProps) {
     setStage("situations");
   }
 
-  function handleSituationsNext() {
+  function handleSituationsNext(responses: { scenarioId: string; flagged: boolean }[]) {
+    setCalibration(responses);
     setStage("solution");
   }
 
@@ -1101,6 +1104,7 @@ export function Onboarding({ onComplete, onHome }: OnboardingProps) {
       habit: finalHabit,
       confidence: finalConfidence,
       context: goalToContext[finalGoal],
+      calibration,
     });
   }
 

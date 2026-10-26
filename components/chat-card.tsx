@@ -10,7 +10,7 @@ type Props = {
 };
 
 export function ChatCard({ scenario, allowInspection = true }: Props) {
-  const [inspectorActive, setInspectorActive] = useState(true);
+  const [inspectorActive, setInspectorActive] = useState(false);
   const [selectedClueIndex, setSelectedClueIndex] = useState<number | null>(null);
 
   const clues: ScenarioSignal[] = scenario.signals;
