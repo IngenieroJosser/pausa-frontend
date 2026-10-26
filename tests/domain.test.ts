@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { selectScenario, getMeta, recommendationFor } from "../lib/server/domain.ts";
+import { selectScenario, getMeta, recommendationFor } from "@/lib/server/domain";
 
 type Candidate = Parameters<typeof selectScenario>[0]["candidates"][number];
 const sample = (i: number, stage: string, signal: string, family: string): Candidate => ({
