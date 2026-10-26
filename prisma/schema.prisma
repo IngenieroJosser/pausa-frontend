@@ -1,0 +1,334 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==========================================
+// ENUMERACIONES
+// ==========================================
+
+enum Topic {
+  EMPLOYMENT
+  MONEY
+  IDENTITY
+}
+
+enum Difficulty {
+  BASIC
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum LearningPhase {
+  CALIBRATION
+  PRACTICE
+  TRANSFER
+}
+
+enum SessionStatus {
+  ACTIVE
+  COMPLETED
+  ABANDONED
+}
+
+enum CaseStatus {
+  PENDING
+  PRESENTED
+  COMPLETED
+  SKIPPED
+}
+
+enum InspectionStage {
+  BEFORE_DECISION
+  AFTER_DECISION
+}
+
+enum SkillType {
+  SOURCE_VERIFICATION
+  URGENCY_RECOGNITION
+  DATA_PROTECTION
+  FINANCIAL_RISK
+  REPORTING
+  SAFE_DECISION
+}
+
+// ==========================================
+// BANCO DE ESCENARIOS
+// ==========================================
+
+model Scenario {
+  id          String     @id @default(uuid()) @db.Uuid
+  slug        String     @unique
+  title       String
+  description String     @db.Text
+
+  topic       Topic
+  difficulty  Difficulty @default(BASIC)
+
+  conversation Json
+  fraudPattern String?
+
+  version     Int     @default(1)
+  isPublished Boolean @default(false)
+
+  options    ScenarioOption[]
+  clues      ScenarioClue[]
+  skills     ScenarioSkill[]
+  placements SessionScenario[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([topic, difficulty, isPublished])
+}
+
+// ==========================================
+// OPCIONES DE DECISIÓN
+// ==========================================
+
+model ScenarioOption {
+  id         String @id @default(uuid()) @db.Uuid
+  scenarioId String @db.Uuid
+
+  code       String
+  label      String
+  position   Int
+
+  isSafe     Boolean @default(false)
+  score      Int     @default(0)
+
+  feedback    String  @db.Text
+  consequence String? @db.Text
+
+  scenario Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+
+  decisions Decision[]
+
+  @@unique([scenarioId, code])
+  @@unique([scenarioId, position])
+}
+
+// ==========================================
+// PISTAS DEL ESCENARIO
+// ==========================================
+
+model ScenarioClue {
+  id         String @id @default(uuid()) @db.Uuid
+  scenarioId String @db.Uuid
+
+  code        String
+  title       String
+  description String @db.Text
+  explanation String @db.Text
+  position    Int
+
+  scenario Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+
+  inspections ClueInspection[]
+
+  @@unique([scenarioId, code])
+  @@unique([scenarioId, position])
+}
+
+// ==========================================
+// COMPETENCIAS DE CADA ESCENARIO
+// ==========================================
+
+model ScenarioSkill {
+  scenarioId String @db.Uuid
+  skill       SkillType
+  weight      Int @default(1)
+
+  scenario Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+
+  @@id([scenarioId, skill])
+}
+
+// ==========================================
+// SESIONES DE APRENDIZAJE
+// ==========================================
+
+model LearningSession {
+  id          String @id @default(uuid()) @db.Uuid
+  resumeToken String @unique @default(uuid()) @db.Uuid
+
+  topic Topic
+
+  status       SessionStatus @default(ACTIVE)
+  currentPhase LearningPhase @default(CALIBRATION)
+
+  currentPosition Int @default(0)
+  calibrationData Json?
+
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  updatedAt   DateTime  @updatedAt
+
+  assignedCases SessionScenario[]
+  decisions     Decision[]
+  events        InteractionEvent[]
+  assessments   SkillAssessment[]
+  outcome       SessionOutcome?
+
+  @@index([topic, startedAt])
+  @@index([status, updatedAt])
+}
+
+// ==========================================
+// ESCENARIOS ASIGNADOS A UNA SESIÓN
+// ==========================================
+
+model SessionScenario {
+  id         String @id @default(uuid()) @db.Uuid
+  sessionId  String @db.Uuid
+  scenarioId String @db.Uuid
+
+  position Int
+  phase    LearningPhase
+
+  status CaseStatus @default(PENDING)
+  countsTowardScore Boolean @default(true)
+
+  selectionReason String?
+  adaptationData  Json?
+
+  presentedAt DateTime?
+  completedAt DateTime?
+
+  session LearningSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  scenario Scenario @relation(fields: [scenarioId], references: [id], onDelete: Restrict)
+
+  decision        Decision?
+  clueInspections ClueInspection[]
+  events          InteractionEvent[]
+
+  @@unique([sessionId, position])
+  @@index([scenarioId])
+  @@index([sessionId, status])
+}
+
+// ==========================================
+// DECISIONES EVALUADAS
+// ==========================================
+
+model Decision {
+  id String @id @default(uuid()) @db.Uuid
+
+  sessionId         String @db.Uuid
+  sessionScenarioId String @unique @db.Uuid
+  optionId          String @db.Uuid
+
+  requestId String @db.Uuid
+
+  isSafe Boolean
+  score  Int
+  feedbackSnapshot Json?
+  responseTimeMs Int?
+
+  createdAt DateTime @default(now())
+
+  session LearningSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionScenario SessionScenario @relation(fields: [sessionScenarioId], references: [id], onDelete: Cascade)
+  selectedOption ScenarioOption @relation(fields: [optionId], references: [id], onDelete: Restrict)
+
+  @@unique([sessionId, requestId])
+  @@index([optionId])
+  @@index([sessionId, createdAt])
+}
+
+// ==========================================
+// INSPECTOR DE PISTAS
+// ==========================================
+
+model ClueInspection {
+  id String @id @default(uuid()) @db.Uuid
+
+  sessionScenarioId String @db.Uuid
+  clueId            String @db.Uuid
+
+  stage InspectionStage
+  inspectedAt DateTime @default(now())
+
+  sessionScenario SessionScenario @relation(fields: [sessionScenarioId], references: [id], onDelete: Cascade)
+  clue ScenarioClue @relation(fields: [clueId], references: [id], onDelete: Restrict)
+
+  @@unique([sessionScenarioId, clueId, stage])
+  @@index([clueId])
+}
+
+// ==========================================
+// EVENTOS DE INTERACCIÓN
+// ==========================================
+
+model InteractionEvent {
+  id String @id @default(uuid()) @db.Uuid
+
+  sessionId         String  @db.Uuid
+  sessionScenarioId String? @db.Uuid
+
+  type    String @db.VarChar(64)
+  payload Json?
+
+  createdAt DateTime @default(now())
+
+  session LearningSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionScenario SessionScenario? @relation(fields: [sessionScenarioId], references: [id], onDelete: SetNull)
+
+  @@index([sessionId, createdAt])
+  @@index([type, createdAt])
+}
+
+// ==========================================
+// EVALUACIÓN DE COMPETENCIAS
+// ==========================================
+
+model SkillAssessment {
+  id String @id @default(uuid()) @db.Uuid
+
+  sessionId String @db.Uuid
+
+  skill SkillType
+  phase LearningPhase
+
+  totalDecisions   Int @default(0)
+  correctDecisions Int @default(0)
+  score Int @default(0)
+
+  evaluatedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  session LearningSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, skill, phase])
+  @@index([skill, score])
+}
+
+// ==========================================
+// INFORME FINAL DEL APRENDIZAJE
+// ==========================================
+
+model SessionOutcome {
+  id String @id @default(uuid()) @db.Uuid
+
+  sessionId String @unique @db.Uuid
+
+  totalCases     Int @default(0)
+  totalDecisions Int @default(0)
+  safeDecisions  Int @default(0)
+
+  finalScore Int @default(0)
+  reachedTransfer Boolean @default(false)
+
+  strengths       Json?
+  improvementAreas Json?
+  recommendations Json?
+  summary         Json?
+
+  completedAt DateTime @default(now())
+
+  session LearningSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
