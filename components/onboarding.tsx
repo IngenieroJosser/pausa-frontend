@@ -189,21 +189,6 @@ const frictionMap: Record<Friction, FrictionDetail> = {
   },
 };
 
-type HabitDetail = {
-  title: string;
-  body: string;
-  tag: string;
-  hint: string;
-  icon: React.ReactNode;
-};
-
-type ConfidenceDetail = {
-  title: string;
-  body: string;
-  tone: string;
-  meter: number;
-};
-
 const habitMap: Record<Habit, HabitDetail> = {
   impulso: {
     title: "Respondo de inmediato",
