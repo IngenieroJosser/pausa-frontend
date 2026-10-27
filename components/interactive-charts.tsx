@@ -284,16 +284,20 @@ export function AttackFunnelChart() {
   const currentInsight = current.insights[insightStep];
   const InsightIcon = currentInsight.icon;
 
-  // Reset insight step when scene changes
-  useEffect(() => {
+  // Changing scenes resets their lesson synchronously in the originating action,
+  // avoiding a second render caused by resetting state in an effect.
+  function changeScene(index: number) {
+    setActiveStep(index);
     setInsightStep(0);
-  }, [activeStep]);
+    setIsPlaying(false);
+  }
 
   // Auto-advance narrative tour when playing
   useEffect(() => {
     if (!isPlaying) return;
     const timer = setInterval(() => {
       setActiveStep((prev) => (prev + 1) % scenes.length);
+      setInsightStep(0);
     }, 5000);
     return () => clearInterval(timer);
   }, [isPlaying, scenes.length]);
@@ -312,8 +316,7 @@ export function AttackFunnelChart() {
                 type="button"
                 className={`shp-step-tab${isCurrent ? " active" : ""}${isCompleted ? " completed" : ""}`}
                 onClick={() => {
-                  setActiveStep(index);
-                  setIsPlaying(false);
+                  changeScene(index);
                 }}
                 aria-label={`Ver escena ${index + 1}: ${s.title}`}
               >
@@ -361,8 +364,7 @@ export function AttackFunnelChart() {
               className="sic-nav-btn prev"
               disabled={activeStep === 0}
               onClick={() => {
-                setActiveStep((prev) => Math.max(0, prev - 1));
-                setIsPlaying(false);
+                changeScene(Math.max(0, activeStep - 1));
               }}
             >
               <ArrowLeft size={16} />
@@ -377,8 +379,7 @@ export function AttackFunnelChart() {
                   className={`sic-dot${activeStep === idx ? " active" : ""}`}
                   style={{ backgroundColor: activeStep === idx ? current.themeColor : undefined }}
                   onClick={() => {
-                    setActiveStep(idx);
-                    setIsPlaying(false);
+                    changeScene(idx);
                   }}
                   aria-label={`Ir a la escena ${idx + 1}`}
                 />
@@ -392,8 +393,7 @@ export function AttackFunnelChart() {
               type="button"
               className="sic-nav-btn next"
               onClick={() => {
-                setActiveStep((prev) => (prev + 1) % scenes.length);
-                setIsPlaying(false);
+                changeScene((activeStep + 1) % scenes.length);
               }}
             >
               <span>{activeStep === scenes.length - 1 ? "Reiniciar" : "Siguiente"}</span>
@@ -475,9 +475,9 @@ export function AttackFunnelChart() {
                   style={{ backgroundColor: current.themeColor }}
                   onClick={() => {
                     if (activeStep < scenes.length - 1) {
-                      setActiveStep((s) => s + 1);
+                      changeScene(activeStep + 1);
                     } else {
-                      setActiveStep(0);
+                      changeScene(0);
                     }
                   }}
                 >

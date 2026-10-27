@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   completeLearningSession, createLearningSession, getLearningResults,
   getLearningSession, recordInteraction, submitLearningDecision, LearningApiError,
@@ -15,7 +15,7 @@ import { ResultScreen } from "./result-screen";
 import { ScenarioStep } from "./scenario-step";
 import { ServiceError } from "./service-error";
 
-type View = "restoring" | "intro" | "onboarding" | "scenario" | "feedback" | "result" | "service-error";
+type View = "restoring" | "starting" | "intro" | "onboarding" | "scenario" | "feedback" | "result" | "service-error";
 type RetryAction = "resume" | "start" | "submit" | "complete";
 type StoredSession = { id: string; accessToken: string };
 
@@ -44,7 +44,11 @@ function getSavedResult(): SavedResult | null {
 }
 
 export function PausaExperience() {
-  const [view, setView] = useState<View>("restoring");
+  // La bienvenida debe poder renderizarse desde el servidor sin esperar a la
+  // hidratación. Si existe una sesión previa, la restauración se activa tras el
+  // montaje y sustituye temporalmente esta pantalla por el estado de carga.
+  // En una visita nueva, el CTA está disponible desde el primer HTML.
+  const [view, setView] = useState<View>("intro");
   const [step, setStep] = useState(1);
   const [scenario, setScenario] = useState<Scenario>(diagnosticScenario);
   const [selected, setSelected] = useState<string | null>(null);
@@ -58,7 +62,7 @@ export function PausaExperience() {
   const [retryAction, setRetryAction] = useState<RetryAction>("resume");
   const [scenarioStartedAt, setScenarioStartedAt] = useState(() => Date.now());
 
-  async function restoreSession() {
+  const restoreSession = useCallback(async () => {
     const savedResult = getSavedResult();
     if (savedResult) {
       setAnswers(savedResult.answers ?? []);
@@ -68,9 +72,10 @@ export function PausaExperience() {
     }
     const stored = getStoredSession();
     if (!stored) {
-      setView("intro");
+      // No forzar una transición ni mostrar un spinner en una visita nueva.
       return;
     }
+    setView("restoring");
     try {
       const details = await getLearningSession(stored.id, stored.accessToken);
       setSessionId(stored.id);
@@ -110,9 +115,17 @@ export function PausaExperience() {
         setView("service-error");
       }
     }
-  }
+  }, []);
 
-  useEffect(() => { void restoreSession(); }, []); // Ejecutar una vez al montar.
+  // Deferred to a microtask so this effect only schedules synchronization.
+  // The cancellation guard prevents a duplicate restore in React Strict Mode.
+  useEffect(() => {
+    let active = true;
+    queueMicrotask(() => {
+      if (active) void restoreSession();
+    });
+    return () => { active = false; };
+  }, [restoreSession]);
 
   function goHome() {
     setView("intro");
@@ -132,6 +145,7 @@ export function PausaExperience() {
 
   async function startAfterOnboarding(result: OnboardingResult) {
     setOnboardingResult(result);
+    setView("starting");
     setRetryAction("start");
     try {
       const session = await createLearningSession(result);
@@ -232,7 +246,14 @@ export function PausaExperience() {
     else void continueSession();
   }
 
-  if (view === "restoring") return <main role="status" aria-live="polite" style={{ display: "grid", placeItems: "center", minHeight: "100svh", background: "#fff", color: "#18221b", fontFamily: "inherit" }}>Recuperando tu práctica PAUSA…</main>;
+  if (view === "restoring" || view === "starting") return (
+    <main className="pausa-loading-screen" role="status" aria-live="polite" aria-busy="true">
+      <span className="pausa-loading-mark" aria-hidden="true" />
+      <h1>{view === "starting" ? "Preparando tus escenarios" : "Recuperando tu práctica"}</h1>
+      <p>{view === "starting" ? "Seleccionamos tus casos en el servidor. Solo un momento." : "Buscando tu último avance para que continúes donde quedaste."}</p>
+      <span className="pausa-loading-spinner" aria-hidden="true" />
+    </main>
+  );
   if (view === "intro") return <IntroScreen onStart={() => setView("onboarding")} previousScore={previousScore} />;
   if (view === "onboarding") return <Onboarding onComplete={startAfterOnboarding} onHome={goHome} />;
   if (view === "result") return <ResultScreen answers={answers} onRestart={restartPractice} />;

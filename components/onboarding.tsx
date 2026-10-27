@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   AlertCircle,
   AlertTriangle,
@@ -56,7 +56,7 @@ type OnboardingProps = {
   onHome?: () => void;
 };
 
-type Stage = "goal" | "friction" | "habit" | "confidence" | "situations" | "solution" | "processing";
+type Stage = "goal" | "friction" | "habit" | "confidence" | "situations" | "solution";
 
 export type SituationChannel = "whatsapp" | "sms" | "email";
 
@@ -264,18 +264,25 @@ const frictionToSignal: Record<Friction, string> = {
   canal: "el procedimiento para verificar por canales independientes",
 };
 
-/* ─── Nav dots ───────────────────────────────────── */
-const STAGES: Stage[] = ["goal", "friction", "habit", "confidence", "situations", "solution", "processing"];
+/* ─── Onboarding progress: six meaningful stages, no fake loading step ─── */
+const STAGES: Stage[] = ["goal", "friction", "habit", "confidence", "situations", "solution"];
+const STAGE_LABELS: Record<Stage, string> = {
+  goal: "Tu objetivo", friction: "Tu dificultad", habit: "Tu reacción",
+  confidence: "Tu confianza", situations: "Reconocimiento", solution: "Tu plan",
+};
 function NavDots({ current }: { current: Stage }) {
   const idx = STAGES.indexOf(current);
   return (
-    <div className="onboarding-steps">
-      {STAGES.slice(0, 5).map((s, i) => (
-        <span
-          key={s}
-          className={`onboarding-step-dot${i === idx ? " active" : i < idx ? " done" : ""}`}
-        />
-      ))}
+    <div className="onboarding-progress" role="progressbar"
+      aria-label="Progreso de personalización" aria-valuemin={1}
+      aria-valuemax={STAGES.length} aria-valuenow={idx + 1}
+      aria-valuetext={`Paso ${idx + 1} de ${STAGES.length}: ${STAGE_LABELS[current]}`}>
+      <span className="onboarding-progress-copy">{STAGE_LABELS[current]} · {idx + 1}/{STAGES.length}</span>
+      <div className="onboarding-steps" aria-hidden="true">
+        {STAGES.map((stage, i) => (
+          <span key={stage} className={`onboarding-step-dot${i === idx ? " active" : i < idx ? " done" : ""}`} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -323,8 +330,8 @@ function GoalArtwork({ goal }: { goal: Goal }) {
 }
 
 /* ─── Stage 1: Goal — Editorial question experience ─── */
-function GoalStage({ onNext }: { onNext: (goal: Goal) => void }) {
-  const [selected, setSelected] = useState<Goal | null>("empleo");
+function GoalStage({ onNext, initialSelected }: { onNext: (goal: Goal) => void; initialSelected?: Goal | null }) {
+  const [selected, setSelected] = useState<Goal | null>(initialSelected ?? "empleo");
   const goals = Object.entries(goalMap) as [Goal, GoalDetail][];
   const activeGoal = selected ? goalMap[selected] : goalMap.empleo;
 
@@ -332,7 +339,7 @@ function GoalStage({ onNext }: { onNext: (goal: Goal) => void }) {
     <div className="onboarding-flow-step questionnaire-flow questionnaire-goals">
       <div className="questionnaire-topline">
         <span><span className="questionnaire-topline-indicator" /> PAUSA / PERSONALIZA TU EXPERIENCIA</span>
-        <span>ETAPA 01 <span className="questionnaire-topline-muted">/ 07</span></span>
+        <span>ETAPA 01 <span className="questionnaire-topline-muted">/ 06</span></span>
       </div>
 
       <div className="onboarding-step-hero question-hero">
@@ -461,8 +468,8 @@ function FrictionIllustration({ type }: { type: "urgencia" | "marca" | "miedo" |
 }
 
 /* ─── Stage 2: Friction — Decision-making trigger ─── */
-function FrictionStage({ goal, onNext }: { goal: Goal; onNext: (f: Friction) => void }) {
-  const [selected, setSelected] = useState<Friction | null>("urgencia");
+function FrictionStage({ goal, onNext, initialSelected }: { goal: Goal; onNext: (f: Friction) => void; initialSelected?: Friction | null }) {
+  const [selected, setSelected] = useState<Friction | null>(initialSelected ?? "urgencia");
   const frictions = Object.entries(frictionMap) as [Friction, FrictionDetail][];
   const goalInfo = goalMap[goal];
   const selectedInfo = selected ? frictionMap[selected] : null;
@@ -471,7 +478,7 @@ function FrictionStage({ goal, onNext }: { goal: Goal; onNext: (f: Friction) => 
     <div className="onboarding-flow-step questionnaire-flow questionnaire-frictions">
       <div className="questionnaire-topline">
         <span><span className="questionnaire-topline-indicator" /> PAUSA / PERSONALIZA TU EXPERIENCIA</span>
-        <span>ETAPA 02 <span className="questionnaire-topline-muted">/ 07</span></span>
+        <span>ETAPA 02 <span className="questionnaire-topline-muted">/ 06</span></span>
       </div>
 
       <div className="onboarding-step-hero question-hero">
@@ -542,8 +549,8 @@ function FrictionStage({ goal, onNext }: { goal: Goal; onNext: (f: Friction) => 
 }
 
 /* ─── Stage 3: Habit / default reaction ─────────── */
-function HabitStage({ goal, friction, onNext }: { goal: Goal; friction: Friction; onNext: (habit: Habit) => void }) {
-  const [selected, setSelected] = useState<Habit>("verifico");
+function HabitStage({ goal, friction, onNext, initialSelected }: { goal: Goal; friction: Friction; onNext: (habit: Habit) => void; initialSelected?: Habit | null }) {
+  const [selected, setSelected] = useState<Habit>(initialSelected ?? "verifico");
   const habits = Object.entries(habitMap) as [Habit, HabitDetail][];
   const frictionInfo = frictionMap[friction];
   const selectedInfo = habitMap[selected];
@@ -552,7 +559,7 @@ function HabitStage({ goal, friction, onNext }: { goal: Goal; friction: Friction
     <div className="onboarding-flow-step questionnaire-flow questionnaire-habits">
       <div className="questionnaire-topline">
         <span><span className="questionnaire-topline-indicator" /> PAUSA / AJUSTA EL RECORRIDO</span>
-        <span>ETAPA 03 <span className="questionnaire-topline-muted">/ 07</span></span>
+        <span>ETAPA 03 <span className="questionnaire-topline-muted">/ 06</span></span>
       </div>
 
       <div className="onboarding-step-hero question-hero">
@@ -602,8 +609,8 @@ function HabitStage({ goal, friction, onNext }: { goal: Goal; friction: Friction
 }
 
 /* ─── Stage 4: Confidence level ─────────────────── */
-function ConfidenceStage({ goal, habit, onNext }: { goal: Goal; habit: Habit; onNext: (confidence: Confidence) => void }) {
-  const [selected, setSelected] = useState<Confidence>("media");
+function ConfidenceStage({ goal, habit, onNext, initialSelected }: { goal: Goal; habit: Habit; onNext: (confidence: Confidence) => void; initialSelected?: Confidence | null }) {
+  const [selected, setSelected] = useState<Confidence>(initialSelected ?? "media");
   const levels = Object.entries(confidenceMap) as [Confidence, ConfidenceDetail][];
   const habitInfo = habitMap[habit];
   const selectedInfo = confidenceMap[selected];
@@ -612,7 +619,7 @@ function ConfidenceStage({ goal, habit, onNext }: { goal: Goal; habit: Habit; on
     <div className="onboarding-flow-step questionnaire-flow questionnaire-confidence">
       <div className="questionnaire-topline">
         <span><span className="questionnaire-topline-indicator" /> PAUSA / RITMO DE LA SESIÓN</span>
-        <span>ETAPA 04 <span className="questionnaire-topline-muted">/ 07</span></span>
+        <span>ETAPA 04 <span className="questionnaire-topline-muted">/ 06</span></span>
       </div>
 
       <div className="onboarding-step-hero question-hero">
@@ -653,7 +660,7 @@ function ConfidenceStage({ goal, habit, onNext }: { goal: Goal; habit: Habit; on
           <span className="question-preview-copy">
             <small>RITMO ESTIMADO DE LA SESIÓN</small>
             <strong>{selectedInfo.tone}</strong>
-            <span>Te mostraremos entre 10 y 12 interacciones cortas, sin hacerlo tedioso.</span>
+            <span>Los casos se ajustarán al nivel seleccionado.</span>
           </span>
         </div>
         <button className="primary-button large teal question-next-button" type="button" onClick={() => onNext(selected)}>
@@ -762,15 +769,20 @@ function EmailSimulator({ item }: { item: SituationItem }) {
 }
 
 /* ─── Stage 5: Situation Cards with Realistic Simulators ─ */
-function SituationsStage({ goal, onNext }: { goal: Goal; onNext: (responses: { scenarioId: string; flagged: boolean }[]) => void }) {
-  const [situations] = useState<SituationItem[]>(() => sampleCalibration(goal));
-  const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, boolean>>({});
+function SituationsStage({ goal, situations, calibration, onAnswer, onNext }: {
+  goal: Goal;
+  situations: SituationItem[];
+  calibration: { scenarioId: string; flagged: boolean }[];
+  onAnswer: (scenarioId: string, flagged: boolean) => void;
+  onNext: () => void;
+}) {
+  const [index, setIndex] = useState(() => Math.min(calibration.length, situations.length));
+  const answers = Object.fromEntries(calibration.map((item) => [item.scenarioId, item.flagged]));
   const current = situations[index];
   const done = index >= situations.length;
 
   function respond(isConcerning: boolean) {
-    setAnswers((a) => ({ ...a, [current.id]: isConcerning }));
+    onAnswer(current.id, isConcerning);
     setIndex((i) => i + 1);
   }
 
@@ -781,7 +793,7 @@ function SituationsStage({ goal, onNext }: { goal: Goal; onNext: (responses: { s
           <span className="eyebrow">05 · Calibración completada</span>
           <h1>Desglose de tu criterio inicial</h1>
           <p>
-            Revisaste cuatro situaciones breves en distintos canales. Aquí tienes el análisis de tu criterio inicial y las señales que reforzaremos:
+            Revisaste cuatro situaciones breves. Identificaste correctamente {situations.filter((sit) => (answers[sit.id] === (sit.label === "riesgo"))).length} de 4. Estas respuestas orientan los próximos casos:
           </p>
         </div>
 
@@ -835,7 +847,7 @@ function SituationsStage({ goal, onNext }: { goal: Goal; onNext: (responses: { s
             <span className="obb-dot" />
             <span>Punto de partida calibrado · Listo para tu práctica interactiva</span>
           </div>
-          <button className="primary-button large teal" type="button" onClick={() => onNext(situations.map((sit) => ({ scenarioId: sit.id, flagged: answers[sit.id] === true })))}>
+          <button className="primary-button large teal" type="button" onClick={onNext}>
             Ver mi plan personalizado de práctica <ArrowRight size={20} />
           </button>
         </div>
@@ -864,6 +876,12 @@ function SituationsStage({ goal, onNext }: { goal: Goal; onNext: (responses: { s
         <span className="calibration-counter">Más de 45 combinaciones disponibles</span>
       </div>
 
+      {index > 0 && (
+        <button type="button" className="calibration-back-button"
+          onClick={() => setIndex((i) => Math.max(0, i - 1))}>
+          <ChevronLeft size={17} /> Corregir la respuesta anterior
+        </button>
+      )}
       <div className="situation-simulator-widescreen" key={current.id}>
         {/* Neutral header without spoilers */}
         <div className="ssw-neutral-bar">
@@ -975,79 +993,6 @@ function SolutionStage({ goal, friction, onNext }: { goal: Goal; friction: Frict
   );
 }
 
-/* ─── Stage 7: Processing ────────────────────────── */
-function ProcessingStage({ goal, friction, onReady }: { goal: Goal; friction: Friction; onReady: () => void }) {
-  const [step, setStep] = useState(0);
-  const steps = [
-    `Identificando escenario de ${goalMap[goal].title.toLowerCase()}…`,
-    `Ajustando señal de riesgo: ${frictionToSignal[friction]}…`,
-    "Preparando simulación interactiva adaptada…",
-  ];
-
-  useEffect(() => {
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    steps.forEach((_, i) => {
-      timers.push(setTimeout(() => setStep(i + 1), (i + 1) * 850));
-    });
-    timers.push(setTimeout(onReady, steps.length * 850 + 700));
-    return () => timers.forEach(clearTimeout);
-  }, []); // eslint-disable-line
-
-  const progressPct = Math.min(100, Math.round((step / steps.length) * 100));
-
-  return (
-    <div className="onboarding-flow-step">
-      <div className="processing-dashboard-widescreen">
-        <div className="processing-icon">
-          <Shield size={40} />
-        </div>
-        <div className="processing-hero-text">
-          <span className="eyebrow">Calibración en tiempo real</span>
-          <h2>Preparando tu práctica interactiva</h2>
-          <p>
-            Seleccionamos una ruta breve y variable desde nuestro banco de escenarios. Máximo 10 a 12 interacciones en total.
-          </p>
-        </div>
-
-        {/* Live Progress Bar */}
-        <div className="pdw-progress-wrap">
-          <div className="pdw-progress-info">
-            <span>Calibración activa</span>
-            <strong>{progressPct}%</strong>
-          </div>
-          <div className="pdw-track">
-            <div className="pdw-fill" style={{ width: `${progressPct}%` }} />
-          </div>
-        </div>
-
-        {/* 3 Live Terminal Cards */}
-        <div className="pdw-cards-grid">
-          <div className={`pdw-card${step >= 1 ? " done" : ""}`}>
-            <span className="pdw-step-num">01</span>
-            <strong>Escenario de práctica</strong>
-            <p>Caso de {goalMap[goal].title.toLowerCase()}</p>
-            {step >= 1 ? <span className="pdw-status-badge ok">✓ Seleccionado</span> : <span className="pdw-status-badge wait">Calibrando…</span>}
-          </div>
-
-          <div className={`pdw-card${step >= 2 ? " done" : ""}`}>
-            <span className="pdw-step-num">02</span>
-            <strong>Punto ciego calibrado</strong>
-            <p>{frictionToSignal[friction]}</p>
-            {step >= 2 ? <span className="pdw-status-badge ok">✓ Ajustado</span> : <span className="pdw-status-badge wait">En espera…</span>}
-          </div>
-
-          <div className={`pdw-card${step >= 3 ? " done" : ""}`}>
-            <span className="pdw-step-num">03</span>
-            <strong>Prueba de transferencia</strong>
-            <p>Caso cruzado para medir aprendizaje</p>
-            {step >= 3 ? <span className="pdw-status-badge ok">✓ Listo</span> : <span className="pdw-status-badge wait">En espera…</span>}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /* ─── Main Onboarding Component ──────────────────── */
 export function Onboarding({ onComplete, onHome }: OnboardingProps) {
   const [stage, setStage] = useState<Stage>("goal");
@@ -1056,8 +1001,9 @@ export function Onboarding({ onComplete, onHome }: OnboardingProps) {
   const [habit, setHabit] = useState<Habit | null>(null);
   const [confidence, setConfidence] = useState<Confidence | null>(null);
   const [calibration, setCalibration] = useState<{ scenarioId: string; flagged: boolean }[]>([]);
+  const [situations, setSituations] = useState<SituationItem[]>([]);
 
-  const canGoBack = stage !== "goal" && stage !== "processing";
+  const canGoBack = stage !== "goal";
   const stageIndex = STAGES.indexOf(stage);
 
   function goBack() {
@@ -1065,6 +1011,13 @@ export function Onboarding({ onComplete, onHome }: OnboardingProps) {
   }
 
   function handleGoalNext(g: Goal) {
+    if (g !== goal || situations.length === 0) {
+      setSituations(sampleCalibration(g));
+      setCalibration([]);
+      setFriction(null);
+      setHabit(null);
+      setConfidence(null);
+    }
     setGoal(g);
     setStage("friction");
   }
@@ -1084,13 +1037,15 @@ export function Onboarding({ onComplete, onHome }: OnboardingProps) {
     setStage("situations");
   }
 
-  function handleSituationsNext(responses: { scenarioId: string; flagged: boolean }[]) {
-    setCalibration(responses);
-    setStage("solution");
+  function handleCalibrationAnswer(scenarioId: string, flagged: boolean) {
+    setCalibration((previous) => [
+      ...previous.filter((item) => item.scenarioId !== scenarioId),
+      { scenarioId, flagged },
+    ]);
   }
 
-  function handleSolutionNext() {
-    setStage("processing");
+  function handleSituationsNext() {
+    setStage("solution");
   }
 
   function handleReady() {
@@ -1125,27 +1080,20 @@ export function Onboarding({ onComplete, onHome }: OnboardingProps) {
           <Brand onClick={onHome} />
         </div>
         <NavDots current={stage} />
-        <button
-          type="button"
-          className="onboarding-skip"
-          onClick={handleReady}
-          title="Saltar onboarding"
-        >
-          Saltar intro
-        </button>
+        <span className="onboarding-nav-assurance"><Lock size={13} /> Sin registro</span>
       </nav>
 
       <div className="onboarding-body" key={stage}>
-        {stage === "goal" && <GoalStage onNext={handleGoalNext} />}
-        {stage === "friction" && goal && <FrictionStage goal={goal} onNext={handleFrictionNext} />}
-        {stage === "habit" && goal && friction && <HabitStage goal={goal} friction={friction} onNext={handleHabitNext} />}
-        {stage === "confidence" && goal && habit && <ConfidenceStage goal={goal} habit={habit} onNext={handleConfidenceNext} />}
-        {stage === "situations" && goal && <SituationsStage goal={goal} onNext={handleSituationsNext} />}
-        {stage === "solution" && goal && friction && (
-          <SolutionStage goal={goal} friction={friction} onNext={handleSolutionNext} />
+        {stage === "goal" && <GoalStage onNext={handleGoalNext} initialSelected={goal} />}
+        {stage === "friction" && goal && <FrictionStage goal={goal} onNext={handleFrictionNext} initialSelected={friction} />}
+        {stage === "habit" && goal && friction && <HabitStage goal={goal} friction={friction} onNext={handleHabitNext} initialSelected={habit} />}
+        {stage === "confidence" && goal && habit && <ConfidenceStage goal={goal} habit={habit} onNext={handleConfidenceNext} initialSelected={confidence} />}
+        {stage === "situations" && goal && situations.length > 0 && (
+          <SituationsStage goal={goal} situations={situations} calibration={calibration}
+            onAnswer={handleCalibrationAnswer} onNext={handleSituationsNext} />
         )}
-        {stage === "processing" && goal && friction && (
-          <ProcessingStage goal={goal} friction={friction} onReady={handleReady} />
+        {stage === "solution" && goal && friction && (
+          <SolutionStage goal={goal} friction={friction} onNext={handleReady} />
         )}
       </div>
     </div>

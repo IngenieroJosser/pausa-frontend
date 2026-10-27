@@ -6299,3 +6299,22 @@ button.brand-btn {
   .nf-card-footer { padding:15px 23px; }
 }
 @media (prefers-reduced-motion: reduce) { .nf-scenario-card { animation:none; } .nf-main-button { transition:none; } .nf-ambient video { display:none; } }
+
+/* PAUSA 2026 · onboarding progresivo y carga auténtica */
+.onboarding-progress { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; min-width: 150px; }
+.onboarding-progress-copy { font-size: 11px; letter-spacing: .035em; font-weight: 650; color: #526652; }
+.onboarding-progress .onboarding-steps { gap: 6px; }
+.onboarding-nav-assurance { display: inline-flex; gap: 7px; align-items: center; font-size: 11px; color: #506051; font-weight: 650; }
+.calibration-back-button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #dbe4d7; padding: 10px 14px; border-radius: 99px; background: #ffffff; color: #314333; font-size: 13px; font-weight: 650; cursor: pointer; margin-bottom: 14px; }
+.calibration-back-button:hover { background: #eff7e8; border-color: #a6c491; }
+.calibration-back-button:focus-visible, .onboarding-nav .onboarding-skip:focus-visible { outline: 3px solid #92d14d; outline-offset: 3px; }
+.pausa-loading-screen { min-height: 100svh; background: #fff; color: #15251a; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; gap: 13px; }
+.pausa-loading-screen h1 { font-size: clamp(25px, 3vw, 39px); font-weight: 750; line-height: 1.15; margin: 8px 0 0; }
+.pausa-loading-screen p { font-size: 15px; color: #576658; max-width: 365px; margin: 0; line-height: 1.6; }
+.pausa-loading-mark { display: block; width: 58px; height: 58px; border-radius: 18px; background: #1e2b23; position: relative; box-shadow: 0 12px 35px rgba(28, 46, 33, .13); }
+.pausa-loading-mark::before, .pausa-loading-mark::after { content: ""; position: absolute; width: 9px; height: 26px; top: 16px; border-radius: 4px; background: #bdff68; }
+.pausa-loading-mark::before { left: 19px; } .pausa-loading-mark::after { right: 19px; }
+.pausa-loading-spinner { width: 21px; height: 21px; border: 2px solid #dfe9d8; border-top-color: #659f4a; border-radius: 50%; animation: pausa-loading-rotate .85s linear infinite; margin-top: 14px; }
+@keyframes pausa-loading-rotate { to { transform: rotate(360deg); } }
+@media (max-width: 680px) { .onboarding-progress { min-width: 95px; } .onboarding-nav-assurance { display: none; } .onboarding-progress .onboarding-steps { gap: 4px; } }
+@media (prefers-reduced-motion: reduce) { .pausa-loading-spinner { animation: none; border-top-color: #34694d; } }

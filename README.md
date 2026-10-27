@@ -140,3 +140,8 @@ scripts/seed-runner.mjs   ejecutor TS via jiti
 ## Alcance pendiente de validar
 
 Este proyecto entrega el código y pruebas unitarias. **Un build real, migraciones en tu PostgreSQL y pruebas E2E de Vercel no pueden darse por aprobados sin instalar paquetes y conectar la base de datos real.** Esos pasos son obligatorios antes de entregar la hackathon.
+
+
+## Correcciones para la entrega (27 de octubre de 2026)
+
+Consulta [`CORRECCIONES_HACKATHON_2026_10_27.md`](./CORRECCIONES_HACKATHON_2026_10_27.md) para los cambios del onboarding, carga real, recuperación de respuestas y procedimiento de validación E2E.
